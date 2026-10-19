@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+- Release workflow attests build provenance for `main.js`, `manifest.json` and `styles.css`.
+- Ships the Obsidian 1.13+ settings improvements that were prepared for 1.0.1 (declarative settings, `setDestructive()`, slider tooltip).
+
 ## 1.0.1
 
 - Settings are declared to Obsidian 1.13+, so they show up in the settings search; older versions keep the same tab.
