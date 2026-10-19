@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.0 (unreleased)
+
+- **Confidential passages.** Mark a whole note (`audience: internal`), a section (`## Title %%internal%%`), a block (`> [!internal]`) or a phrase (`<span data-audience="internal">`), then export a version per audience. Marked passages a profile leaves out are removed before rendering, embedded notes included.
+- Export profiles in the settings: levels kept, file name suffix, optional "[passage removed]" mark, TLP marking. A *Client* profile is created on first run; a note can pick one with `profile:`.
+- New commands: *Export as PDF report with a profile…* and *Export all versions as PDF reports*.
+- TLP marks: `## Title %%tlp:red%%`, `<span data-tlp="red">`, or `tlp:` on an embedded note — removed from any version marked less strictly.
+- In versions that keep them, restricted passages are labelled (amber label, dashed closing rule) and marked phrases highlighted. In Obsidian, `[!internal]` callouts show in orange with a lock and marked phrases with a dotted underline.
+- Optional export log note: one line per restricted export, with what was removed (counts only).
+- `example-confidential.md`, a note that uses every marking.
+- Unknown levels and unclosed marked phrases stop the export instead of letting text through.
+- Obsidian comments (`%%…%%`) are no longer printed in exports.
+
 ## 1.0.2
 
 - Release workflow attests build provenance for `main.js`, `manifest.json` and `styles.css`.

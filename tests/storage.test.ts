@@ -186,3 +186,30 @@ test('only image files the plugin wrote itself count as stored template images',
     assert.equal(isStoredFile(bad), false, String(bad));
   }
 });
+
+test('an install from before export profiles gets the internal level and a client profile', () => {
+  const d = migrateData({ presets: [], outputFolder: 'PDF' });
+  assert.deepEqual(d.audienceLevels, ['internal']);
+  assert.deepEqual(d.profiles.map((p) => [p.id, p.keep, p.suffix]), [['client', [], '-client']]);
+});
+
+test('stored profiles are kept, cleaned, and the ones without an id dropped', () => {
+  const d = migrateData({
+    audienceLevels: ['Internal', 'Board', 'internal'],
+    profiles: [
+      { id: 'partner', name: 'Partner', keep: 'Board', suffix: '-partner', placeholder: true, tlp: 'amber' },
+      { name: 'no id' },
+      'junk',
+      { id: 'bad-tlp', tlp: 'PURPLE' }
+    ]
+  });
+  assert.deepEqual(d.audienceLevels, ['internal', 'board']);
+  assert.deepEqual(d.profiles, [
+    { id: 'partner', name: 'Partner', keep: ['board'], suffix: '-partner', placeholder: true, tlp: 'AMBER' },
+    { id: 'bad-tlp', name: 'bad-tlp', keep: [], suffix: '', placeholder: false, tlp: null }
+  ]);
+});
+
+test('a user who deleted every profile keeps none', () => {
+  assert.deepEqual(migrateData({ profiles: [] }).profiles, []);
+});

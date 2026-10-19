@@ -39,6 +39,7 @@ import {
 import { iconSvg, type IconName } from './icons.ts';
 import { fitTable, type TableCell } from './tableLayout.ts';
 import { getLocale, t as tr, type Locale } from './i18n.ts';
+import { MARK_END_RE, MARK_START_RE, PHRASE_MARK_ATTR } from './redact.ts';
 
 /**
  * A pdfmake content node. pdfmake has no published types, and its node shape is
@@ -389,10 +390,27 @@ function decodeEntities(s: unknown): string {
     .replace(/&#(\d+);/g, (_, d: string) => String.fromCodePoint(parseInt(d, 10)));
 }
 
+/** Fill behind a restricted phrase kept in this version. */
+function markFill(preset: Preset): string {
+  return tint(tlpColor(preset, 'AMBER').bg, 0.75);
+}
+
 function inlineRuns(tokens: MdToken[] | undefined, preset: Preset): PdfNode[] {
   const out: PdfNode[] = [];
   if (!tokens) return out;
+  // Open <span> tags, true for those that mark a restricted phrase. Spans are
+  // not printed: only their text is, highlighted while a marking one is open.
+  const spans: boolean[] = [];
   for (const t of tokens) {
+    const from = out.length;
+    if (t.type === 'html' && /^<span\b/i.test(String(t.text))) {
+      spans.push(String(t.text).includes(PHRASE_MARK_ATTR));
+      continue;
+    }
+    if (t.type === 'html' && /^<\/span\s*>$/i.test(String(t.text))) {
+      spans.pop();
+      continue;
+    }
     switch (t.type) {
       case 'text':
         if (t.tokens && t.tokens.length) out.push(...inlineRuns(t.tokens, preset));
@@ -414,6 +432,9 @@ function inlineRuns(tokens: MdToken[] | undefined, preset: Preset): PdfNode[] {
       case 'escape': out.push({ text: t.text }); break;
       case 'image': break; // images are rendered as blocks in paragraphNode
       default: if (t.text) out.push({ text: decodeEntities(t.text) });
+    }
+    if (spans.includes(true)) {
+      for (let i = from; i < out.length; i++) out[i] = { ...out[i], background: markFill(preset) };
     }
   }
   return out;
@@ -1216,10 +1237,44 @@ const HEADING_STYLE_SET = new Set(HEADING_STYLES);
 function wantsAutoBreak(out: PdfNode[]): boolean {
   for (let k = out.length - 1; k >= 0; k--) {
     const el = out[k];
-    if (el && el.__pb) continue;
+    if (el && (el.__pb || el.__mark)) continue;
     return !(el && typeof el === 'object' && typeof el.style === 'string' && HEADING_STYLE_SET.has(el.style));
   }
   return false;
+}
+
+/**
+ * Where a restricted passage this version keeps begins: its label, and a rule
+ * in the TLP amber. It sits under the section's heading, so a heading that
+ * opens a new page takes it along.
+ */
+function markStartNode(label: string, preset: Preset, ctx: Ctx): PdfNode {
+  const accent = tlpColor(preset, 'AMBER').bg;
+  return {
+    __mark: true,
+    stack: [
+      {
+        text: [
+          { text: ` ${label} `, bold: true, color: tlpColor(preset, 'AMBER').fg, background: accent },
+          { text: '  ' + tr('audience.bannerNote'), italics: true, color: '#6B6B6B' }
+        ],
+        fontSize: 7.5
+      },
+      { canvas: [{ type: 'line', x1: 0, y1: 3, x2: ctx.width, y2: 3, lineWidth: 0.8, lineColor: accent }] }
+    ],
+    margin: [0, 0, 0, 8],
+    unbreakable: true
+  };
+}
+
+/** Where it ends: a dashed rule in the same colour. */
+function markEndNode(preset: Preset, ctx: Ctx): PdfNode {
+  const accent = tlpColor(preset, 'AMBER').bg;
+  return {
+    __mark: true,
+    canvas: [{ type: 'line', x1: 0, y1: 0, x2: ctx.width, y2: 0, lineWidth: 0.8, lineColor: accent, dash: { length: 3, space: 2 } }],
+    margin: [0, 2, 0, 10]
+  };
 }
 
 export function markdownToPdf(md: string, preset: Preset, ctx?: Ctx): PdfNode[] {
@@ -1229,6 +1284,12 @@ export function markdownToPdf(md: string, preset: Preset, ctx?: Ctx): PdfNode[] 
   const out: PdfNode[] = [];
   for (const t of tokens) {
     if (isPageBreakToken(t)) { out.push({ __pb: true }); continue; }
+    if (t.type === 'html') {
+      const raw = String(t.raw || t.text || '').trim();
+      const start = MARK_START_RE.exec(raw);
+      if (start) { out.push(markStartNode(start[1], preset, c)); continue; }
+      if (MARK_END_RE.test(raw)) { out.push(markEndNode(preset, c)); continue; }
+    }
     if (t.type === 'heading' && t.depth === 1) {
       const plain = runsToPlain(inlineRuns(t.tokens, preset)).trim();
       c.diamond = preset.diamondBullets !== false && /recommand|recommend/i.test(plain);

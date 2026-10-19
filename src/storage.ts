@@ -9,18 +9,22 @@ import {
   asText,
   HEADING_LEVELS,
   SECTION_KEYS,
+  TLP_KEYS,
   isNumberingStyle,
   isSectionKey,
   type ConflictMode,
   type DocContact,
   type DocVersion,
+  type ExportProfile,
   type PluginData,
   type Preset,
   type PresetToc,
   type ReportVars,
-  type SectionKey
+  type SectionKey,
+  type TlpKey
 } from './types.ts';
 import { defaultLabels, defaultPreset, defaultToc } from './generator.ts';
+import { normalizeLevels } from './redact.ts';
 
 /**
  * Bring a stored heading configuration back to exactly six levels of known
@@ -52,7 +56,33 @@ export function defaultData(): PluginData {
     conflictMode: 'ask',
     rememberLast: true,
     alwaysUseLast: false,
-    defaultContacts: []
+    defaultContacts: [],
+    audienceLevels: ['internal'],
+    profiles: [defaultProfile()],
+    markConfidential: true,
+    logExports: false
+  };
+}
+
+/** The profile a first install starts with: a client version without internal passages. */
+export function defaultProfile(): ExportProfile {
+  return { id: 'client', name: 'Client', keep: [], suffix: '-client', placeholder: false, tlp: null };
+}
+
+/** Bring a stored profile up to the current shape. */
+export function migrateProfile(raw: unknown): ExportProfile | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const p = raw as Record<string, unknown>;
+  const id = asText(p.id).trim();
+  if (!id) return null;
+  const tlp = asText(p.tlp).trim().toUpperCase();
+  return {
+    id,
+    name: asText(p.name).trim() || id,
+    keep: normalizeLevels(p.keep),
+    suffix: asText(p.suffix),
+    placeholder: p.placeholder === true,
+    tlp: (TLP_KEYS as readonly string[]).includes(tlp) ? (tlp as TlpKey) : null
   };
 }
 
@@ -131,6 +161,13 @@ export function migrateData(raw: unknown): PluginData {
   out.alwaysUseLast = d.alwaysUseLast === true;
   out.lastPresetId = typeof d.lastPresetId === 'string' ? d.lastPresetId : undefined;
   out.defaultContacts = Array.isArray(d.defaultContacts) ? d.defaultContacts : [];
+  // Absent before 1.1: a first install and an upgrade both get the defaults.
+  if (d.audienceLevels !== undefined) out.audienceLevels = normalizeLevels(d.audienceLevels);
+  if (Array.isArray(d.profiles)) {
+    out.profiles = d.profiles.map(migrateProfile).filter((p): p is ExportProfile => p !== null);
+  }
+  out.markConfidential = d.markConfidential !== false;
+  out.logExports = d.logExports === true;
 
   // Seed the factory preset on first run. Once the user has templates of their
   // own, they are free to delete it.

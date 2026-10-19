@@ -12,12 +12,14 @@ import {
   type MarkdownView
 } from 'obsidian';
 import { ReportSettingTab } from './settings.ts';
-import { ConflictModal, PresetPickerModal } from './modals.ts';
+import { ConflictModal, PresetPickerModal, ProfilePickerModal } from './modals.ts';
 import { AssetStore } from './assets.ts';
 import { migrateData } from './storage.ts';
 import {
   incrementedPath,
   presetFromFrontmatter,
+  profileFromFrontmatter,
+  redactionSummary,
   renderReport,
   reportWarnings,
   targetPath,
@@ -25,7 +27,8 @@ import {
   type ExportDeps
 } from './exporter.ts';
 import { getLocale, setLocale, t } from './i18n.ts';
-import type { ConflictMode, DocContact, PluginData, Preset } from './types.ts';
+import type { RedactionCounts } from './redact.ts';
+import type { ConflictMode, DocContact, ExportProfile, PluginData, Preset } from './types.ts';
 import type { PdfMake } from 'pdfmake/build/pdfmake.js';
 
 /**
@@ -66,6 +69,30 @@ export default class PdfReportPlugin extends Plugin {
         const file = this.app.workspace.getActiveFile();
         if (!file || file.extension !== 'md') return false;
         if (!checking) void this.previewFile(file);
+        return true;
+      }
+    });
+
+    this.addCommand({
+      id: 'export-pdf-report-profile',
+      name: t('cmd.exportProfile'),
+      checkCallback: (checking) => {
+        const file = this.app.workspace.getActiveFile();
+        if (!file || file.extension !== 'md') return false;
+        if (!checking) {
+          new ProfilePickerModal(this.app, this.data.profiles, (profile) => void this.exportFile(file, undefined, profile)).open();
+        }
+        return true;
+      }
+    });
+
+    this.addCommand({
+      id: 'export-all-versions',
+      name: t('cmd.exportAll'),
+      checkCallback: (checking) => {
+        const file = this.app.workspace.getActiveFile();
+        if (!file || file.extension !== 'md') return false;
+        if (!checking) void this.exportAllVersions(file);
         return true;
       }
     });
@@ -188,34 +215,123 @@ export default class PdfReportPlugin extends Plugin {
   /* Export                                                            */
   /* ---------------------------------------------------------------- */
 
-  async exportFile(file: TFile, selection?: string): Promise<void> {
+  /**
+   * Export one version of a note. `profile` undefined means the one the note's
+   * frontmatter names, or the full version when it names none.
+   */
+  async exportFile(file: TFile, selection?: string, profile?: ExportProfile | null): Promise<void> {
     const preset = await this.choosePreset(file);
     if (!preset) return;
 
     const notice = new Notice(t('notice.generating'), 0);
     try {
       const deps = this.deps();
-      const { bytes, vars, warnings } = await renderReport(deps, file, preset, selection);
+      const chosen = profile === undefined ? profileFromFrontmatter(this.app, file, this.data.profiles) : profile;
+      const result = await this.writeVersion(deps, file, preset, chosen, selection);
+      if (!result) { notice.hide(); return; }
 
-      let target = targetPath(deps, file, vars);
-      if (target.exists) {
-        const mode = await this.resolveConflict(target.path);
-        if (!mode) { notice.hide(); return; }
-        if (mode === 'increment') target = { path: incrementedPath(deps, target.path), exists: false };
-      }
-
-      const written = await writePdf(deps, target.path, bytes);
-      if (this.data.rememberLast) {
-        this.data.lastPresetId = preset.id;
-        await this.saveSettings();
-      }
+      await this.rememberPreset(preset);
       notice.hide();
-      reportWarnings(warnings);
-      this.noticeWithActions(t('notice.exported', { path: written.path }), written);
+      reportWarnings(result.warnings);
+      if (chosen && result.redacted) new Notice(redactionSummary(chosen, result.redacted), 8000);
+      this.noticeWithActions(t('notice.exported', { path: result.file.path }), result.file);
     } catch (e) {
       notice.hide();
       this.reportError(e, file);
     }
+  }
+
+  /** The full version, then one per profile, each under its own name. */
+  async exportAllVersions(file: TFile): Promise<void> {
+    const preset = await this.choosePreset(file);
+    if (!preset) return;
+
+    const notice = new Notice(t('notice.generating'), 0);
+    const deps = this.deps();
+    const written: TFile[] = [];
+    const warnings = new Set<string>();
+    const summaries: string[] = [];
+    try {
+      for (const profile of [null, ...this.data.profiles]) {
+        const result = await this.writeVersion(deps, file, preset, profile);
+        if (!result) continue;
+        written.push(result.file);
+        result.warnings.forEach((w) => warnings.add(w));
+        if (profile && result.redacted) summaries.push(redactionSummary(profile, result.redacted));
+      }
+      await this.rememberPreset(preset);
+    } catch (e) {
+      // Stop at the first failure: a version that cannot be made safely must
+      // not be silently missing from a set the user believes complete.
+      this.reportError(e, file);
+    } finally {
+      notice.hide();
+    }
+
+    reportWarnings([...warnings]);
+    if (summaries.length) new Notice(summaries.join('\n'), 8000);
+    if (written.length) {
+      this.noticeWithActions(
+        t('notice.exportedMany', { count: written.length, paths: written.map((f) => f.path).join('\n') }),
+        written[0]
+      );
+    }
+  }
+
+  /** Render one version and write it, asking about an existing file. Null when the user cancels. */
+  private async writeVersion(
+    deps: ExportDeps,
+    file: TFile,
+    preset: Preset,
+    profile: ExportProfile | null,
+    selection?: string
+  ): Promise<{ file: TFile; warnings: string[]; redacted: RedactionCounts | null } | null> {
+    const { bytes, vars, warnings, redacted } = await renderReport(deps, file, preset, profile, selection);
+    let target = targetPath(deps, file, vars, profile);
+    if (target.exists) {
+      const mode = await this.resolveConflict(target.path);
+      if (!mode) return null;
+      if (mode === 'increment') target = { path: incrementedPath(deps, target.path), exists: false };
+    }
+    const written = await writePdf(deps, target.path, bytes);
+    if (profile && redacted) await this.logExport(file, written, profile, redacted);
+    return { file: written, warnings, redacted };
+  }
+
+  /**
+   * One line in the export log, when the user asked for one: which note left,
+   * under which name, and what was removed from it. The log never holds the
+   * removed text itself.
+   */
+  private async logExport(source: TFile, written: TFile, profile: ExportProfile, counts: RedactionCounts): Promise<void> {
+    if (!this.data.logExports) return;
+    try {
+      const folder = (this.data.outputFolder || '').trim().replace(/^\/+|\/+$/g, '');
+      const name = `${t('log.file')}.md`;
+      const path = normalizePath(folder ? `${folder}/${name}` : name);
+      const now = new Date();
+      const pad = (n: number) => String(n).padStart(2, '0');
+      const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const link = `[[${source.path.replace(/\.md$/, '')}|${source.basename}]]`;
+      const line = `- ${stamp} — ${link} → ${written.path} — ${redactionSummary(profile, counts)}\n`;
+
+      const existing = this.app.vault.getAbstractFileByPath(path);
+      if (existing instanceof TFile) {
+        await this.app.vault.process(existing, (data) => (data.endsWith('\n') || !data ? data : data + '\n') + line);
+      } else {
+        if (folder && !this.app.vault.getAbstractFileByPath(folder)) await this.app.vault.createFolder(folder);
+        await this.app.vault.create(path, t('log.header') + line);
+      }
+    } catch (e) {
+      // The PDF is written; a log that cannot be is not worth failing it for.
+      console.warn('[PDF Report Exporter] export log not written', e);
+    }
+  }
+
+  private async rememberPreset(preset: Preset): Promise<void> {
+    if (!this.data.rememberLast) return;
+    this.data.lastPresetId = preset.id;
+    await this.saveSettings();
   }
 
   /** Ask what to do about an existing PDF, unless a mode is already chosen. */
@@ -248,13 +364,15 @@ export default class PdfReportPlugin extends Plugin {
       progress.setMessage(t('notice.batchStep', { done: done + 1, count: notes.length, name: note.basename }));
       try {
         const notePreset = presetFromFrontmatter(this.app, note, this.data.presets) || preset;
-        const { bytes, vars } = await renderReport(deps, note, notePreset);
+        const profile = profileFromFrontmatter(this.app, note, this.data.profiles);
+        const { bytes, vars, redacted } = await renderReport(deps, note, notePreset, profile);
         // In batch, never prompt: a collision falls back to a numbered name
         // unless the user has explicitly chosen to overwrite.
-        const target = targetPath(deps, note, vars);
+        const target = targetPath(deps, note, vars, profile);
         const path =
           target.exists && this.data.conflictMode !== 'overwrite' ? incrementedPath(deps, target.path) : target.path;
-        await writePdf(deps, path, bytes);
+        const written = await writePdf(deps, path, bytes);
+        if (profile && redacted) await this.logExport(note, written, profile, redacted);
         done++;
       } catch (e) {
         console.error('[PDF Report Exporter] export failed:', note.path, e);
@@ -293,7 +411,8 @@ export default class PdfReportPlugin extends Plugin {
     const notice = new Notice(t('notice.generatingPreview'), 0);
     try {
       const deps = this.deps();
-      const { bytes, warnings } = await renderReport(deps, file, preset);
+      const profile = profileFromFrontmatter(this.app, file, this.data.profiles);
+      const { bytes, warnings } = await renderReport(deps, file, preset, profile);
       const folder = (this.data.outputFolder || '').trim().replace(/^\/+|\/+$/g, '');
       const name = t('preview.file');
       const path = normalizePath(folder ? `${folder}/${name}` : name);

@@ -73,3 +73,20 @@
   font-size: var(--font-ui-smaller);
   white-space: nowrap;
 }
+
+/* --- Confidential passages, as the author sees them ----------------- */
+
+/* `> [!internal]`: an orange callout with a lock, so it cannot pass for an
+   ordinary note. Other levels a vault declares use the default callout look. */
+.callout[data-callout="internal"] {
+  --callout-color: var(--color-orange-rgb);
+  --callout-icon: lucide-lock;
+}
+
+/* `<span data-audience="…">` and `<span data-tlp="…">`, in reading view and
+   Live Preview. */
+span[data-audience],
+span[data-tlp] {
+  background-color: rgba(var(--color-orange-rgb), 0.12);
+  border-bottom: 1px dotted rgb(var(--color-orange-rgb));
+}
