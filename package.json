@@ -1,0 +1,45 @@
+{
+  "name": "pdf-report-exporter",
+  "version": "1.0.0",
+  "description": "Obsidian plugin: export notes as polished PDF reports, with reusable templates.",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "npm run check && node esbuild.config.mjs production",
+    "check": "tsc --noEmit",
+    "test": "node --test \"tests/*.test.ts\"",
+    "version-bump": "node scripts/version-bump.mjs",
+    "lint": "eslint src"
+  },
+  "keywords": [
+    "obsidian",
+    "obsidian-plugin",
+    "pdf",
+    "report",
+    "export",
+    "pdfmake"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20",
+    "esbuild": "^0.28.2",
+    "eslint": "^9.39.5",
+    "eslint-plugin-obsidianmd": "^0.4.2",
+    "obsidian": "^1.13.1",
+    "typescript": "^5",
+    "typescript-eslint": "^8.71.2"
+  },
+  "dependencies": {
+    "marked": "^12",
+    "pdfmake": "^0.2.20"
+  },
+  "author": "Maxence H",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Phdhebde/Obisidian-pdf-export.git"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}

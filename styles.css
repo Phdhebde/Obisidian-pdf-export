@@ -1,0 +1,75 @@
+/* PDF Report Exporter */
+
+.pdf-report-muted {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  margin-block: 0.2em 0.8em;
+}
+
+/* Mermaid diagrams are laid out here, off-screen, while their styles are
+   read back for the PDF. Not hidden: that would be inherited into them. */
+.pdf-report-mermaid-scratch {
+  position: fixed;
+  inset-inline-start: -100000px;
+  inset-block-start: 0;
+  pointer-events: none;
+}
+
+/* --- Template picker ---------------------------------------------- */
+
+.pdf-report-preset-picker .pdf-report-picker-row {
+  border-top: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  padding-inline: var(--size-4-2);
+  cursor: pointer;
+}
+
+.pdf-report-preset-picker .pdf-report-picker-row.is-selected {
+  background-color: var(--background-modifier-hover);
+  box-shadow: inset 2px 0 0 var(--interactive-accent);
+}
+
+/* --- Modals ------------------------------------------------------- */
+
+.pdf-report-modal .setting-item {
+  border-top: none;
+}
+
+/* --- Export notice actions ---------------------------------------- */
+
+.pdf-report-notice-actions {
+  display: flex;
+  gap: var(--size-4-2);
+  margin-block-start: var(--size-4-2);
+}
+
+.pdf-report-notice-actions button {
+  font-size: var(--font-ui-smaller);
+  padding: var(--size-2-1) var(--size-4-2);
+  cursor: pointer;
+}
+
+/* --- Settings widgets --------------------------------------------- */
+
+.pdf-report-settings .pdf-report-num {
+  inline-size: 90px;
+  text-align: end;
+}
+
+.pdf-report-settings .pdf-report-warn {
+  color: var(--text-warning);
+}
+
+/* A control with its caption underneath (heading levels). */
+.pdf-report-settings .pdf-report-captioned {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--size-2-1);
+}
+
+.pdf-report-settings .pdf-report-caption {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  white-space: nowrap;
+}
