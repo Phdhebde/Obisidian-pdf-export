@@ -1,6 +1,16 @@
-import { App, FuzzySuggestModal, Modal, Setting, TFile } from 'obsidian';
+import { App, FuzzySuggestModal, Modal, Setting, TFile, requireApiVersion, type ButtonComponent } from 'obsidian';
 import { sectionLabel, type ConflictMode, type Preset } from './types.ts';
 import { t } from './i18n.ts';
+
+/**
+ * Style a button as destructive. `setDestructive()` arrived in 1.13 and
+ * replaces `setWarning()`; older versions get the class `setWarning()` set.
+ */
+function destructive(b: ButtonComponent): ButtonComponent {
+  if (requireApiVersion('1.13.0')) return b.setDestructive();
+  b.buttonEl.addClass('mod-warning');
+  return b;
+}
 
 /* ------------------------------------------------------------------ */
 /* Vault file picker                                                   */
@@ -67,7 +77,7 @@ export class ConfirmModal extends Modal {
     new Setting(contentEl)
       .addButton((b) => {
         b.setButtonText(this.opts.confirmText).onClick(() => this.confirm());
-        if (this.opts.danger) b.setWarning();
+        if (this.opts.danger) destructive(b);
         else b.setCta();
       })
       .addButton((b) => b.setButtonText(t('confirm.cancel')).onClick(() => this.close()));
@@ -211,7 +221,7 @@ export class ConflictModal extends Modal {
 
     new Setting(contentEl)
       .addButton((b) =>
-        b.setButtonText(t('conflict.overwrite')).setWarning().onClick(() => this.pick('overwrite', remember))
+        destructive(b.setButtonText(t('conflict.overwrite'))).onClick(() => this.pick('overwrite', remember))
       )
       .addButton((b) =>
         b.setButtonText(t('conflict.keepBoth')).setCta().onClick(() => this.pick('increment', remember))

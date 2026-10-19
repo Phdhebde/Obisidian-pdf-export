@@ -51,24 +51,24 @@
 
 /* --- Settings widgets --------------------------------------------- */
 
-.pdf-report-settings .pdf-report-num {
+.pdf-report-num {
   inline-size: 90px;
   text-align: end;
 }
 
-.pdf-report-settings .pdf-report-warn {
+.pdf-report-warn {
   color: var(--text-warning);
 }
 
 /* A control with its caption underneath (heading levels). */
-.pdf-report-settings .pdf-report-captioned {
+.pdf-report-captioned {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--size-2-1);
 }
 
-.pdf-report-settings .pdf-report-caption {
+.pdf-report-caption {
   color: var(--text-muted);
   font-size: var(--font-ui-smaller);
   white-space: nowrap;

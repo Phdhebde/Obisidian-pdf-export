@@ -180,6 +180,7 @@ const EN = {
   'set.bodySizeDesc':
     'The body of the report. Headings, tables, captions and the table of contents follow the same scale. Default: {{size}} pt.',
   'set.bodySizeReset': 'Back to {{size}} pt',
+  'set.bodySizeCurrent': 'Current: {{size}} pt.',
   'set.calloutIcons': 'Callout icons',
   'set.calloutIconsDesc': 'Draws Obsidian’s own (Lucide) icon at the top of each callout.',
   'set.justify': 'Justified text',
@@ -447,6 +448,7 @@ const FR: Record<MessageKey, string> = {
   'set.bodySizeDesc':
     'Le corps du rapport. Titres, tableaux, légendes et sommaire suivent la même échelle. Par défaut : {{size}} pt.',
   'set.bodySizeReset': 'Revenir à {{size}} pt',
+  'set.bodySizeCurrent': 'Actuellement : {{size}} pt.',
   'set.calloutIcons': 'Icônes des callouts',
   'set.calloutIconsDesc': 'Reprend les pictogrammes d’Obsidian (Lucide) en tête de chaque callout.',
   'set.justify': 'Texte justifié',
