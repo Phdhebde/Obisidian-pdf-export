@@ -14,6 +14,7 @@ import { createRequire } from 'node:module';
 import { paginationPresets, defaultPreset } from '../src/generator.ts';
 import { buildDocDefinition } from './loose.ts';
 import { stripFrontmatter } from '../src/textScan.ts';
+import { redact } from '../src/redact.ts';
 import { cssValue } from '../src/svgPaint.ts';
 import { loadCmap, missingChars } from './fontCoverage.ts';
 import type { Preset } from '../src/types.ts';
@@ -445,4 +446,30 @@ test('automatic page breaks give each top-level part its own page', async () => 
   const pdf = await render(dd);
   // One TOC page, then one page per `#` — none blank in between.
   assert.equal(countPages(pdf), 4);
+});
+
+test('a full version with restricted passages labelled and highlighted renders', async () => {
+  const md = redact(
+    [
+      '# Offer',
+      '',
+      'Ships in May<span data-audience="internal"> unless the budget slips</span>.',
+      '',
+      '## Pricing %%internal%%',
+      '',
+      'Margin: 18 %.',
+      '',
+      '### Sources %%tlp:red%%',
+      '',
+      '- a contact',
+      '',
+      '## Scope',
+      '',
+      'Three phases.'
+    ].join('\n'),
+    { levels: ['internal'], keep: null, tlp: 'CLEAR', placeholder: '', mark: true }
+  );
+  const dd = buildDocDefinition(md, { docTitle: 'Offer', tlp: 'AMBER' }, preset({ sections: ['toc', 'body'] }));
+  const pdf = await render(dd);
+  assert.equal(pdf.subarray(0, 5).toString(), '%PDF-');
 });

@@ -27,6 +27,8 @@ Desktop only.
 | **Export as PDF report** command (`Ctrl/Cmd+P`), or the ribbon icon | Exports the active note |
 | **Preview PDF report** command | Renders the PDF and **opens it inside Obsidian** — the quick way to tune a template |
 | **Export selection as PDF report** command | Exports only the selected text |
+| **Export as PDF report with a profile…** command | Exports one version of the note: the full one, or a profile such as *Client* (see Confidential passages) |
+| **Export all versions as PDF reports** command | Writes the full version and one PDF per profile, each with its own name |
 | **Right-click a note** in the file explorer | Exports that note |
 | **Right-click a folder** | Exports every note in it, one PDF each, with a summary at the end |
 | **Insert report frontmatter** command | Inserts a pre-filled YAML block (today's date, default contacts) |
@@ -99,6 +101,36 @@ Only paragraphs starting with *Figure*, *Table*, *Chart*, *Diagram*, *Illustrati
 
 **Embedded notes:** `![[another note]]` inlines that note's content (up to 3 levels deep; circular embeds are detected). A template can switch this to *mention only*.
 
+**Comments:** Obsidian comments (`%%…%%`) are left out of every export, as they are hidden in reading view.
+
+### Confidential passages
+
+One note, several deliverables: a full internal version, and a version per audience — a client, a partner — from which the passages marked for the team are **removed before rendering**. They are never hidden under a black box: the text is not in the file at all, nor in its table of contents, links or metadata.
+
+| Scope | In the note |
+|---|---|
+| Whole note | `audience: internal` in its frontmatter. Exporting it with a profile that leaves `internal` out stops with a message; embedded with `![[…]]` in another note, it is left out of that version. |
+| Section | `## Pricing %%internal%%` — the heading and everything under it, down to the next heading of the same or a higher level |
+| Block | `> [!internal] Negotiation` — the callout, its nested quotes, and the lines that continue it |
+| Phrase | `<span data-audience="internal">12 %</span>` |
+| By TLP level | `## Sources %%tlp:red%%`, `<span data-tlp="red">…</span>`, or `tlp: red` in the frontmatter of an embedded note |
+
+**Profiles** (*Settings → Confidential passages*) say which levels a version keeps, the suffix added to its file name (`Report-client.pdf`), whether a "[passage removed]" mark shows where something was cut, and its TLP marking. A first install comes with a *Client* profile that removes every marked passage. A note can name its profile with `profile: Client`; without one, the usual export is the full version.
+
+**Levels** are declared in the same settings: `internal` by default, add your own (`management`, `board`…). A passage marked with several levels leaves only in a version that keeps all of them.
+
+**TLP:** a passage marked with a TLP level stays only in versions marked at least as strictly. A profile's marking is its own TLP setting, else the note's `tlp:`; with neither, the version counts as `TLP:CLEAR` and every TLP-marked passage goes. The full version keeps everything.
+
+**Seeing what is restricted:** in a version that keeps them — the full one, typically — restricted sections, top-level `[!internal]` callouts and embedded notes open with an amber label (*INTERNAL*, *TLP:RED*…) and close with a dashed rule, and marked phrases are highlighted, so a reviewer sees what the other versions will not contain. In Obsidian itself, `[!internal]` callouts show in orange with a lock, and marked phrases with a dotted underline. The labelling in the PDF can be turned off in the settings.
+
+**Export log (optional):** after each export with a profile, a line is added to a *PDF export log* note in the output folder — the note, the file written, and what was removed (counts, never the removed text).
+
+**Fail closed:** an unknown level (`audience: internl`), or a marked phrase whose `</span>` is missing, stops the export with a message rather than letting the passage through. After each restricted export, a notice says what was removed, e.g. *Profile "Client": removed 1 section, 2 phrases.*
+
+What is not covered: the frontmatter fields printed on the cover and the references page (title, client, contacts…) are not filtered — keep confidential details out of them.
+
+To try it, export [example-confidential.md](example-confidential.md) with *Export all versions as PDF reports*.
+
 ---
 
 ## Templates
@@ -135,6 +167,12 @@ Each template sets:
 - **Columns** are not split across pages: a group that does not fit is pushed whole to the next page.
 - Dataview and other dynamic queries are not rendered.
 - Page size is A4.
+
+---
+
+## Roadmap
+
+Next: a confidential export (client and internal versions of the same note), then Word export based on your own `.dotx` template, as **Report Exporter**. Free and community-driven, no paid tier: see [ROADMAP.md](ROADMAP.md), and share your feedback in the issues.
 
 ---
 

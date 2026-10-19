@@ -4,17 +4,30 @@
 import { Notice, TFile, normalizePath, type App } from 'obsidian';
 import type { PdfMake } from 'pdfmake/build/pdfmake.js';
 import { buildDocDefinition, collectDiagrams, normalizeTlp, type PdfNode } from './generator.ts';
-import { t } from './i18n.ts';
+import { t, type MessageKey } from './i18n.ts';
 import { ImageResolver, IMG_EXTS, loadVaultImage } from './images.ts';
 import { renderMermaid } from './mermaid.ts';
 import { flattenWikilinks, replaceOutsideCodeAsync, stripFrontmatter } from './textScan.ts';
-import { normalizeContact, normalizeVersion, renderFilename, uniqueName } from './storage.ts';
+import { normalizeContact, normalizeVersion, renderFilename, sanitizeSegment, uniqueName } from './storage.ts';
+import {
+  AudienceError,
+  emptyCounts,
+  framed,
+  kept,
+  noteMark,
+  redact,
+  totalRemoved,
+  type AudienceFilter,
+  type RedactionCounts
+} from './redact.ts';
 import {
   asText,
   hasContactContent,
   isSectionKey,
   type DocContact,
+  type ExportProfile,
   type PluginData,
+  type TlpKey,
   type Preset,
   type ReportVars,
   type SectionKey
@@ -95,9 +108,56 @@ export function presetFromFrontmatter(app: App, file: TFile, presets: Preset[]):
   return presets.find((p) => p.id === want) || presets.find((p) => (p.name || '').toLowerCase() === lower) || null;
 }
 
+/**
+ * The export profile the note's frontmatter names (`profile:`), if any. A name
+ * that matches no profile is an error, not a full export: the author asked for
+ * a restricted version.
+ */
+export function profileFromFrontmatter(app: App, file: TFile, profiles: ExportProfile[]): ExportProfile | null {
+  const want = asText(frontmatterOf(app, file).profile ?? frontmatterOf(app, file).profil).trim();
+  if (!want) return null;
+  const lower = want.toLowerCase();
+  const found = profiles.find((p) => p.id === want || p.name.toLowerCase() === lower);
+  if (!found) throw new AudienceError(t('audience.unknownProfile', { name: want }));
+  return found;
+}
+
+/**
+ * What a version keeps. No profile is the full version. A profile's TLP
+ * ceiling is the marking printed on it — its own, else the note's — and,
+ * with neither, CLEAR: a passage marked with any TLP level then goes.
+ */
+export function audienceFilter(data: PluginData, profile: ExportProfile | null, noteTlp: TlpKey | null): AudienceFilter {
+  return {
+    levels: data.audienceLevels,
+    keep: profile ? profile.keep : null,
+    tlp: profile?.tlp ?? noteTlp ?? 'CLEAR',
+    placeholder: profile?.placeholder ? t('audience.placeholder') : '',
+    mark: data.markConfidential
+  };
+}
+
 /* ------------------------------------------------------------------ */
 /* Body assembly                                                       */
 /* ------------------------------------------------------------------ */
+
+/** The filter an export applies, and what it has removed so far. */
+interface Audience {
+  filter: AudienceFilter;
+  counts: RedactionCounts;
+}
+
+function frontmatterOf(app: App, file: TFile): Record<string, unknown> {
+  return app.metadataCache.getFileCache(file)?.frontmatter || {};
+}
+
+/**
+ * What a note's frontmatter marks it with. An embedded note's `tlp:` counts
+ * too; the exported note's own is the marking of the whole document.
+ */
+function markOf(app: App, file: TFile, filter: AudienceFilter, embedded: boolean) {
+  return noteMark(frontmatterOf(app, file), filter, file.basename, embedded);
+}
 
 /**
  * Inline `![[note]]` transclusions, so a report can be assembled from section
@@ -108,6 +168,7 @@ async function expandTransclusions(
   md: string,
   sourcePath: string,
   mode: Preset['transclusions'],
+  audience: Audience,
   seen: Set<string>,
   depth: number
 ): Promise<string> {
@@ -120,30 +181,53 @@ async function expandTransclusions(
     if (mode === 'warn') return `*[${t('inline.noteNotIncluded', { target })}]*`;
     if (depth >= MAX_TRANSCLUSION_DEPTH) return `*[${t('inline.depthExceeded', { target })}]*`;
     if (seen.has(file.path)) return `*[${t('inline.circular', { target })}]*`;
+    // A note reserved for an audience this export leaves out goes whole, and
+    // before it is read: none of it reaches the report.
+    const mark = markOf(app, file, audience.filter, true);
+    if (!kept(audience.filter, mark)) {
+      audience.counts.notes++;
+      return audience.filter.placeholder ? `*[${audience.filter.placeholder}]*` : '';
+    }
 
     seen.add(file.path);
     try {
       const body = stripFrontmatter(await app.vault.cachedRead(file));
-      return await expandTransclusions(app, body, file.path, mode, seen, depth + 1);
+      const inlined = await expandTransclusions(app, body, file.path, mode, audience, seen, depth + 1);
+      const marked = mark.levels.length > 0 || mark.tlp !== null;
+      return audience.filter.mark && marked ? framed(inlined, mark) : inlined;
     } finally {
       seen.delete(file.path);
     }
   });
 }
 
-/** Read a note and turn it into the Markdown the generator consumes. */
+/**
+ * Read a note and turn it into the Markdown the generator consumes.
+ *
+ * Confidential passages are cut here, after embedded notes are inlined and
+ * before anything else reads the text: images, diagrams and links in a cut
+ * passage are never loaded.
+ */
 export async function prepareBody(
   app: App,
   file: TFile,
   preset: Preset,
+  profile: ExportProfile | null,
+  filter: AudienceFilter,
   override?: string
-): Promise<{ markdown: string; images: Record<string, string>; missing: string[] }> {
+): Promise<{ markdown: string; images: Record<string, string>; missing: string[]; counts: RedactionCounts }> {
+  if (!kept(filter, markOf(app, file, filter, false))) {
+    throw new AudienceError(t('audience.noteExcluded', { note: file.basename, profile: profile?.name ?? '' }));
+  }
+  const counts = emptyCounts();
   const raw = override ?? stripFrontmatter(await app.vault.cachedRead(file));
-  const withNotes = await expandTransclusions(app, raw, file.path, preset.transclusions, new Set([file.path]), 0);
-  const flattened = flattenWikilinks(withNotes);
+  const withNotes = await expandTransclusions(
+    app, raw, file.path, preset.transclusions, { filter, counts }, new Set([file.path]), 0
+  );
+  const flattened = flattenWikilinks(redact(withNotes, filter, counts));
   const resolver = new ImageResolver(app);
   const { markdown, images, missing } = await resolver.resolve(flattened, file.path);
-  return { markdown, images, missing };
+  return { markdown, images, missing, counts };
 }
 
 /* ------------------------------------------------------------------ */
@@ -154,6 +238,8 @@ export interface RenderResult {
   bytes: ArrayBuffer;
   vars: ReportVars;
   warnings: string[];
+  /** What the profile removed; null for a full export. */
+  redacted: RedactionCounts | null;
 }
 
 /**
@@ -190,19 +276,28 @@ function toPdfBytes(pdfMake: PdfMake, dd: PdfNode): Promise<ArrayBuffer> {
   });
 }
 
-/** Build the PDF bytes for a note. Does not touch the vault. */
+/**
+ * Build the PDF bytes for a note. Does not touch the vault.
+ *
+ * `profile` restricts the export to one audience; null is the full version.
+ */
 export async function renderReport(
   deps: ExportDeps,
   file: TFile,
   preset: Preset,
+  profile: ExportProfile | null,
   override?: string
 ): Promise<RenderResult> {
+  const parsed = parseVars(deps.app, file);
+  const filter = audienceFilter(deps.data, profile, parsed.vars.tlp);
+  const { markdown, images, missing, counts } = await prepareBody(deps.app, file, preset, profile, filter, override);
+
   const pdfMake = await deps.getPdfMake();
   deps.assets.ensureFonts(pdfMake);
 
-  const { vars, tlpWarning } = parseVars(deps.app, file);
+  const vars: ReportVars = profile?.tlp ? { ...parsed.vars, tlp: profile.tlp } : parsed.vars;
+  const tlpWarning = profile?.tlp ? null : parsed.tlpWarning;
   const resolved = await deps.assets.resolvePreset(preset);
-  const { markdown, images, missing } = await prepareBody(deps.app, file, preset, override);
 
   // A `logo:` in the note wins over the one the template carries; naming one
   // that cannot be found is worth saying out loud rather than silently
@@ -244,7 +339,7 @@ export async function renderReport(
         : t('warn.imagesMissing', { count: missing.length, paths: missing.slice(0, 3).join(', ') })
     );
   }
-  return { bytes, vars, warnings };
+  return { bytes, vars, warnings, redacted: profile ? counts : null };
 }
 
 /* ------------------------------------------------------------------ */
@@ -256,10 +351,11 @@ export interface SaveTarget {
   exists: boolean;
 }
 
-/** Where a note's PDF would go, honouring the folder and filename template. */
-export function targetPath(deps: ExportDeps, file: TFile, vars: ReportVars): SaveTarget {
+/** Where a note's PDF would go, honouring the folder, the filename template and the profile's suffix. */
+export function targetPath(deps: ExportDeps, file: TFile, vars: ReportVars, profile: ExportProfile | null): SaveTarget {
   const folder = (deps.data.outputFolder || '').trim().replace(/^\/+|\/+$/g, '');
-  const base = renderFilename(deps.data.filenameTemplate, { noteBasename: file.basename, vars });
+  const suffix = profile ? sanitizeSegment(profile.suffix) : '';
+  const base = renderFilename(deps.data.filenameTemplate, { noteBasename: file.basename, vars }) + suffix;
   const path = normalizePath(folder ? `${folder}/${base}.pdf` : `${base}.pdf`);
   return { path, exists: deps.app.vault.getAbstractFileByPath(path) instanceof TFile };
 }
@@ -287,6 +383,19 @@ export async function writePdf(deps: ExportDeps, path: string, bytes: ArrayBuffe
     return existing;
   }
   return deps.app.vault.createBinary(path, bytes);
+}
+
+/** "Profile “Client”: 5 passages removed (2 sections, 3 phrases)." */
+export function redactionSummary(profile: ExportProfile, c: RedactionCounts): string {
+  const part = (n: number, one: MessageKey, many: MessageKey) => (n === 1 ? t(one) : t(many, { count: n }));
+  const parts: string[] = [];
+  if (c.notes) parts.push(part(c.notes, 'audience.note', 'audience.notes'));
+  if (c.sections) parts.push(part(c.sections, 'audience.section', 'audience.sections'));
+  if (c.blocks) parts.push(part(c.blocks, 'audience.block', 'audience.blocks'));
+  if (c.phrases) parts.push(part(c.phrases, 'audience.phrase', 'audience.phrases'));
+  return totalRemoved(c)
+    ? t('audience.removed', { profile: profile.name, detail: parts.join(', ') })
+    : t('audience.removedNone', { profile: profile.name });
 }
 
 /** Surface any non-fatal issues from the render as a single notice. */

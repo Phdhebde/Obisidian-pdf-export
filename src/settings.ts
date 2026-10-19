@@ -15,6 +15,7 @@ import type PdfReportPlugin from './main.ts';
 import { ConfirmModal, VaultFileModal } from './modals.ts';
 import { IMG_EXTS, loadVaultImage } from './images.ts';
 import { migratePreset, presetId } from './storage.ts';
+import { normalizeLevels } from './redact.ts';
 import {
   DEFAULT_BODY_SIZE,
   DEFAULT_PAGINATION,
@@ -32,8 +33,10 @@ import { t, type MessageKey } from './i18n.ts';
 import {
   HEADING_LEVELS,
   SECTION_KEYS,
+  TLP_KEYS,
   sectionLabel,
   type ConflictMode,
+  type ExportProfile,
   type NumberingStyle,
   type Preset,
   type PresetColors,
@@ -280,7 +283,111 @@ export class ReportSettingTab extends PluginSettingTab {
       this.presetSelector()
     ];
 
-    return [{ rows: general }, { heading: t('set.templates'), rows: templates }];
+    return [{ rows: general }, ...this.audienceSections(), { heading: t('set.templates'), rows: templates }];
+  }
+
+  /* ================================================================ */
+  /* Confidential passages                                             */
+  /* ================================================================ */
+
+  private audienceSections(): Section[] {
+    const data = this.plugin.data;
+    const levels: Section = {
+      heading: t('set.confidential'),
+      desc: t('set.confidentialDesc'),
+      rows: [
+        {
+          name: t('set.levels'),
+          desc: t('set.levelsDesc'),
+          render: (s) =>
+            s.addText((tx) =>
+              tx.setValue(data.audienceLevels.join(', ')).onChange((v) => {
+                data.audienceLevels = normalizeLevels(v);
+                this.save();
+              })
+            )
+        },
+        this.toggle('set.markConfidential', 'set.markConfidentialDesc',
+          () => data.markConfidential, (v) => (data.markConfidential = v)),
+        this.toggle('set.logExports', 'set.logExportsDesc', () => data.logExports, (v) => (data.logExports = v))
+      ]
+    };
+
+    const add: Section = {
+      rows: [
+        {
+          name: t('set.addProfile'),
+          desc: t('set.addProfileDesc'),
+          render: (s) =>
+            s.addButton((b) =>
+              b.setButtonText(t('set.add')).onClick(() => {
+                data.profiles.push({
+                  id: presetId('profile'),
+                  name: t('set.newProfileName'),
+                  keep: [],
+                  suffix: `-profile-${data.profiles.length + 1}`,
+                  placeholder: false,
+                  tlp: null
+                });
+                void this.plugin.saveSettings();
+                this.refresh();
+              })
+            )
+        }
+      ]
+    };
+
+    return [levels, ...data.profiles.map((p) => this.profileSection(p)), add];
+  }
+
+  private profileSection(profile: ExportProfile): Section {
+    const data = this.plugin.data;
+    const text = (name: MessageKey, desc: MessageKey, get: () => string, set: (v: string) => void): Row => ({
+      name: t(name),
+      desc: t(desc),
+      render: (s) =>
+        s.addText((tx) =>
+          tx.setValue(get()).onChange((v) => {
+            set(v);
+            this.save();
+          })
+        )
+    });
+
+    return {
+      heading: profile.name,
+      extraButtons: [
+        (b) =>
+          b
+            .setIcon('trash')
+            .setTooltip(t('set.deleteProfile'))
+            .onClick(() => {
+              data.profiles = data.profiles.filter((p) => p !== profile);
+              void this.plugin.saveSettings();
+              this.refresh();
+            })
+      ],
+      rows: [
+        text('set.profileName', 'set.profileNameDesc', () => profile.name, (v) => (profile.name = v.trim() || profile.id)),
+        text('set.profileKeep', 'set.profileKeepDesc', () => profile.keep.join(', '), (v) => (profile.keep = normalizeLevels(v))),
+        text('set.profileSuffix', 'set.profileSuffixDesc', () => profile.suffix, (v) => (profile.suffix = v)),
+        this.toggle('set.profilePlaceholder', 'set.profilePlaceholderDesc',
+          () => profile.placeholder, (v) => (profile.placeholder = v)),
+        {
+          name: t('set.profileTlp'),
+          desc: t('set.profileTlpDesc'),
+          render: (s) =>
+            s.addDropdown((d) => {
+              d.addOption('', t('set.profileTlpNote'));
+              for (const key of TLP_KEYS) d.addOption(key, `TLP:${key}`);
+              d.setValue(profile.tlp ?? '').onChange((v) => {
+                profile.tlp = TLP_KEYS.find((k) => k === v) ?? null;
+                this.save();
+              });
+            })
+        }
+      ]
+    };
   }
 
   /* ================================================================ */

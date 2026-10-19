@@ -1,5 +1,5 @@
 import { App, FuzzySuggestModal, Modal, Setting, TFile, requireApiVersion, type ButtonComponent } from 'obsidian';
-import { sectionLabel, type ConflictMode, type Preset } from './types.ts';
+import { sectionLabel, type ConflictMode, type ExportProfile, type Preset } from './types.ts';
 import { t } from './i18n.ts';
 
 /**
@@ -52,6 +52,34 @@ export class VaultFileModal extends FuzzySuggestModal<TFile> {
 
   onChooseItem(file: TFile): void {
     this.onPick(file);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Export profile picker                                               */
+/* ------------------------------------------------------------------ */
+
+/** Choose the audience of an export: the full version, or one profile. */
+export class ProfilePickerModal extends FuzzySuggestModal<ExportProfile | null> {
+  constructor(
+    app: App,
+    private profiles: ExportProfile[],
+    private onPick: (profile: ExportProfile | null) => void
+  ) {
+    super(app);
+    this.setPlaceholder(t('audience.pickProfile'));
+  }
+
+  getItems(): (ExportProfile | null)[] {
+    return [null, ...this.profiles];
+  }
+
+  getItemText(profile: ExportProfile | null): string {
+    return profile ? profile.name : t('audience.full');
+  }
+
+  onChooseItem(profile: ExportProfile | null): void {
+    this.onPick(profile);
   }
 }
 

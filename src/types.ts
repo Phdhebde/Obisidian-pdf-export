@@ -290,6 +290,20 @@ export interface ReportVars {
 /** What to do when the target PDF already exists. */
 export type ConflictMode = 'ask' | 'overwrite' | 'increment';
 
+/** One audience a note can be exported for, such as a client. */
+export interface ExportProfile {
+  id: string;
+  name: string;
+  /** Audience levels whose passages stay; passages marked with any other level are removed. */
+  keep: string[];
+  /** Appended to the PDF name, so versions do not overwrite each other. */
+  suffix: string;
+  /** Print a "[passage removed]" mark where something was cut. */
+  placeholder: boolean;
+  /** TLP marking for this version; null keeps the note's own. */
+  tlp: TlpKey | null;
+}
+
 export interface PluginData {
   /** Bumped when the shape changes; drives migrate(). */
   schemaVersion: number;
@@ -305,6 +319,13 @@ export interface PluginData {
   alwaysUseLast: boolean;
   /** Pre-filled into the frontmatter inserted by the template command. */
   defaultContacts: DocContact[];
+  /** Audience levels a note may mark passages with, lower case. */
+  audienceLevels: string[];
+  profiles: ExportProfile[];
+  /** Label and highlight the restricted passages a version keeps. */
+  markConfidential: boolean;
+  /** Append a line to a log note after each restricted export. */
+  logExports: boolean;
 }
 
 export const CURRENT_SCHEMA_VERSION = 1;
