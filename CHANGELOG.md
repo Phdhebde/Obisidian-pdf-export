@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+- Settings are declared to Obsidian 1.13+, so they show up in the settings search; older versions keep the same tab.
+- Destructive buttons use `setDestructive()` on Obsidian 1.13+.
+- The text size slider no longer calls the deprecated `setDynamicTooltip()`; before 1.13 its value is shown in the description.
+
 ## 1.0.0
 
 First public release.
