@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0 (unreleased)
+## 1.1.0
 
 - **Confidential passages.** Mark a whole note (`audience: internal`), a section (`## Title %%internal%%`), a block (`> [!internal]`) or a phrase (`<span data-audience="internal">`), then export a version per audience. Marked passages a profile leaves out are removed before rendering, embedded notes included.
 - Export profiles in the settings: levels kept, file name suffix, optional "[passage removed]" mark, TLP marking. A *Client* profile is created on first run; a note can pick one with `profile:`.
