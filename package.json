@@ -1,6 +1,6 @@
 {
   "name": "pdf-report-exporter",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Obsidian plugin: export notes as polished PDF reports, with reusable templates.",
   "main": "main.js",
   "type": "module",
