@@ -1,6 +1,6 @@
 # PDF Report Exporter
 
-*[Version française](README.fr.md)*
+*[Version française](README.fr.md) · [Documentation website](https://phdhebde.github.io/Obisidian-pdf-export/)*
 
 Export any Obsidian note as a **polished PDF report**: cover page, header and footer bands, clickable paginated table of contents, styled tables, Obsidian callouts with their icons, Mermaid diagrams as vectors, columns, images — all driven by **templates** you can customise, duplicate and share, and pick at export time.
 

@@ -1,6 +1,6 @@
 # PDF Report Exporter
 
-*[English version](README.md)*
+*[English version](README.md) · [Site de documentation](https://phdhebde.github.io/Obisidian-pdf-export/fr/)*
 
 Exporte n'importe quelle note Obsidian en **rapport PDF soigné** : page de garde, bandeaux d'en-tête et de pied de page, sommaire paginé cliquable, tableaux stylés, callouts Obsidian avec leurs icônes, schémas Mermaid en vectoriel, colonnes, images — le tout piloté par des **modèles** personnalisables, duplicables et partageables, sélectionnés au moment de l'export.
 
