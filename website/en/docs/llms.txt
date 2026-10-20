@@ -1,0 +1,21 @@
+# PDF Report Exporter for Obsidian
+
+> PDF Report Exporter is a free, open-source (MIT) Obsidian community plugin that exports a Markdown note as a professional PDF report: cover page, references page (document status, contacts, recipients), running header and footer, numbered headings, clickable paginated table of contents, styled tables, Obsidian callouts with icons, Mermaid diagrams as vectors, Obsidian Columns, images and embedded notes. Reusable templates set colours, fonts, numbering, cover layout and letterhead artwork, and can be shared as JSON. Since version 1.1 it also exports confidential-free versions of a note for a client: passages marked internal (whole notes, sections, callouts, phrases, or by TLP level) are removed before rendering. Desktop only, Obsidian 1.8.7+, works offline, no network access, interface in English and French.
+
+Install: Obsidian → Settings → Community plugins → Browse → "PDF Report Exporter". Plugin id: `pdf-report-exporter`. Source: https://github.com/Phdhebde/Obisidian-pdf-export
+
+## Documentation
+
+- [Home](https://phdhebde.github.io/Obisidian-pdf-export/): what the plugin does and why
+- [Getting started](https://phdhebde.github.io/Obisidian-pdf-export/getting-started/): installation, first export, every export command
+- [Frontmatter](https://phdhebde.github.io/Obisidian-pdf-export/frontmatter/): keys for the cover, header, references page, TLP and profiles (English and French keys)
+- [Markdown support](https://phdhebde.github.io/Obisidian-pdf-export/markdown/): how each Markdown element is rendered, images, embedded notes, page breaks, limits
+- [Templates](https://phdhebde.github.io/Obisidian-pdf-export/templates/): sections, numbering, colours, fonts, cover layout, page numbers, letterhead, sharing, global settings
+- [Confidential export](https://phdhebde.github.io/Obisidian-pdf-export/confidential-export/): marking syntax, export profiles, TLP levels, safety rules
+- [FAQ](https://phdhebde.github.io/Obisidian-pdf-export/faq/): price, privacy, mobile, comparison with Obsidian's built-in PDF export
+
+## Optional
+
+- [Changelog](https://phdhebde.github.io/Obisidian-pdf-export/changelog/)
+- [Roadmap](https://phdhebde.github.io/Obisidian-pdf-export/roadmap/): Word export from a .dotx template, rename to Report Exporter
+- [Documentation en français](https://phdhebde.github.io/Obisidian-pdf-export/fr/)

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{#
+  Search and AI-assistant discoverability, shared by the English and French
+  sites. Every page path exists in both languages, so a page's alternates are
+  the same path under each base URL.
+#}
+{% block extrahead %}
+  {% set path = page.url if page and page.url else "" %}
+  {% set home = path == "" or path == "./" or path == "index.html" %}
+  {% set heading = page.meta.title if page and page.meta and page.meta.title else (page.title if page else "") %}
+  {% if home %}
+    {% set title = config.site_name ~ (" — " ~ heading if heading else "") %}
+  {% else %}
+    {% set title = heading ~ " — " ~ config.site_name if heading else config.site_name %}
+  {% endif %}
+  {% set description = page.meta.description if page and page.meta and page.meta.description else config.site_description %}
+
+  <link rel="alternate" hreflang="en" href="{{ config.extra.base_en }}{{ path }}">
+  <link rel="alternate" hreflang="fr" href="{{ config.extra.base_fr }}{{ path }}">
+  <link rel="alternate" hreflang="x-default" href="{{ config.extra.base_en }}{{ path }}">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  <meta property="og:title" content="{{ title }}">
+  <meta property="og:description" content="{{ description }}">
+  <meta property="og:url" content="{{ page.canonical_url if page and page.canonical_url else config.site_url }}">
+  <meta property="og:image" content="{{ config.extra.social_image }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="{{ config.extra.locale }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ title }}">
+  <meta name="twitter:description" content="{{ description }}">
+  <meta name="twitter:image" content="{{ config.extra.social_image }}">
+
+  {% if home %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "PDF Report Exporter",
+    "alternateName": "PDF Report Exporter for Obsidian",
+    "description": {{ config.site_description | tojson }},
+    "applicationCategory": "BusinessApplication",
+    "applicationSubCategory": "Obsidian plugin",
+    "operatingSystem": "Windows, macOS, Linux (Obsidian desktop)",
+    "softwareVersion": "{{ config.extra.version }}",
+    "inLanguage": ["en", "fr"],
+    "isAccessibleForFree": true,
+    "license": "https://opensource.org/licenses/MIT",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+    "url": "{{ config.site_url }}",
+    "downloadUrl": "https://github.com/Phdhebde/Obisidian-pdf-export/releases/latest",
+    "codeRepository": "https://github.com/Phdhebde/Obisidian-pdf-export",
+    "image": "{{ config.extra.social_image }}",
+    "author": { "@type": "Person", "name": "{{ config.site_author }}", "url": "https://github.com/Phdhebde" }
+  }
+  </script>
+  {% endif %}
+{% endblock %}

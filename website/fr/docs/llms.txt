@@ -1,0 +1,21 @@
+# PDF Report Exporter pour Obsidian
+
+> PDF Report Exporter est un plugin communautaire Obsidian gratuit et open source (MIT) qui exporte une note Markdown en rapport PDF professionnel : page de garde, page de références (état du document, contacts, destinataires), en-tête et pied de page, titres numérotés, sommaire paginé et cliquable, tableaux mis en forme, callouts Obsidian avec icônes, schémas Mermaid en vectoriel, colonnes, images et notes incluses. Des modèles réutilisables fixent couleurs, polices, numérotation, couverture et papier à en-tête, et se partagent en JSON. Depuis la version 1.1, il exporte aussi des versions client sans les passages confidentiels : notes, sections, callouts ou phrases marqués comme internes (ou par niveau TLP) sont retirés avant le rendu. Ordinateur uniquement, Obsidian 1.8.7+, hors ligne, aucun accès réseau, interface en français et en anglais.
+
+Installation : Obsidian → Réglages → Plugins communautaires → Parcourir → « PDF Report Exporter ». Identifiant : `pdf-report-exporter`. Code source : https://github.com/Phdhebde/Obisidian-pdf-export
+
+## Documentation
+
+- [Accueil](https://phdhebde.github.io/Obisidian-pdf-export/fr/) : ce que fait le plugin et pourquoi
+- [Premiers pas](https://phdhebde.github.io/Obisidian-pdf-export/fr/getting-started/) : installation, premier export, toutes les commandes
+- [Frontmatter](https://phdhebde.github.io/Obisidian-pdf-export/fr/frontmatter/) : clés de couverture, d'en-tête, de références, TLP et profils (en français et en anglais)
+- [Markdown pris en charge](https://phdhebde.github.io/Obisidian-pdf-export/fr/markdown/) : rendu de chaque élément, images, notes incluses, sauts de page, limites
+- [Modèles](https://phdhebde.github.io/Obisidian-pdf-export/fr/templates/) : sections, numérotation, couleurs, polices, couverture, papier à en-tête, partage, réglages généraux
+- [Export confidentiel](https://phdhebde.github.io/Obisidian-pdf-export/fr/confidential-export/) : syntaxe de marquage, profils d'export, niveaux TLP, règles de sécurité
+- [FAQ](https://phdhebde.github.io/Obisidian-pdf-export/fr/faq/) : prix, confidentialité, mobile, comparaison avec l'export PDF intégré d'Obsidian
+
+## Optionnel
+
+- [Historique des versions](https://phdhebde.github.io/Obisidian-pdf-export/fr/changelog/)
+- [Feuille de route](https://phdhebde.github.io/Obisidian-pdf-export/fr/roadmap/)
+- [English documentation](https://phdhebde.github.io/Obisidian-pdf-export/)

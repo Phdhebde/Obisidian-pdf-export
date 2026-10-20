@@ -6,7 +6,12 @@ main.js.map
 
 # Runtime plugin data, written by Obsidian when the repo is used as a vault plugin folder
 data.json
-assets/
+/assets/
 
 # Local test output
 *.pdf
+
+# Documentation site build output (see .github/workflows/docs.yml)
+/_site/
+website/*/site/
+website/*/.cache/
