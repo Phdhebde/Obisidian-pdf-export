@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+- Code blocks are always left-aligned, even when the template justifies body text. Justified code stretched the spaces, so a command copied out of the PDF no longer worked.
+
 ## 1.1.0
 
 - **Confidential passages.** Mark a whole note (`audience: internal`), a section (`## Title %%internal%%`), a block (`> [!internal]`) or a phrase (`<span data-audience="internal">`), then export a version per audience. Marked passages a profile leaves out are removed before rendering, embedded notes included.

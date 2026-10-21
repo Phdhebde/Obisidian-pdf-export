@@ -1548,7 +1548,8 @@ function buildStyles(preset: Preset): Record<string, PdfNode> {
     tocH3: { font: F.bodyFont, fontSize: B, color: '#000000' },
     tocNumH1: { font: F.bodyFont, bold: true, fontSize: B + 1, color: C.brand },
     tocNumSub: { font: F.bodyFont, fontSize: B, color: '#000000' },
-    code: { font: F.monoFont, fontSize: B - 1.5, color: '#2A2A2A' }
+    // Never justified: stretched spaces break copying a command out of the PDF.
+    code: { font: F.monoFont, fontSize: B - 1.5, color: '#2A2A2A', alignment: 'left' }
   };
 }
 
