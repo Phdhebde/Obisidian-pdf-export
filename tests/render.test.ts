@@ -166,6 +166,14 @@ test('a report renders with the cover section disabled', async () => {
   assert.equal(pdf.subarray(0, 5).toString(), '%PDF-');
 });
 
+test('code blocks stay left-aligned in a justified report', () => {
+  const p = preset({ sections: ['body'] });
+  assert.notEqual(p.justify, false);
+  const dd = buildDocDefinition('```bash\ngit clone https://example.org/repo.git && cd repo\n```', { docTitle: 'Code', tlp: 'GREEN' }, p);
+  assert.equal(dd.defaultStyle.alignment, 'justify');
+  assert.equal(dd.styles.code.alignment, 'left');
+});
+
 test('callouts, task lists, tables, code and images all render', async () => {
   const md = [
     '# Démonstration',
