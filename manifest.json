@@ -1,7 +1,7 @@
 {
   "id": "pdf-report-exporter",
   "name": "PDF Report Exporter",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "minAppVersion": "1.8.7",
   "description": "Export notes as polished PDF reports: cover page, header and footer, clickable table of contents, styled tables, callouts and Mermaid diagrams, with reusable templates.",
   "author": "Maxence H",
