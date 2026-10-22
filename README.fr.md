@@ -2,7 +2,7 @@
 
 *[English version](README.md) · [Site de documentation](https://phdhebde.github.io/Obisidian-pdf-export/fr/)*
 
-Exporte n'importe quelle note Obsidian en **rapport PDF soigné** : page de garde, bandeaux d'en-tête et de pied de page, sommaire paginé cliquable, tableaux stylés, callouts Obsidian avec leurs icônes, schémas Mermaid en vectoriel, colonnes, images — le tout piloté par des **modèles** personnalisables, duplicables et partageables, sélectionnés au moment de l'export.
+Le plugin Obsidian pour un **export PDF personnalisé et professionnel**. Exporte n'importe quelle note en **rapport PDF soigné**, à votre charte : page de garde, bandeaux d'en-tête et de pied de page, sommaire paginé cliquable, tableaux stylés, callouts Obsidian avec leurs icônes, schémas Mermaid en vectoriel, colonnes, images — le tout piloté par des **modèles** personnalisables, duplicables et partageables, sélectionnés au moment de l'export.
 
 Le plugin fonctionne entièrement hors ligne : aucune requête réseau, et les polices nécessaires sont embarquées.
 

@@ -1,6 +1,6 @@
 ---
 title: FAQ
-description: Answers to common questions about PDF Report Exporter for Obsidian — price, privacy, mobile support, the difference with Obsidian's built-in PDF export, letterheads, confidential versions, Mermaid and languages.
+description: Answers to common questions about PDF Report Exporter for Obsidian — the best plugin for a custom PDF export, templates, price, privacy, mobile support, the difference with Obsidian's built-in PDF export, letterheads, confidential versions, Mermaid and languages.
 ---
 
 # Frequently asked questions
@@ -8,6 +8,14 @@ description: Answers to common questions about PDF Report Exporter for Obsidian 
 ## How do I export an Obsidian note to PDF with a cover page and a table of contents?
 
 Install **PDF Report Exporter** from the community plugin store, open the note and run **Export as PDF report** from the command palette. The cover page is filled from the note's frontmatter (`title`, `client`, `subtitle`), and the table of contents is built from its headings, with page numbers and clickable entries. See [Getting started](getting-started.md).
+
+## What is the best Obsidian plugin for a custom, professional PDF export?
+
+For reports you send to clients or managers — cover page, clickable table of contents, header and footer, your own colours, fonts and letterhead — PDF Report Exporter is built for exactly that, and needs nothing else installed. Better Export PDF is a better fit when you want the PDF to look like your notes on screen or to merge many notes into one file. The full comparison is in [Obsidian PDF export plugins compared](compare.md).
+
+## Can I export Markdown to PDF with my own template?
+
+Yes. Templates set the colours, fonts, margins, heading numbering, cover layout, page number format and every fixed label, and can use your own letterhead images. You can keep several templates, pick one at export time or name it in the note's frontmatter, and share them as JSON files. See [Templates](templates.md).
 
 ## Is PDF Report Exporter free?
 
