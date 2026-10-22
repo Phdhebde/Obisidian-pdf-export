@@ -18,6 +18,8 @@ import {
 } from '../src/redact.ts';
 import { defaultPreset } from '../src/generator.ts';
 import { buildDocDefinition } from './loose.ts';
+import { buildDocx } from '../src/docx.ts';
+import { allXml } from './docxRead.ts';
 import type { ReportVars } from '../src/types.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -102,13 +104,14 @@ const vars: ReportVars = {
   author: ''
 };
 
-test('a client export leaks none of the sentinels, in the Markdown or the PDF definition', () => {
+test('a client export leaks none of the sentinels, in the Markdown, the PDF definition or the Word file', () => {
   const counts = emptyCounts();
   const md = redact(SENTINEL_NOTE, client, counts);
   assert.deepEqual(leaked(md), []);
 
   const dd = buildDocDefinition(md, vars, defaultPreset({}, 'en'));
   assert.deepEqual(leaked(JSON.stringify(dd)), []);
+  assert.deepEqual(leaked(allXml(buildDocx(md, vars, defaultPreset({}, 'en')).bytes)), []);
 
   assert.deepEqual(counts, { notes: 0, sections: 1, blocks: 1, phrases: 4 });
   // What is not marked stays.
@@ -129,8 +132,10 @@ test('a full export keeps every marked passage, and only comments go', () => {
 
   const dd = JSON.stringify(buildDocDefinition(md, vars, defaultPreset({}, 'en')));
   // The mermaid source and the image alt text are consumed by the renderer.
+  const docx = allXml(buildDocx(md, vars, defaultPreset({}, 'en')).bytes);
   for (const s of ['LEAK-03', 'LEAK-04', 'LEAK-05', 'LEAK-08', 'LEAK-09', 'LEAK-13', 'LEAK-14', 'LEAK-15', 'LEAK-16']) {
     assert.ok(dd.includes(s), s);
+    assert.ok(docx.includes(s), `${s} in the Word file`);
   }
 });
 

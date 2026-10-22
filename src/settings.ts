@@ -14,6 +14,8 @@ import {
 import type PdfReportPlugin from './main.ts';
 import { ConfirmModal, VaultFileModal } from './modals.ts';
 import { IMG_EXTS, loadVaultImage } from './images.ts';
+import { readWordTemplate } from './exporter.ts';
+import { DEFAULT_WORD_STYLES, listWordStyles } from './docx.ts';
 import { migratePreset, presetId } from './storage.ts';
 import { normalizeLevels } from './redact.ts';
 import {
@@ -41,7 +43,8 @@ import {
   type Preset,
   type PresetColors,
   type PresetLabels,
-  type SectionKey
+  type SectionKey,
+  type WordRole
 } from './types.ts';
 
 /** Dropdown value standing for "write your own template". */
@@ -55,6 +58,15 @@ const PRESET_FILE_MARK = 'pdfReportPreset';
 const PRESET_FILE_SUFFIX = '.report-template.json';
 
 const FONT_KEYS = ['Liberation', 'Archivo', 'LiberationMono'] as const;
+
+/**
+ * Roles offered in the Word style table. The cover title and subtitle only
+ * exist in a generated document: with a Word template, the cover is its own.
+ */
+const WORD_STYLE_ROLES: WordRole[] = [
+  'body', 'heading1', 'heading2', 'heading3', 'heading4', 'heading5', 'heading6',
+  'listParagraph', 'caption', 'code', 'inlineCode', 'hyperlink', 'table'
+];
 
 const CONFLICT_OPTIONS: [ConflictMode, MessageKey][] = [
   ['ask', 'conflict.ask'],
@@ -126,6 +138,8 @@ export class ReportSettingTab extends PluginSettingTab {
    *  field vanish under the caret. */
   private customPagination = false;
   private showLabels = false;
+  /** Styles of each Word template read so far, by vault path; null while reading. */
+  private wordStyles = new Map<string, { name: string; type: string }[] | Error | null>();
 
   /** Coalesce writes: dragging a colour picker fires an event per pixel. */
   private save = debounce(() => void this.plugin.saveSettings(), 400, false);
@@ -563,7 +577,8 @@ export class ReportSettingTab extends PluginSettingTab {
       this.headerFooterSection(preset),
       this.tlpSection(preset),
       this.labelsSection(preset),
-      this.assetsSection(preset)
+      this.assetsSection(preset),
+      this.wordSection(preset)
     ];
   }
 
@@ -992,6 +1007,92 @@ export class ReportSettingTab extends PluginSettingTab {
         row('clientLogo', t('asset.noLogo'), 'asset.removeLogo')
       ]
     };
+  }
+
+  /** Word export (beta): the template's Word file, and which style each element takes. */
+  private wordSection(preset: Preset): Section {
+    const path = preset.word.template;
+    const rows: Row[] = [
+      {
+        name: t('set.wordTemplate'),
+        desc: path ? t('set.wordTemplatePath', { path }) : t('set.wordTemplateNone'),
+        render: (s) =>
+          s
+            .addButton((b) =>
+              b.setButtonText(t('set.choose')).onClick(() =>
+                new VaultFileModal(this.app, ['dotx', 'docx'], t('set.wordTemplateChoose'), (file) => {
+                  preset.word.template = file.path;
+                  // Read again: the file may have changed since it was last listed.
+                  this.wordStyles.delete(file.path);
+                  void this.plugin.saveSettings();
+                  this.refresh();
+                }).open()
+              )
+            )
+            .addExtraButton((b) =>
+              b
+                .setIcon('reset')
+                .setTooltip(t('set.wordTemplateReset'))
+                .setDisabled(!path)
+                .onClick(() => {
+                  preset.word.template = null;
+                  void this.plugin.saveSettings();
+                  this.refresh();
+                })
+            )
+      },
+      { name: '', note: { text: t('set.wordMarkers'), cls: 'pdf-report-muted' } }
+    ];
+    if (path) rows.push(...this.wordStyleRows(preset, path));
+    return { heading: t('set.word'), desc: t('set.wordDesc'), rows };
+  }
+
+  /** One dropdown per element, listing the template's styles of the right kind. */
+  private wordStyleRows(preset: Preset, path: string): Row[] {
+    if (!this.wordStyles.has(path)) this.loadWordStyles(path);
+    const styles = this.wordStyles.get(path);
+    if (!Array.isArray(styles)) {
+      const text = styles instanceof Error
+        ? t('set.wordStylesError', { message: styles.message })
+        : t('set.wordStylesLoading');
+      return [{ name: '', note: { text, cls: 'pdf-report-muted' } }];
+    }
+    return [
+      { name: '', note: { text: t('set.wordStylesDesc'), cls: 'pdf-report-muted' } },
+      ...WORD_STYLE_ROLES.map((role): Row => {
+        const def = DEFAULT_WORD_STYLES[role];
+        const names = styles.filter((s) => s.type === def.type).map((s) => s.name);
+        // Internal names are lower case for built-in styles ("heading 1"); Word shows them capitalised.
+        const shown = (name: string) => name.charAt(0).toUpperCase() + name.slice(1);
+        return {
+          name: t(`wordRole.${role}` as MessageKey),
+          render: (s) =>
+            s.addDropdown((d) => {
+              d.addOption('', t('set.wordStyleDefault', { name: shown(def.name) }));
+              for (const name of names) d.addOption(name, shown(name));
+              const current = preset.word.styles[role] ?? '';
+              // A style the template no longer has stays visible, so it can be changed.
+              if (current && !names.includes(current)) d.addOption(current, current);
+              d.setValue(current).onChange((v) => {
+                if (v) preset.word.styles[role] = v;
+                else delete preset.word.styles[role];
+                this.save();
+              });
+            })
+        };
+      })
+    ];
+  }
+
+  private loadWordStyles(path: string): void {
+    this.wordStyles.set(path, null);
+    void readWordTemplate(this.app, path)
+      .then((bytes) => listWordStyles(bytes))
+      .then(
+        (list) => this.wordStyles.set(path, list),
+        (e: unknown) => this.wordStyles.set(path, e instanceof Error ? e : new Error(String(e)))
+      )
+      .finally(() => this.refresh());
   }
 
   /* ================================================================ */

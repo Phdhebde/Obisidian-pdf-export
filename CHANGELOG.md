@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.0 (beta)
+
+- **Word export (beta).** New commands *Export as Word document (beta)* and *Export as Word document with a profile… (beta)*, and an entry in the file menu. The same note, with the same confidentiality filter, becomes a `.docx`.
+- **Laid out like the PDF.** Without a Word template, the document has the same cover, header and footer bands, references page, TLP reminder and table of contents as the PDF, in the template's colours — or with its own cover and letterhead artwork, and the note's logo.
+- **Your own Word template.** In a template's settings, pick a `.dotx` or `.docx` from the vault: its cover, headers, footers and styles are kept. Write `{{title}}`, `{{subtitle}}`, `{{client}}`, `{{author}}`, `{{version}}`, `{{date}}`, `{{status}}` or `{{tlp}}` where the note's values go, `{{toc}}` where the table of contents goes, and `{{content}}` alone in the paragraph where the report goes. Markers split across runs by Word are found.
+- Styles are looked up by their internal name (`heading 1`, `caption`…), so a template saved by Word in any language works. A table in the settings maps each element of the note to another style of the template.
+- **A real Word table of contents**, linked to the headings and filled in already; Word adds the page numbers when it updates the document's fields on opening (it asks first).
+- **Callouts as in Obsidian**: a tinted box with a bar of their colour, their icon and a coloured title. **Mermaid diagrams** as vector drawings, with a picture for older versions of Word.
+- Also rendered: numbered headings, bold, italic, strikethrough, inline code, links, bulleted, numbered and task lists, tables with a repeated header row, images, code blocks, page breaks and the labels of restricted passages. Side-by-side columns follow one another for now.
+- The leak tests now check the Word file too.
+
 ## 1.1.1
 
 - Code blocks are always left-aligned, even when the template justifies body text. Justified code stretched the spaces, so a command copied out of the PDF no longer worked.
