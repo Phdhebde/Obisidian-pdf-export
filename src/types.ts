@@ -199,6 +199,53 @@ export interface PresetAssets {
   clientLogo: string | null;
 }
 
+/**
+ * What a Word style is used for. Each role has a default style, found in the
+ * Word template by its internal name and created when the template has none.
+ */
+export const WORD_ROLES = [
+  'title',
+  'subtitle',
+  'body',
+  'heading1',
+  'heading2',
+  'heading3',
+  'heading4',
+  'heading5',
+  'heading6',
+  'listParagraph',
+  'caption',
+  'code',
+  'inlineCode',
+  'hyperlink',
+  'table',
+  // The pages a generated document adds around the body.
+  'sectionTitle',
+  'sectionSubtitle',
+  'tocHeading',
+  'toc1',
+  'toc2',
+  'toc3',
+  'toc4',
+  'toc5',
+  'toc6'
+] as const;
+export type WordRole = (typeof WORD_ROLES)[number];
+
+export function isWordRole(v: unknown): v is WordRole {
+  return typeof v === 'string' && (WORD_ROLES as readonly string[]).includes(v);
+}
+
+export interface PresetWord {
+  /**
+   * Vault path of the Word template (.dotx or .docx) the report fills, or null
+   * to generate a document from this template's colours and fonts.
+   */
+  template: string | null;
+  /** Style name per role, overriding the defaults; empty means the default. */
+  styles: Partial<Record<WordRole, string>>;
+}
+
 export interface Preset {
   id: string;
   name: string;
@@ -226,6 +273,8 @@ export interface Preset {
   /** Justify body text or align it left. */
   justify: boolean;
   transclusions: TransclusionMode;
+  /** Word export (beta). */
+  word: PresetWord;
 }
 
 /* ------------------------------------------------------------------ */

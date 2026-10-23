@@ -70,6 +70,8 @@ export interface MdToken {
   /** Lists and their items. */
   items?: MdToken[];
   ordered?: boolean;
+  /** First number of an ordered list; '' when it is not one. */
+  start?: number | '';
   task?: boolean;
   checked?: boolean;
   /** Tables. */
@@ -84,7 +86,7 @@ interface MdCell {
 }
 
 /** Block-level tokens of a Markdown string. */
-function lex(md: string): MdToken[] {
+export function lex(md: string): MdToken[] {
   return marked.lexer(md || '');
 }
 
@@ -323,7 +325,8 @@ export function defaultPreset(assets?: Partial<PresetAssets>, locale: Locale = g
     calloutIcons: true,
     diamondBullets: true,
     justify: true,
-    transclusions: 'inline'
+    transclusions: 'inline',
+    word: { template: null, styles: {} }
   };
 }
 
@@ -373,7 +376,7 @@ export function reportTlp(raw: unknown, sections: SectionKey[]): TlpKey | null {
   return sections.includes('tlp') ? TLP_DEFAULT : null;
 }
 
-function tlpColor(preset: Preset, key: TlpKey): TlpColor {
+export function tlpColor(preset: Preset, key: TlpKey): TlpColor {
   return preset.tlp?.[key] || { bg: '#D9D9D9', fg: '#000000' };
 }
 
@@ -381,7 +384,7 @@ function tlpColor(preset: Preset, key: TlpKey): TlpColor {
 /* Inline rendering                                                    */
 /* ------------------------------------------------------------------ */
 
-function decodeEntities(s: unknown): string {
+export function decodeEntities(s: unknown): string {
   return asText(s)
     .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&rsquo;/g, '’')
@@ -608,7 +611,7 @@ function headingNode(t: MdToken, preset: Preset, ctx: Ctx): PdfNode {
 }
 
 /** An image whose href the host rewrote to `report-image:<name>` (see images.ts). */
-const IMAGE_REF_RE = /^report-image:(.+)$/;
+export const IMAGE_REF_RE = /^report-image:(.+)$/;
 
 function imageNode(tk: MdToken, width: number): PdfNode {
   const href = String((tk && tk.href) || '');
@@ -633,7 +636,7 @@ function imageNode(tk: MdToken, width: number): PdfNode {
  * The previous rule also treated *any* fully-italic paragraph as a caption,
  * which silently centred and greyed out ordinary emphasised prose.
  */
-const CAPTION_RE = /^(figure|fig\.|tableau|table|graphique|chart|schéma|diagram|illustration|annexe|appendix|exhibit|listing)\b/i;
+export const CAPTION_RE = /^(figure|fig\.|tableau|table|graphique|chart|schéma|diagram|illustration|annexe|appendix|exhibit|listing)\b/i;
 
 function paragraphNode(t: MdToken, preset: Preset, ctx: Ctx): PdfNode {
   const toks: MdToken[] = t.tokens || [];
@@ -812,7 +815,7 @@ function codeOrColumnsNode(t: MdToken, preset: Preset, ctx: Ctx): PdfNode | PdfN
   return codeNode(t);
 }
 
-function isMermaidLang(lang: unknown): boolean {
+export function isMermaidLang(lang: unknown): boolean {
   return asText(lang).trim().split(/\s+/)[0].toLowerCase() === 'mermaid';
 }
 
@@ -851,9 +854,9 @@ function codeNode(t: MdToken): PdfNode {
  * Obsidian callout palette: accent colour, tint and Lucide icon per type. An
  * untitled callout is titled with its type, capitalised, as Obsidian does.
  */
-interface CalloutStyle { accent: string; tint: string; icon: IconName }
+export interface CalloutStyle { accent: string; tint: string; icon: IconName }
 
-const CALLOUT_STYLES: Record<string, CalloutStyle> = {
+export const CALLOUT_STYLES: Record<string, CalloutStyle> = {
   note: { accent: '#448AFF', tint: '#EEF4FF', icon: 'pencil' },
   abstract: { accent: '#00B8D4', tint: '#E8FAFD', icon: 'clipboardList' },
   summary: { accent: '#00B8D4', tint: '#E8FAFD', icon: 'clipboardList' },
@@ -1169,7 +1172,7 @@ function calloutColumns(body: string, preset: Preset, ctx: Ctx): PdfNode {
  *     - 2          <- flexGrow
  *       content of the column
  */
-function listColumns(t: MdToken): ColumnSpec[] | null {
+export function listColumns(t: MdToken): ColumnSpec[] | null {
   const items: MdToken[] = t.items || [];
   if (items.length !== 1) return null;
   const toks: MdToken[] = items[0].tokens || [];
@@ -1200,7 +1203,7 @@ function listColumns(t: MdToken): ColumnSpec[] | null {
    <!-- pagebreak -->). The marker becomes pageBreak:'before' on the next block. */
 const PAGE_BREAK_RE = /^(?:\\?(?:pagebreak|newpage|page-break|saut\s*-?\s*de\s*-?\s*page)|\[(?:pagebreak|page-break|saut de page)\]|\{(?:pagebreak|page-break)\})$/i;
 
-function isPageBreakToken(t: MdToken): boolean {
+export function isPageBreakToken(t: MdToken): boolean {
   if (!t) return false;
   if (t.type === 'html') return /page-?break/i.test(String(t.raw || t.text || ''));
   if (t.type === 'paragraph') return PAGE_BREAK_RE.test(String(t.raw || t.text || '').trim());
@@ -1573,7 +1576,7 @@ export interface BuildOptions {
 const COVER_LOGO_KEY = 'coverLogo';
 
 /** Sections to emit: a per-note override wins, then the preset's own list. */
-function resolveSections(vars: ReportVars, preset: Preset): SectionKey[] {
+export function resolveSections(vars: ReportVars, preset: Preset): SectionKey[] {
   const raw = vars.sections && vars.sections.length ? vars.sections : preset.sections;
   const list = (raw || []).filter(isSectionKey);
   // The cover carries a full-page background and suppresses the header/footer,

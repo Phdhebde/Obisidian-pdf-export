@@ -11,6 +11,7 @@
 import { TFile, type App } from 'obsidian';
 import { replaceOutsideCodeAsync } from './textScan.ts';
 import { abToB64 } from './assets.ts';
+import { imageSize } from './imageSize.ts';
 import { t } from './i18n.ts';
 
 const IMG_MIME: Record<string, string> = {
@@ -25,31 +26,6 @@ export interface ResolvedImages {
   /** pdfmake `images` dictionary: name -> data URL. */
   images: Record<string, string>;
   missing: string[];
-}
-
-/** Intrinsic pixel size read straight from PNG / GIF / JPEG bytes. */
-export function imageSize(b: Uint8Array): { w: number; h: number } | null {
-  if (b.length > 24 && b[0] === 0x89 && b[1] === 0x50) {
-    // PNG: IHDR width/height are big-endian at bytes 16..23. Read unsigned —
-    // `<< 24` would go negative on images wider than 32767 px.
-    const rd = (o: number) => b[o] * 0x1000000 + ((b[o + 1] << 16) | (b[o + 2] << 8) | b[o + 3]);
-    return { w: rd(16), h: rd(20) };
-  }
-  if (b.length > 10 && b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46) {
-    return { w: b[6] | (b[7] << 8), h: b[8] | (b[9] << 8) }; // GIF
-  }
-  if (b.length > 4 && b[0] === 0xff && b[1] === 0xd8) {
-    let i = 2; // JPEG: walk the marker chain to the SOF segment
-    while (i < b.length - 8) {
-      if (b[i] !== 0xff) { i++; continue; }
-      const mk = b[i + 1];
-      if (mk >= 0xc0 && mk <= 0xcf && mk !== 0xc4 && mk !== 0xc8 && mk !== 0xcc) {
-        return { w: (b[i + 7] << 8) | b[i + 8], h: (b[i + 5] << 8) | b[i + 6] };
-      }
-      i += 2 + ((b[i + 2] << 8) | b[i + 3]);
-    }
-  }
-  return null;
 }
 
 function loadHtmlImage(url: string): Promise<HTMLImageElement> {
@@ -89,6 +65,28 @@ async function fileToDataUrl(app: App, file: TFile): Promise<{ url: string; w?: 
     return { url: canvas.toDataURL('image/png'), w };
   } catch (e) {
     console.warn('[PDF Report Exporter] image could not be converted:', file.path, e);
+    return null;
+  }
+}
+
+/**
+ * Draw an SVG into a PNG data URL, `scale` times its size: what a Word file
+ * shows where it cannot draw the SVG itself. Null when the browser cannot
+ * decode the drawing.
+ */
+export async function svgToPng(svg: string, width: number, height: number, scale = 2): Promise<string | null> {
+  try {
+    const bytes = new TextEncoder().encode(svg);
+    const img = await loadHtmlImage(`data:image/svg+xml;base64,${abToB64(bytes.buffer)}`);
+    const canvas = createEl('canvas');
+    canvas.width = Math.max(1, Math.round(width * scale));
+    canvas.height = Math.max(1, Math.round(height * scale));
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/png');
+  } catch (e) {
+    console.warn('[PDF Report Exporter] drawing could not be rasterised:', e);
     return null;
   }
 }

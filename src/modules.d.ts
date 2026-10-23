@@ -26,5 +26,7 @@ declare module 'pdfmake/build/pdfmake.js' {
 
 /** Electron's `require`, which Obsidian exposes on the window of the desktop app. */
 interface Window {
-  require?: (module: 'electron') => { shell: { showItemInFolder(fullPath: string): void } };
+  require?: (module: 'electron') => {
+    shell: { showItemInFolder(fullPath: string): void; openPath(fullPath: string): Promise<string> };
+  };
 }

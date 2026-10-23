@@ -107,14 +107,14 @@ Word often splits a marker across several runs (`{{ti` + `tle}}` after a spell c
 | Code blocks | "Code" style, grey shading, monospace font | 1.2 |
 | Page breaks | Word page breaks | 1.2 |
 | TLP | `{{tlp}}` marker, coloured, in a header or footer | 1.2 |
-| Table of contents | Word TOC field, updated when the document opens | 1.3 |
-| Callouts | One-cell shaded table, icon as an image, bold title | 1.3 |
-| Mermaid | SVG image with a PNG fallback for older Word | 1.3 |
+| Table of contents | Word TOC field, updated when the document opens | 1.2 |
+| Callouts | One-cell shaded table, icon as an image, bold title | 1.2 |
+| Mermaid | SVG image with a PNG fallback for older Word | 1.2 |
 | "Figure 1: …" captions | Caption style plus a sequence field, so Word's table of figures works | 1.3 |
 | Footnotes | Real Word footnotes (`footnotes.xml`) | 1.3 |
 | Columns | Borderless table | 1.3 |
 
-A Word table of contents stays empty until Word updates its fields, so the plugin asks Word to do so on open; Word then shows a confirmation prompt. The documentation must say so.
+The plugin writes the table of contents with its entries and links already in place, so it reads anywhere; only the page numbers wait for Word to update the fields, which the plugin asks it to do on open. Word then shows a confirmation prompt. The documentation must say so.
 
 ### Quality
 
@@ -126,13 +126,14 @@ A Word table of contents stays empty until Word updates its fields, so the plugi
 ### Tasks
 
 1.2 (beta):
-- [ ] Word engine: package skeleton (`[Content_Types].xml`, relationships, `document.xml`)
-- [ ] Load a `.dotx`/`.docx`, join runs, replace markers, insert at `{{content}}`
-- [ ] Style mapping by internal name, settings table, missing-style fallback
-- [ ] 1.2 rows of the rendering table
-- [ ] Generated document when there is no Word template
-- [ ] *Export as Word* command, preview of the output path, beta label
-- [ ] XML unit tests and OOXML validation in CI
+- [x] Word engine: package skeleton (`[Content_Types].xml`, relationships, `document.xml`)
+- [x] Load a `.dotx`/`.docx`, join runs, replace markers, insert at `{{content}}`
+- [x] Style mapping by internal name, settings table, missing-style fallback
+- [x] 1.2 rows of the rendering table
+- [x] Generated document when there is no Word template
+- [x] *Export as Word* command, beta label
+- [x] XML unit tests, and the sentinel leak tests on the `.docx`
+- [ ] OOXML validation in CI
 
 1.3:
 - [ ] 1.3 rows of the rendering table

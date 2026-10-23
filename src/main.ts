@@ -21,10 +21,12 @@ import {
   profileFromFrontmatter,
   redactionSummary,
   renderReport,
+  renderWord,
   reportWarnings,
   targetPath,
-  writePdf,
-  type ExportDeps
+  writeExport,
+  type ExportDeps,
+  type ExportFormat
 } from './exporter.ts';
 import { getLocale, setLocale, t } from './i18n.ts';
 import type { RedactionCounts } from './redact.ts';
@@ -98,6 +100,30 @@ export default class PdfReportPlugin extends Plugin {
     });
 
     this.addCommand({
+      id: 'export-word-report',
+      name: t('cmd.exportWord'),
+      checkCallback: (checking) => {
+        const file = this.app.workspace.getActiveFile();
+        if (!file || file.extension !== 'md') return false;
+        if (!checking) void this.exportFile(file, undefined, undefined, 'docx');
+        return true;
+      }
+    });
+
+    this.addCommand({
+      id: 'export-word-report-profile',
+      name: t('cmd.exportWordProfile'),
+      checkCallback: (checking) => {
+        const file = this.app.workspace.getActiveFile();
+        if (!file || file.extension !== 'md') return false;
+        if (!checking) {
+          new ProfilePickerModal(this.app, this.data.profiles, (profile) => void this.exportFile(file, undefined, profile, 'docx')).open();
+        }
+        return true;
+      }
+    });
+
+    this.addCommand({
       id: 'export-selection-pdf-report',
       name: t('cmd.exportSelection'),
       editorCheckCallback: (checking, editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => {
@@ -130,6 +156,12 @@ export default class PdfReportPlugin extends Plugin {
         if (item instanceof TFile && item.extension === 'md') {
           menu.addItem((mi) =>
             mi.setTitle(t('menu.exportNote')).setIcon('file-text').onClick(() => void this.exportFile(item))
+          );
+          menu.addItem((mi) =>
+            mi
+              .setTitle(t('menu.exportWord'))
+              .setIcon('file-type')
+              .onClick(() => void this.exportFile(item, undefined, undefined, 'docx'))
           );
         } else if (item instanceof TFolder) {
           const notes = this.markdownFilesIn(item);
@@ -219,22 +251,28 @@ export default class PdfReportPlugin extends Plugin {
    * Export one version of a note. `profile` undefined means the one the note's
    * frontmatter names, or the full version when it names none.
    */
-  async exportFile(file: TFile, selection?: string, profile?: ExportProfile | null): Promise<void> {
+  async exportFile(
+    file: TFile,
+    selection?: string,
+    profile?: ExportProfile | null,
+    format: ExportFormat = 'pdf'
+  ): Promise<void> {
     const preset = await this.choosePreset(file);
     if (!preset) return;
 
-    const notice = new Notice(t('notice.generating'), 0);
+    const word = format === 'docx';
+    const notice = new Notice(t(word ? 'notice.generatingWord' : 'notice.generating'), 0);
     try {
       const deps = this.deps();
       const chosen = profile === undefined ? profileFromFrontmatter(this.app, file, this.data.profiles) : profile;
-      const result = await this.writeVersion(deps, file, preset, chosen, selection);
+      const result = await this.writeVersion(deps, file, preset, chosen, selection, format);
       if (!result) { notice.hide(); return; }
 
       await this.rememberPreset(preset);
       notice.hide();
       reportWarnings(result.warnings);
       if (chosen && result.redacted) new Notice(redactionSummary(chosen, result.redacted), 8000);
-      this.noticeWithActions(t('notice.exported', { path: result.file.path }), result.file);
+      this.noticeWithActions(t(word ? 'notice.exportedWord' : 'notice.exported', { path: result.file.path }), result.file);
     } catch (e) {
       notice.hide();
       this.reportError(e, file);
@@ -284,16 +322,18 @@ export default class PdfReportPlugin extends Plugin {
     file: TFile,
     preset: Preset,
     profile: ExportProfile | null,
-    selection?: string
+    selection?: string,
+    format: ExportFormat = 'pdf'
   ): Promise<{ file: TFile; warnings: string[]; redacted: RedactionCounts | null } | null> {
-    const { bytes, vars, warnings, redacted } = await renderReport(deps, file, preset, profile, selection);
-    let target = targetPath(deps, file, vars, profile);
+    const render = format === 'docx' ? renderWord : renderReport;
+    const { bytes, vars, warnings, redacted } = await render(deps, file, preset, profile, selection);
+    let target = targetPath(deps, file, vars, profile, format);
     if (target.exists) {
       const mode = await this.resolveConflict(target.path);
       if (!mode) return null;
       if (mode === 'increment') target = { path: incrementedPath(deps, target.path), exists: false };
     }
-    const written = await writePdf(deps, target.path, bytes);
+    const written = await writeExport(deps, target.path, bytes);
     if (profile && redacted) await this.logExport(file, written, profile, redacted);
     return { file: written, warnings, redacted };
   }
@@ -371,7 +411,7 @@ export default class PdfReportPlugin extends Plugin {
         const target = targetPath(deps, note, vars, profile);
         const path =
           target.exists && this.data.conflictMode !== 'overwrite' ? incrementedPath(deps, target.path) : target.path;
-        const written = await writePdf(deps, path, bytes);
+        const written = await writeExport(deps, path, bytes);
         if (profile && redacted) await this.logExport(note, written, profile, redacted);
         done++;
       } catch (e) {
@@ -416,7 +456,7 @@ export default class PdfReportPlugin extends Plugin {
       const folder = (this.data.outputFolder || '').trim().replace(/^\/+|\/+$/g, '');
       const name = t('preview.file');
       const path = normalizePath(folder ? `${folder}/${name}` : name);
-      const written = await writePdf(deps, path, bytes);
+      const written = await writeExport(deps, path, bytes);
 
       notice.hide();
       reportWarnings(warnings);
@@ -490,16 +530,30 @@ export default class PdfReportPlugin extends Plugin {
   /* Feedback                                                          */
   /* ---------------------------------------------------------------- */
 
-  /** Success notice with "open" and "reveal" actions, so the PDF is one click away. */
+  /** Success notice with "open" and "reveal" actions, so the file is one click away. */
   private noticeWithActions(message: string, file: TFile): void {
     const frag = createFragment();
     frag.createDiv({ text: message });
     const row = frag.createDiv({ cls: 'pdf-report-notice-actions' });
-
-    const open = row.createEl('button', { text: t('notice.open') });
-    open.addEventListener('click', () => void this.app.workspace.getLeaf('tab').openFile(file));
-
     const adapter = this.app.vault.adapter;
+
+    // Obsidian shows a PDF itself; a Word document opens in the app the
+    // system associates with it.
+    if (file.extension === 'pdf' || adapter instanceof FileSystemAdapter) {
+      const open = row.createEl('button', { text: t('notice.open') });
+      open.addEventListener('click', () => {
+        if (file.extension === 'pdf' || !(adapter instanceof FileSystemAdapter)) {
+          void this.app.workspace.getLeaf('tab').openFile(file);
+          return;
+        }
+        try {
+          void window.require?.('electron').shell.openPath(adapter.getFullPath(file.path));
+        } catch (e) {
+          console.warn('[PDF Report Exporter] openPath unavailable', e);
+        }
+      });
+    }
+
     if (adapter instanceof FileSystemAdapter) {
       const reveal = row.createEl('button', { text: t('notice.reveal') });
       reveal.addEventListener('click', () => {

@@ -12,6 +12,7 @@ import {
   TLP_KEYS,
   isNumberingStyle,
   isSectionKey,
+  isWordRole,
   type ConflictMode,
   type DocContact,
   type DocVersion,
@@ -139,8 +140,20 @@ export function migratePreset(raw: unknown): Preset {
     calloutIcons: p.calloutIcons !== false,
     diamondBullets: p.diamondBullets !== false,
     justify: typeof p.justify === 'boolean' ? p.justify : true,
-    transclusions: p.transclusions === 'warn' ? 'warn' : 'inline'
+    transclusions: p.transclusions === 'warn' ? 'warn' : 'inline',
+    word: migrateWord(p.word)
   };
+}
+
+function migrateWord(raw: unknown): Preset['word'] {
+  const w = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>;
+  const styles: Preset['word']['styles'] = {};
+  if (w.styles && typeof w.styles === 'object') {
+    for (const [role, name] of Object.entries(w.styles as Record<string, unknown>)) {
+      if (isWordRole(role) && typeof name === 'string' && name.trim()) styles[role] = name.trim();
+    }
+  }
+  return { template: typeof w.template === 'string' && w.template.trim() ? w.template.trim() : null, styles };
 }
 
 /** Normalise whatever loadData() returned into a complete, current PluginData. */

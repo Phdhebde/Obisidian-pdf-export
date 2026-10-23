@@ -1,11 +1,13 @@
 /*
- * Export orchestration: note -> pdfmake document -> PDF bytes -> vault file.
+ * Export orchestration: note -> pdfmake document -> PDF bytes -> vault file,
+ * or note -> Word package -> .docx bytes -> vault file.
  */
 import { Notice, TFile, normalizePath, type App } from 'obsidian';
 import type { PdfMake } from 'pdfmake/build/pdfmake.js';
 import { buildDocDefinition, collectDiagrams, normalizeTlp, type PdfNode } from './generator.ts';
-import { t, type MessageKey } from './i18n.ts';
-import { ImageResolver, IMG_EXTS, loadVaultImage } from './images.ts';
+import { buildDocx, calloutIcons, type RasterImage } from './docx.ts';
+import { getLocale, t, type MessageKey } from './i18n.ts';
+import { ImageResolver, IMG_EXTS, loadVaultImage, svgToPng } from './images.ts';
 import { renderMermaid } from './mermaid.ts';
 import { flattenWikilinks, replaceOutsideCodeAsync, stripFrontmatter } from './textScan.ts';
 import { normalizeContact, normalizeVersion, renderFilename, sanitizeSegment, uniqueName } from './storage.ts';
@@ -33,6 +35,9 @@ import {
   type SectionKey
 } from './types.ts';
 import type { AssetStore } from './assets.ts';
+
+/** What a note is exported to. */
+export type ExportFormat = 'pdf' | 'docx';
 
 /** How deep `![[note]]` transclusions are followed before we stop. */
 const MAX_TRANSCLUSION_DEPTH = 3;
@@ -332,14 +337,83 @@ export async function renderReport(
   if (failed) {
     warnings.push(failed === 1 ? t('warn.diagramFailed') : t('warn.diagramsFailed', { count: failed }));
   }
-  if (missing.length) {
-    warnings.push(
-      missing.length === 1
-        ? t('warn.imageMissing', { path: missing[0] })
-        : t('warn.imagesMissing', { count: missing.length, paths: missing.slice(0, 3).join(', ') })
-    );
-  }
+  warnings.push(...missingWarnings(missing));
   return { bytes, vars, warnings, redacted: profile ? counts : null };
+}
+
+function missingWarnings(missing: string[]): string[] {
+  if (!missing.length) return [];
+  return [
+    missing.length === 1
+      ? t('warn.imageMissing', { path: missing[0] })
+      : t('warn.imagesMissing', { count: missing.length, paths: missing.slice(0, 3).join(', ') })
+  ];
+}
+
+/** Today, written the way the interface language writes dates. */
+function today(): string {
+  const d = new Date();
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  return getLocale() === 'fr' ? `${dd}/${mm}/${d.getFullYear()}` : `${d.getFullYear()}-${mm}-${dd}`;
+}
+
+/** The bytes of a template's Word file, or an error naming the path it looked for. */
+export async function readWordTemplate(app: App, path: string): Promise<Uint8Array> {
+  const file = app.vault.getAbstractFileByPath(normalizePath(path));
+  if (!(file instanceof TFile)) throw new Error(t('word.templateMissing', { path }));
+  return new Uint8Array(await app.vault.readBinary(file));
+}
+
+/**
+ * Build the Word document for a note. Does not touch the vault.
+ *
+ * The body goes through the same preparation as the PDF — embedded notes,
+ * confidentiality filter, images — so a profile removes exactly the same
+ * passages from both formats.
+ */
+export async function renderWord(
+  deps: ExportDeps,
+  file: TFile,
+  preset: Preset,
+  profile: ExportProfile | null,
+  override?: string
+): Promise<RenderResult> {
+  const parsed = parseVars(deps.app, file);
+  const filter = audienceFilter(deps.data, profile, parsed.vars.tlp);
+  const { markdown, images, missing, counts } = await prepareBody(deps.app, file, preset, profile, filter, override);
+
+  const vars: ReportVars = profile?.tlp ? { ...parsed.vars, tlp: profile.tlp } : parsed.vars;
+  const tlpWarning = profile?.tlp ? null : parsed.tlpWarning;
+  const template = preset.word.template ? await readWordTemplate(deps.app, preset.word.template) : null;
+  const resolved = await deps.assets.resolvePreset(preset);
+  const noteLogo = vars.clientLogo ? await loadVaultImage(deps.app, vars.clientLogo, file.path) : null;
+
+  // Word draws an SVG only alongside a PNG of it, and only a browser can
+  // make one: diagrams and callout icons are rasterised here.
+  const { diagrams: svgs, failed } = await renderMermaid(collectDiagrams(markdown, resolved));
+  const diagrams: Record<string, RasterImage> = {};
+  for (const [source, d] of Object.entries(svgs)) {
+    const png = await svgToPng(d.svg, d.width, d.height, 2);
+    if (png) diagrams[source] = { png, svg: d.svg, width: d.width, height: d.height };
+  }
+  const icons: Record<string, RasterImage> = {};
+  if (resolved.calloutIcons !== false) {
+    for (const { key, svg } of calloutIcons(resolved)) {
+      const png = await svgToPng(svg, 24, 24, 4);
+      if (png) icons[key] = { png, svg, width: 24, height: 24 };
+    }
+  }
+
+  const result = buildDocx(markdown, vars, resolved, { images, template, date: today(), diagrams, icons, clientLogo: noteLogo });
+
+  const warnings = [...result.warnings];
+  if (tlpWarning) warnings.push(tlpWarning);
+  if (vars.clientLogo && !noteLogo) warnings.push(t('warn.logo', { path: vars.clientLogo }));
+  if (failed) warnings.push(failed === 1 ? t('warn.diagramFailed') : t('warn.diagramsFailed', { count: failed }));
+  warnings.push(...missingWarnings(missing));
+  // A copy, so the buffer holds exactly the file and nothing around it.
+  return { bytes: result.bytes.slice().buffer, vars, warnings, redacted: profile ? counts : null };
 }
 
 /* ------------------------------------------------------------------ */
@@ -351,16 +425,22 @@ export interface SaveTarget {
   exists: boolean;
 }
 
-/** Where a note's PDF would go, honouring the folder, the filename template and the profile's suffix. */
-export function targetPath(deps: ExportDeps, file: TFile, vars: ReportVars, profile: ExportProfile | null): SaveTarget {
+/** Where a note's export would go, honouring the folder, the filename template and the profile's suffix. */
+export function targetPath(
+  deps: ExportDeps,
+  file: TFile,
+  vars: ReportVars,
+  profile: ExportProfile | null,
+  format: ExportFormat = 'pdf'
+): SaveTarget {
   const folder = (deps.data.outputFolder || '').trim().replace(/^\/+|\/+$/g, '');
   const suffix = profile ? sanitizeSegment(profile.suffix) : '';
   const base = renderFilename(deps.data.filenameTemplate, { noteBasename: file.basename, vars }) + suffix;
-  const path = normalizePath(folder ? `${folder}/${base}.pdf` : `${base}.pdf`);
+  const path = normalizePath(folder ? `${folder}/${base}.${format}` : `${base}.${format}`);
   return { path, exists: deps.app.vault.getAbstractFileByPath(path) instanceof TFile };
 }
 
-/** Path that avoids clobbering an existing PDF ("Report" -> "Report-1"). */
+/** Path that avoids clobbering an existing file ("Report" -> "Report-1"). */
 export function incrementedPath(deps: ExportDeps, path: string): string {
   const dot = path.lastIndexOf('.');
   const stem = path.slice(0, dot);
@@ -368,7 +448,7 @@ export function incrementedPath(deps: ExportDeps, path: string): string {
   return uniqueName(stem, (name) => deps.app.vault.getAbstractFileByPath(name + ext) != null) + ext;
 }
 
-export async function writePdf(deps: ExportDeps, path: string, bytes: ArrayBuffer): Promise<TFile> {
+export async function writeExport(deps: ExportDeps, path: string, bytes: ArrayBuffer): Promise<TFile> {
   const folder = path.split('/').slice(0, -1).join('/');
   if (folder && !deps.app.vault.getAbstractFileByPath(folder)) {
     try {
