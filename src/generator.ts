@@ -434,6 +434,11 @@ function inlineRuns(tokens: MdToken[] | undefined, preset: Preset): PdfNode[] {
       case 'br': out.push({ text: '\n' }); break;
       case 'escape': out.push({ text: t.text }); break;
       case 'image': break; // images are rendered as blocks in paragraphNode
+      case 'html':
+        // An inline <br> breaks the line — the only way to get one inside a
+        // table cell — as in the Word export; any other tag is printed as written.
+        out.push({ text: /^<br\s*\/?>$/i.test(String(t.text ?? '').trim()) ? '\n' : decodeEntities(t.text) });
+        break;
       default: if (t.text) out.push({ text: decodeEntities(t.text) });
     }
     if (spans.includes(true)) {

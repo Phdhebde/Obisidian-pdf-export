@@ -10,6 +10,7 @@
 - **Callouts as in Obsidian**: a tinted box with a bar of their colour, their icon and a coloured title. **Mermaid diagrams** as vector drawings, with a picture for older versions of Word.
 - Also rendered: numbered headings, bold, italic, strikethrough, inline code, links, bulleted, numbered and task lists, tables with a repeated header row, images, code blocks, page breaks and the labels of restricted passages. Side-by-side columns follow one another for now.
 - The leak tests now check the Word file too.
+- PDF: a `<br>` in a table cell or a paragraph breaks the line, as in Obsidian ([#9](https://github.com/Phdhebde/Obisidian-pdf-export/issues/9)).
 
 ## 1.1.1
 
