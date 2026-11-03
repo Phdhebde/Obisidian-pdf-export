@@ -456,3 +456,13 @@ test('a three-line cover title pushes the rule and subtitles down instead of cro
   assert.equal(rule!.absolutePosition.y, p.layout.cover.ruleY + shift);
   assert.equal(subtitle!.absolutePosition.y, p.layout.cover.subtitleY + shift);
 });
+
+test('an inline <br> breaks the line, in a table cell as in a paragraph (#9)', () => {
+  const md = '| Name | Permissions |\n|---|---|\n| App | Read<br>Write |\n\nOne<br/>Two <b>bold</b>';
+  const nodes = markdownToPdf(md, preset());
+  const table = nodes.find((n) => n.table);
+  const cell = table?.table.body[1][1].text as PdfNode[];
+  assert.deepEqual(cell.map((r) => r.text), ['Read', '\n', 'Write']);
+  const para = nodes.find((n) => n.style === 'body')?.text as PdfNode[];
+  assert.deepEqual(para.map((r) => r.text), ['One', '\n', 'Two ', '<b>', 'bold', '</b>']);
+});
