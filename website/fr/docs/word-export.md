@@ -1,25 +1,25 @@
 ---
-title: Export Word (bêta)
+title: Export Word
 description: Exporter une note Obsidian en document Word (.docx) mis en page comme le rapport PDF, ou rempli dans le modèle .dotx de votre entreprise — page de garde, en-têtes, pieds de page et styles conservés, marqueurs remplacés, vrai sommaire Word, notes de bas de page et légendes.
 ---
 
-# Export Word (bêta)
+# Export Word
 
 La même note, avec le même filtre de confidentialité, peut sortir en document Word (`.docx`) au lieu d'un PDF. Deux possibilités :
 
 - **Sans modèle Word**, le document est mis en page comme le PDF : même page de garde, mêmes bandeaux d'en-tête et de pied de page, page de références, rappel TLP et sommaire, aux couleurs du modèle — ou avec son papier à en-tête et le logo de la note.
 - **Avec votre propre modèle Word** (`.dotx` ou `.docx`), le plugin le remplit : sa page de garde, ses en-têtes, ses pieds de page, son thème et ses styles restent tels quels, et le rapport va là où vous avez écrit `{{content}}`.
 
-!!! warning "Bêta"
+!!! info "Vérifié dans Word et LibreOffice"
     L'export Word est vérifié dans Microsoft Word, et chaque build ouvre ses documents d'exemple dans LibreOffice (voir [plus bas](#libreoffice-et-google-docs)). Si un document s'ouvre mal, [ouvrez une issue](https://github.com/Phdhebde/Obisidian-pdf-export/issues) avec la note et, si possible, le modèle Word.
 
 ## Exporter
 
 | Comment | Ce que ça fait |
 |---|---|
-| Commande **Exporter en document Word (bêta)** | Exporte la note active |
-| Commande **Exporter en document Word avec un profil… (bêta)** | Exporte une version : la complète, ou un profil comme *Client* (voir [Export confidentiel](confidential-export.md)) |
-| **Clic droit sur une note** → **Exporter en document Word (bêta)** | Exporte cette note |
+| Commande **Exporter en document Word** | Exporte la note active |
+| Commande **Exporter en document Word avec un profil…** | Exporte une version : la complète, ou un profil comme *Client* (voir [Export confidentiel](confidential-export.md)) |
+| **Clic droit sur une note** → **Exporter en document Word** | Exporte cette note |
 
 Le fichier va là où irait le PDF : même dossier, même nom, avec l'extension `.docx`. Le choix du modèle et les profils fonctionnent comme pour le PDF.
 
@@ -43,7 +43,7 @@ Le fichier va là où irait le PDF : même dossier, même nom, avec l'extension 
     | `{{content}}` | Le rapport, seul dans son paragraphe |
 
 2. Enregistrez-le en `.dotx` ou `.docx` dans le coffre. Les fichiers avec macros (`.dotm`, `.docm`) sont refusés.
-3. Dans **Réglages → PDF Report Exporter**, ouvrez le modèle du plugin à utiliser, puis **Export Word (bêta) → Modèle Word → Choisir…**.
+3. Dans **Réglages → Report Exporter**, ouvrez le modèle du plugin à utiliser, puis **Export Word → Modèle Word → Choisir…**.
 
 Les marqueurs gardent la mise en forme du texte qu'ils remplacent. Word coupe parfois un marqueur en plusieurs morceaux après une correction orthographique ou un changement de mise en forme ; le plugin le retrouve quand même. Un marqueur écrit dans la note elle-même reste tel quel.
 

@@ -1,11 +1,11 @@
 ---
 title: Templates
-description: Customise PDF Report Exporter templates — sections, heading numbering, colours, fonts, cover layout, page numbers, fixed labels and your own letterhead artwork — and share them as JSON files.
+description: Customise Report Exporter templates — sections, heading numbering, colours, fonts, cover layout, page numbers, fixed labels and your own letterhead artwork — and share them as JSON files.
 ---
 
 # Templates
 
-A template decides how a report looks; the note decides what it says. Templates live in **Settings → PDF Report Exporter**. A template named **Report** is created on first launch, and you can add as many as you need: **new**, **duplicate**, **export as JSON**, **import a JSON**, **delete**.
+A template decides how a report looks; the note decides what it says. Templates live in **Settings → Report Exporter**. A template named **Report** is created on first launch, and you can add as many as you need: **new**, **duplicate**, **export as JSON**, **import a JSON**, **delete**.
 
 ## What a template sets
 

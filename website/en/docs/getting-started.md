@@ -1,6 +1,6 @@
 ---
 title: Getting started
-description: Install PDF Report Exporter from the Obsidian community plugin store or manually, then export your first Obsidian note as a PDF report with a cover page and table of contents.
+description: Install Report Exporter from the Obsidian community plugin store or manually, then export your first Obsidian note as a PDF or Word report with a cover page and table of contents.
 ---
 
 # Getting started
@@ -12,13 +12,13 @@ This page takes you from installation to your first exported report in about fiv
 === "From the community store"
 
     1. In Obsidian, open **Settings → Community plugins**. If needed, turn off *Restricted mode*.
-    2. Click **Browse**, search for **PDF Report Exporter**, then **Install** and **Enable**.
+    2. Click **Browse**, search for **Report Exporter**, then **Install** and **Enable**.
 
 === "Manually"
 
     1. Download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/Phdhebde/Obisidian-pdf-export/releases/latest).
     2. Put them in `<your vault>/.obsidian/plugins/pdf-report-exporter/`.
-    3. Restart Obsidian, then enable **PDF Report Exporter** in **Settings → Community plugins**.
+    3. Restart Obsidian, then enable **Report Exporter** in **Settings → Community plugins**.
 
 The plugin works on Obsidian **1.8.7 or later**, desktop only.
 
@@ -57,6 +57,7 @@ The plugin works on Obsidian **1.8.7 or later**, desktop only.
 | **Export selection as PDF report** command | Exports only the selected text |
 | **Export as PDF report with a profile…** command | Exports one version: the full one, or a profile such as *Client* — see [Confidential export](confidential-export.md) |
 | **Export all versions as PDF reports** command | Writes the full version and one PDF per profile |
+| **Export as Word document** command, with or without a profile | Writes the same report as a `.docx` — see [Word export](word-export.md) |
 | Right-click a note in the file explorer | Exports that note |
 | Right-click a folder | Exports every note in it, one PDF each, with a summary at the end |
 
@@ -68,4 +69,5 @@ When you have several templates, a picker asks which one to use. It is skipped w
 - [Markdown](markdown.md): what each piece of Markdown becomes in the PDF.
 - [Templates](templates.md): colours, numbering, cover layout, your own letterhead.
 - [Confidential export](confidential-export.md): one note, a full version and a client version.
+- [Word export](word-export.md): the same report as a Word document, in your own `.dotx` template if you have one.
 - Try the two example notes from the repository: [`example-report.md`](https://github.com/Phdhebde/Obisidian-pdf-export/blob/main/example-report.md) and [`example-confidential.md`](https://github.com/Phdhebde/Obisidian-pdf-export/blob/main/example-confidential.md).

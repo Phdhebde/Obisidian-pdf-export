@@ -584,3 +584,22 @@ test('bench: a landscape brief keeps its own footnote first and lays tables on i
   const tblW = Number(/<w:tblW w:w="(\d+)" w:type="dxa"\/>/.exec(doc)?.[1]);
   assert.ok(tblW > 14000, `table width ${tblW}`);
 });
+
+test('the table of contents shows a tag in a heading as the heading does', () => {
+  const doc = parts(buildDocx('# Last <words> & more[^a]\n\n[^a]: note', { ...vars, sections: ['toc', 'body'] }, preset()).bytes)['word/document.xml'];
+  const entry = /<w:hyperlink w:anchor="_TocReport\d+" w:history="1"><w:r><w:t xml:space="preserve">([^<]*)</.exec(doc)?.[1];
+  assert.equal(entry, 'Last &lt;words&gt; &amp; more');
+});
+
+test('a table style of our own writes its header colour and tight rows on the cells; a template’s own is left alone', () => {
+  const md = '| Item | Cost |\n|---|---|\n| A | 1 |';
+  const generated = parts(buildDocx(md, { ...vars, sections: ['body'] }, preset()).bytes)['word/document.xml'];
+  assert.match(generated, /<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"\/><w:jc w:val="left"\/><\/w:pPr><w:r><w:rPr><w:b\/><w:bCs\/><w:color w:val="FFFFFF"\/><\/w:rPr><w:t xml:space="preserve">Item/);
+  const template = makeTemplate({
+    body: '<w:p><w:r><w:t>{{content}}</w:t></w:r></w:p>',
+    styles: '<w:style w:type="table" w:styleId="Grille"><w:name w:val="Table Grid"/></w:style>'
+  });
+  const filled = parts(buildDocx(md, vars, preset(), { template }).bytes)['word/document.xml'];
+  assert.match(filled, /<w:tblStyle w:val="Grille"\/>/);
+  assert.match(filled, /<w:pPr><w:jc w:val="left"\/><\/w:pPr><w:r><w:rPr><w:b\/><w:bCs\/><\/w:rPr><w:t xml:space="preserve">Item/);
+});

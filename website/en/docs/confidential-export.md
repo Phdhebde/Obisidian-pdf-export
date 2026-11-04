@@ -55,7 +55,7 @@ After each restricted export, a notice says what was removed, for example *Profi
 
 ## Profiles and levels
 
-**Settings → PDF Report Exporter → Confidential passages**:
+**Settings → Report Exporter → Confidential passages**:
 
 - **Audience levels**: `internal` by default; add your own (`management`, `board`…). A passage marked with several levels leaves only in a version that keeps all of them.
 - **Profiles**: for each audience, the levels it keeps, the suffix added to its file name, whether a *[passage removed]* mark shows where something was cut, and its TLP marking. A *Client* profile that removes every marked passage is created on first install.

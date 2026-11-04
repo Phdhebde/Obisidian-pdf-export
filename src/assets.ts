@@ -89,7 +89,7 @@ export class AssetStore {
       const ext = (value.split('.').pop() || 'png').toLowerCase();
       return await this.saveCustomImage(presetId, key, ab, ext);
     } catch {
-      console.warn('[PDF Report Exporter] template image not copied:', value);
+      console.warn('[Report Exporter] template image not copied:', value);
       return value;
     }
   }
@@ -117,7 +117,7 @@ export class AssetStore {
       this.cache.set(value, url);
       return url;
     } catch {
-      console.warn('[PDF Report Exporter] template image not found:', value);
+      console.warn('[Report Exporter] template image not found:', value);
       return null;
     }
   }

@@ -364,7 +364,7 @@ export default class PdfReportPlugin extends Plugin {
       }
     } catch (e) {
       // The PDF is written; a log that cannot be is not worth failing it for.
-      console.warn('[PDF Report Exporter] export log not written', e);
+      console.warn('[Report Exporter] export log not written', e);
     }
   }
 
@@ -415,7 +415,7 @@ export default class PdfReportPlugin extends Plugin {
         if (profile && redacted) await this.logExport(note, written, profile, redacted);
         done++;
       } catch (e) {
-        console.error('[PDF Report Exporter] export failed:', note.path, e);
+        console.error('[Report Exporter] export failed:', note.path, e);
         failures.push(note.basename);
       }
     }
@@ -549,7 +549,7 @@ export default class PdfReportPlugin extends Plugin {
         try {
           void window.require?.('electron').shell.openPath(adapter.getFullPath(file.path));
         } catch (e) {
-          console.warn('[PDF Report Exporter] openPath unavailable', e);
+          console.warn('[Report Exporter] openPath unavailable', e);
         }
       });
     }
@@ -560,7 +560,7 @@ export default class PdfReportPlugin extends Plugin {
         try {
           window.require?.('electron').shell.showItemInFolder(adapter.getFullPath(file.path));
         } catch (e) {
-          console.warn('[PDF Report Exporter] showItemInFolder unavailable', e);
+          console.warn('[Report Exporter] showItemInFolder unavailable', e);
         }
       });
     }
@@ -568,7 +568,7 @@ export default class PdfReportPlugin extends Plugin {
   }
 
   private reportError(e: unknown, file: TFile): void {
-    console.error('[PDF Report Exporter] export error', file.path, e);
+    console.error('[Report Exporter] export error', file.path, e);
     const message = e instanceof Error ? e.message : String(e);
     new Notice(t('notice.error', { name: file.basename, message }), 10000);
   }

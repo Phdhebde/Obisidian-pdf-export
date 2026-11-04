@@ -1,20 +1,20 @@
 ---
 title: Comparatif des plugins d'export PDF pour Obsidian
-description: Quel plugin Obsidian choisir pour un export PDF personnalisé et professionnel — l'export PDF intégré d'Obsidian, PDF Report Exporter, Better Export PDF, Omd to Typst, Document Export et PDF Export Enhancer comparés sur la page de garde, le sommaire, les modèles, la charte graphique et les dépendances.
+description: Quel plugin Obsidian choisir pour un export PDF personnalisé et professionnel — l'export PDF intégré d'Obsidian, Report Exporter, Better Export PDF, Omd to Typst, Document Export et PDF Export Enhancer comparés sur la page de garde, le sommaire, les modèles, la charte graphique et les dépendances.
 ---
 
 # Comparatif des plugins d'export PDF pour Obsidian
 
-**En bref :** pour exporter une note Obsidian en **PDF personnalisé et professionnel** (page de garde, sommaire cliquable, en-tête et pied de page, couleurs, polices et papier à en-tête de votre entreprise) sans rien installer d'autre que le plugin, utilisez **PDF Report Exporter**. Pour assembler de nombreuses notes dans un seul PDF qui ressemble au mode lecture d'Obsidian, utilisez **Better Export PDF**. Si vous utilisez déjà Typst et voulez écrire la mise en page vous-même, utilisez **Omd to Typst**.
+**En bref :** pour exporter une note Obsidian en **PDF personnalisé et professionnel** (page de garde, sommaire cliquable, en-tête et pied de page, couleurs, polices et papier à en-tête de votre entreprise) sans rien installer d'autre que le plugin, utilisez **Report Exporter**. Pour assembler de nombreuses notes dans un seul PDF qui ressemble au mode lecture d'Obsidian, utilisez **Better Export PDF**. Si vous utilisez déjà Typst et voulez écrire la mise en page vous-même, utilisez **Omd to Typst**.
 
-Cette page compare les principales façons d'exporter des notes Obsidian en PDF, d'après la documentation de chaque plugin (octobre 2026). Elle est écrite par l'auteur de PDF Report Exporter : les corrections sont bienvenues dans les [issues GitHub](https://github.com/Phdhebde/Obisidian-pdf-export/issues).
+Cette page compare les principales façons d'exporter des notes Obsidian en PDF, d'après la documentation de chaque plugin (octobre 2026). Elle est écrite par l'auteur de Report Exporter : les corrections sont bienvenues dans les [issues GitHub](https://github.com/Phdhebde/Obisidian-pdf-export/issues).
 
 ## Vue d'ensemble
 
 | | Page de garde | Sommaire cliquable | Apparence personnalisable | Autre logiciel à installer | Résultat |
 |---|---|---|---|---|---|
 | **Export PDF intégré d'Obsidian** | Non | Non | Format, marges, snippets CSS | Non | PDF identique à la note à l'écran |
-| **PDF Report Exporter** | Oui, depuis le frontmatter, avec logo | Oui, paginé, titres numérotés | Modèles : couleurs, polices, numérotation, couverture, papier à en-tête, partageables en JSON | Non (polices embarquées, hors ligne) | Rapport PDF, et versions client sans passages confidentiels |
+| **Report Exporter** | Oui, depuis le frontmatter, avec logo | Oui, paginé, titres numérotés | Modèles : couleurs, polices, numérotation, couverture, papier à en-tête, partageables en JSON | Non (polices embarquées, hors ligne) | Rapport PDF, et versions client sans passages confidentiels |
 | **[Better Export PDF](https://community.obsidian.md/plugins/better-export-pdf)** | Pas de page de garde dédiée | Signets PDF, et une note de liens peut fixer l'ordre | Snippets CSS, en-tête et pied de page en HTML | Non | PDF au rendu du mode lecture, plusieurs notes en un |
 | **[Omd to Typst](https://community.obsidian.md/plugins/omd-to-typst)** | Oui, depuis le frontmatter | Oui, titres numérotés | Vos propres modèles `.typ` | Oui : le compilateur Typst | PDF ou source `.typ` |
 | **[Document Export](https://community.obsidian.md/plugins/juanperez-document-export)** | Oui : titre, sous-titre, auteur ou image | Oui, sur sa propre page | Police, taille, position des numéros de page ; pas de modèles | Non pour PDF et DOCX ; un compilateur LaTeX pour le `.tex` | PDF (US Letter), DOCX, LaTeX |
@@ -24,7 +24,7 @@ Cette page compare les principales façons d'exporter des notes Obsidian en PDF,
 
 ### Vous envoyez des rapports à des clients ou à votre hiérarchie
 
-Choisissez **PDF Report Exporter**. Il met la note en page comme un document au lieu d'imprimer l'écran : page de garde, page de références avec état du document, contacts et destinataires, en-tête et pied de page sur chaque page, titres numérotés, sommaire cliquable avec numéros de page, tableaux mis en forme, callouts Obsidian avec leurs icônes et schémas Mermaid en vectoriel. L'apparence est définie dans des [modèles](templates.md), qui peuvent porter votre propre papier à en-tête pleine page et se partager avec vos collègues en fichier JSON.
+Choisissez **Report Exporter**. Il met la note en page comme un document au lieu d'imprimer l'écran : page de garde, page de références avec état du document, contacts et destinataires, en-tête et pied de page sur chaque page, titres numérotés, sommaire cliquable avec numéros de page, tableaux mis en forme, callouts Obsidian avec leurs icônes et schémas Mermaid en vectoriel. L'apparence est définie dans des [modèles](templates.md), qui peuvent porter votre propre papier à en-tête pleine page et se partager avec vos collègues en fichier JSON.
 
 C'est aussi le seul de ces plugins qui produit une [version client](confidential-export.md) de la même note : les passages marqués comme internes sont retirés avant le rendu, pas masqués sous un rectangle noir.
 
@@ -38,9 +38,9 @@ Choisissez **Omd to Typst**. Vous installez le compilateur Typst et décrivez la
 
 ### Il vous faut aussi un fichier Word
 
-**PDF Report Exporter** exporte aussi la même note en document Word (bêta, depuis la 1.2) : mis en page comme le PDF, ou rempli dans le modèle `.dotx` de votre entreprise, avec sa page de garde, ses en-têtes, ses pieds de page et ses styles. Voir [Export Word](word-export.md). **Document Export** produit aussi du PDF et du DOCX à partir de la même note.
+**Report Exporter** exporte aussi la même note en document Word : mis en page comme le PDF, ou rempli dans le modèle `.dotx` de votre entreprise, avec sa page de garde, ses en-têtes, ses pieds de page et ses styles. Voir [Export Word](word-export.md). **Document Export** produit aussi du PDF et du DOCX à partir de la même note.
 
-## Ce que PDF Report Exporter ne fait pas
+## Ce que Report Exporter ne fait pas
 
 - **Mobile.** Il fonctionne uniquement sur ordinateur (Windows, macOS, Linux).
 - **Votre thème Obsidian.** Le PDF suit le modèle, pas le thème ni les snippets CSS du coffre.
@@ -49,4 +49,4 @@ Choisissez **Omd to Typst**. Vous installez le compilateur Typst et décrivez la
 
 ## L'essayer
 
-PDF Report Exporter est gratuit et open source (MIT). Dans Obsidian, ouvrez **Réglages → Plugins communautaires → Parcourir**, cherchez **PDF Report Exporter**, puis lancez **Exporter en rapport PDF** sur une note. Voir [Premiers pas](getting-started.md).
+Report Exporter est gratuit et open source (MIT). Dans Obsidian, ouvrez **Réglages → Plugins communautaires → Parcourir**, cherchez **Report Exporter**, puis lancez **Exporter en rapport PDF** sur une note. Voir [Premiers pas](getting-started.md).

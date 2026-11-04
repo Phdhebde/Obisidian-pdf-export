@@ -8,7 +8,7 @@ Three Word templates for the plugin's Word export, written in Microsoft Word for
 | `memo.dotx` | No cover: markers in a table at the top, a custom *Corps de rapport* body style to pick in the plugin's Word style settings |
 | `landscape-brief.dotx` | A4 landscape, narrow margins, a footnote of its own |
 
-Download one into your vault, then pick it in **Settings → PDF Report Exporter → (template) → Word export → Word template**. How to write your own: [Word export](https://phdhebde.github.io/Obisidian-pdf-export/word-export/).
+Download one into your vault, then pick it in **Settings → Report Exporter → (template) → Word export → Word template**. How to write your own: [Word export](https://phdhebde.github.io/Obisidian-pdf-export/word-export/).
 
 ## Licence
 

@@ -530,7 +530,7 @@ export class ReportSettingTab extends PluginSettingTab {
       new Notice(t('set.imported', { name: preset.name }));
       this.refresh();
     } catch (e) {
-      console.error('[PDF Report Exporter] template import', e);
+      console.error('[Report Exporter] template import', e);
       new Notice(t('set.importInvalid', { message: e instanceof Error ? e.message : String(e) }));
     }
   }
@@ -1010,7 +1010,7 @@ export class ReportSettingTab extends PluginSettingTab {
     };
   }
 
-  /** Word export (beta): the template's Word file, and which style each element takes. */
+  /** Word export: the template's Word file, and which style each element takes. */
   private wordSection(preset: Preset): Section {
     const path = preset.word.template;
     const rows: Row[] = [
@@ -1182,7 +1182,7 @@ export class ReportSettingTab extends PluginSettingTab {
       new Notice(t('asset.imported', { name: file.name }));
       this.refresh();
     } catch (e) {
-      console.error('[PDF Report Exporter] image import', e);
+      console.error('[Report Exporter] image import', e);
       new Notice(t('asset.importFailed', { message: e instanceof Error ? e.message : String(e) }));
     }
   }

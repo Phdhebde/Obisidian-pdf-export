@@ -1,5 +1,5 @@
 /*
- * PDF Report Exporter — PDF generator (environment-agnostic).
+ * Report Exporter — PDF generator (environment-agnostic).
  *
  * Exposes:
  *   defaultPreset(assets)                -> the factory preset
@@ -1680,7 +1680,7 @@ export function buildDocDefinition(
       author: v.author || '',
       subject: v.coverSubtitle || '',
       keywords: [tlp ? 'TLP:' + tlp : '', v.client || ''].filter(Boolean).join(', '),
-      creator: 'PDF Report Exporter'
+      creator: 'Report Exporter'
     },
     background: (currentPage: number, pageSize: { width: number; height: number }) => {
       // Keyed on whether a cover was actually emitted, not on the page number:

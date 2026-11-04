@@ -327,7 +327,7 @@ export async function renderReport(
     // A drawing pdfkit cannot handle must not cost the whole report: print
     // the diagrams as code, and say so.
     if (!Object.keys(diagrams).length) throw e;
-    console.warn('[PDF Report Exporter] export failed with diagrams, retrying without:', e);
+    console.warn('[Report Exporter] export failed with diagrams, retrying without:', e);
     bytes = await toPdfBytes(pdfMake, build(false));
     warnings.push(t('warn.diagramsAsCode', { message: e instanceof Error ? e.message : String(e) }));
   }

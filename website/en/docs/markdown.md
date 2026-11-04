@@ -1,11 +1,11 @@
 ---
 title: Markdown support
-description: How PDF Report Exporter renders Obsidian Markdown in a PDF — numbered headings, callouts with icons, tables fitted to the page, task lists, Mermaid diagrams as vectors, Obsidian Columns, images, embedded notes and page breaks.
+description: How Report Exporter renders Obsidian Markdown in a PDF — numbered headings, callouts with icons, tables fitted to the page, task lists, Mermaid diagrams as vectors, Obsidian Columns, images, embedded notes and page breaks.
 ---
 
 # Markdown support
 
-PDF Report Exporter reads the Markdown you already write in Obsidian. Nothing needs to change in your notes.
+Report Exporter reads the Markdown you already write in Obsidian. Nothing needs to change in your notes.
 
 | Markdown | In the PDF |
 |---|---|

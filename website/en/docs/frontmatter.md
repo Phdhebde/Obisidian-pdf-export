@@ -1,6 +1,6 @@
 ---
 title: Frontmatter
-description: The frontmatter keys PDF Report Exporter reads to fill the cover page, header, references page and PDF metadata — in English or French — including versions, contacts, recipients and the TLP marking.
+description: The frontmatter keys Report Exporter reads to fill the cover page, header, references page and PDF metadata — in English or French — including versions, contacts, recipients and the TLP marking.
 ---
 
 # Frontmatter

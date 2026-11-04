@@ -1,13 +1,13 @@
 # Roadmap
 
-PDF Report Exporter is becoming **Report Exporter**: one note, several deliverables — a PDF or a Word document, a full internal version or a redacted client version — from the same templates.
+PDF Report Exporter is now **Report Exporter** (2.0): one note, several deliverables — a PDF or a Word document, a full internal version or a redacted client version — from the same templates.
 
 The project is and will stay **free and community-driven**: MIT licence, no paid tier, no account, no network access. Ideas, bug reports, templates and pull requests are welcome in the [issues](https://github.com/Phdhebde/Obisidian-pdf-export/issues).
 
 | Version | Theme | Estimate | Ships when |
 |---|---|---|---|
 | 1.1 | Confidential export | ~4 weeks | Zero leaks on the sentinel note |
-| 1.2 (beta) | Word export: the core | ~6 weeks | Opens without errors in Word and LibreOffice |
+| 1.2 | Word export: the core (beta) | ~6 weeks | Opens without errors in Word and LibreOffice |
 | 1.3 | Word export: complete | ~4 weeks | Three real-world templates render faithfully |
 | 2.0 | Launch as Report Exporter | ~2 weeks | Published and announced |
 
@@ -76,7 +76,7 @@ Levels are declared in the settings (`internal`, `management`…). They can foll
 
 ---
 
-## 1.2 (beta) and 1.3 — Word export
+## 1.2 and 1.3 — Word export
 
 The company's Word template carries the house style, not the plugin. The plugin fills an existing `.dotx` or `.docx` and leaves its cover page, headers and footers, theme and styles untouched. Without a Word template, it generates a clean document from the PDF template's colours and fonts.
 
@@ -125,7 +125,7 @@ The plugin writes the table of contents with its entries and links already in pl
 
 ### Tasks
 
-1.2 (beta):
+1.2 (shipped as a beta):
 - [x] Word engine: package skeleton (`[Content_Types].xml`, relationships, `document.xml`)
 - [x] Load a `.dotx`/`.docx`, join runs, replace markers, insert at `{{content}}`
 - [x] Style mapping by internal name, settings table, missing-style fallback
@@ -146,15 +146,16 @@ The confidential export applies to Word from the first beta: same filter, same s
 
 ## 2.0 — Launch as Report Exporter
 
-- [ ] Display name "Report Exporter" (`manifest.json`, README, store listing). The plugin id `pdf-report-exporter` cannot change, so existing users keep their settings and updates.
-- [ ] Documentation (EN/FR) rewritten around PDF + Word + profiles
-- [ ] Contribution guide: issues, template submissions, translations
+- [x] Display name "Report Exporter" (`manifest.json`, README, store listing). The plugin id `pdf-report-exporter` cannot change, so existing users keep their settings and updates.
+- [x] Documentation (EN/FR) rewritten around PDF + Word + profiles
+- [x] Contribution guide: issues, template submissions, translations
 - [ ] Announcement on the Obsidian forum
 
 ---
 
 ## Feedback wanted
 
-- **Marking syntax.** The four syntaxes above are a proposal. Which ones would you use, and which feel awkward? Tell us in the issues or the forum thread before 1.1 ships.
+- **What should come next?** Report Exporter does what this roadmap set out to do. Tell us in the issues or the forum thread what your reports still need.
+- **Marking syntax.** Which of the four confidentiality syntaxes do you use, and which feel awkward?
 - **Word templates.** If you can share a template (anonymised, under a licence that allows it), it will make the Word export work for many more people.
 - **Translations** beyond English and French.

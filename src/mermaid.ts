@@ -127,7 +127,7 @@ export async function renderMermaid(
   try {
     mermaid = (await loadMermaid()) as Mermaid;
   } catch (e) {
-    console.warn('[PDF Report Exporter] Mermaid unavailable:', e);
+    console.warn('[Report Exporter] Mermaid unavailable:', e);
     return { diagrams, failed: sources.length };
   }
 
@@ -141,7 +141,7 @@ export async function renderMermaid(
       if (out) diagrams[sources[i]] = out;
       else failed++;
     } catch (e) {
-      console.warn('[PDF Report Exporter] Mermaid diagram not rendered:', e);
+      console.warn('[Report Exporter] Mermaid diagram not rendered:', e);
       failed++;
     } finally {
       // A failed render can leave its scratch element in the page.

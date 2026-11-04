@@ -1,6 +1,6 @@
 ---
 title: Historique des versions
-description: Historique des versions de PDF Report Exporter pour Obsidian.
+description: Historique des versions de Report Exporter pour Obsidian.
 ---
 
 !!! note "En anglais"

@@ -1,11 +1,11 @@
 ---
 title: Modèles
-description: Personnaliser les modèles de PDF Report Exporter — sections, numérotation des titres, couleurs, polices, couverture, numéros de page, libellés et papier à en-tête — et les partager en fichiers JSON.
+description: Personnaliser les modèles de Report Exporter — sections, numérotation des titres, couleurs, polices, couverture, numéros de page, libellés et papier à en-tête — et les partager en fichiers JSON.
 ---
 
 # Modèles
 
-Le modèle décide de l'apparence du rapport ; la note décide de ce qu'il dit. Les modèles se gèrent dans **Réglages → PDF Report Exporter**. Un modèle **Rapport** est créé au premier lancement, et vous pouvez en ajouter autant que nécessaire : **nouveau**, **dupliquer**, **exporter en JSON**, **importer un JSON**, **supprimer**.
+Le modèle décide de l'apparence du rapport ; la note décide de ce qu'il dit. Les modèles se gèrent dans **Réglages → Report Exporter**. Un modèle **Rapport** est créé au premier lancement, et vous pouvez en ajouter autant que nécessaire : **nouveau**, **dupliquer**, **exporter en JSON**, **importer un JSON**, **supprimer**.
 
 ## Ce que règle un modèle
 
