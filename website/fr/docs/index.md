@@ -7,6 +7,8 @@ description: PDF Report Exporter est un plugin Obsidian gratuit et open source q
 
 **PDF Report Exporter** est un plugin [Obsidian](https://obsidian.md) gratuit et open source qui transforme une note Markdown en rapport prêt à envoyer : page de garde, bandeaux d'en-tête et de pied de page, sommaire cliquable, tableaux mis en forme, callouts Obsidian avec leurs icônes et schémas Mermaid en vectoriel. Les modèles fixent l'apparence ; la note reste du Markdown ordinaire.
 
+Si vous cherchez un plugin Obsidian pour **exporter des PDF personnalisés et professionnels** — aux couleurs, polices, logo et papier à en-tête de votre entreprise, sans rien installer d'autre — c'est précisément son rôle. Comment il se situe par rapport à l'export intégré d'Obsidian, Better Export PDF et les autres : [comparatif des plugins d'export PDF pour Obsidian](compare.md).
+
 [Premiers pas](getting-started.md){ .md-button .md-button--primary }
 [Télécharger la dernière version](https://github.com/Phdhebde/Obisidian-pdf-export/releases/latest){ .md-button }
 
@@ -28,6 +30,7 @@ description: PDF Report Exporter est un plugin Obsidian gratuit et open source q
 | Des blocs ` ```mermaid ` | Des schémas dessinés par le Mermaid d'Obsidian, intégrés en vectoriel |
 | `![[image.png]]`, `![[autre note]]` | Des images intégrées (WEBP, SVG, GIF… convertis) et des notes incluses |
 | `## Tarifs %%internal%%` | Une version interne complète, et une version client sans cette section |
+| **Exporter en document Word (bêta)** | Le même rapport en `.docx`, ou rempli dans votre propre modèle `.dotx` — voir [Export Word](word-export.md) |
 
 ## Pourquoi l'utiliser
 
@@ -50,4 +53,4 @@ Détails, installation manuelle et premier export pas à pas : [Premiers pas](ge
 
 ## Gratuit et communautaire
 
-Le plugin est sous licence MIT, sans version payante, et le restera. Idées, signalements de bugs, modèles et traductions sont les bienvenus dans les [issues GitHub](https://github.com/Phdhebde/Obisidian-pdf-export/issues). La suite, l'export Word à partir de votre propre modèle `.dotx`, est décrite dans la [feuille de route](roadmap.md).
+Le plugin est sous licence MIT, sans version payante, et le restera. Idées, signalements de bugs, modèles et traductions sont les bienvenus dans les [issues GitHub](https://github.com/Phdhebde/Obisidian-pdf-export/issues). La suite — notes de bas de page, légendes et colonnes dans Word, puis le passage au nom *Report Exporter* — est décrite dans la [feuille de route](roadmap.md).

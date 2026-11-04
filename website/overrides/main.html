@@ -6,6 +6,7 @@
   the same path under each base URL.
 #}
 {% block extrahead %}
+  <link rel="apple-touch-icon" href="{{ 'assets/images/apple-touch-icon.png' | url }}">
   {% set path = page.url if page and page.url else "" %}
   {% set home = path == "" or path == "./" or path == "index.html" %}
   {% set heading = page.meta.title if page and page.meta and page.meta.title else (page.title if page else "") %}
@@ -54,6 +55,26 @@
     "downloadUrl": "https://github.com/Phdhebde/Obisidian-pdf-export/releases/latest",
     "codeRepository": "https://github.com/Phdhebde/Obisidian-pdf-export",
     "image": "{{ config.extra.social_image }}",
+    "screenshot": [
+      "{{ config.extra.base_en }}assets/images/report-cover.webp",
+      "{{ config.extra.base_en }}assets/images/report-toc.webp",
+      "{{ config.extra.base_en }}assets/images/report-body.webp"
+    ],
+    "featureList": [
+      "Custom, professional PDF export of Obsidian notes",
+      "Cover page with logo, filled from frontmatter",
+      "Clickable, paginated table of contents with numbered headings",
+      "Running header and footer, page numbers",
+      "Reusable templates: colours, fonts, numbering, cover layout, letterhead artwork",
+      "Obsidian callouts with icons, styled tables, Mermaid diagrams as vectors",
+      "Client versions with internal passages removed, TLP marking",
+      "Offline, no network access, bundled fonts"
+    ],
+    "keywords": "Obsidian plugin, PDF export, custom PDF, professional PDF report, Markdown to PDF, cover page, table of contents, letterhead, templates",
+    "sameAs": [
+      "https://community.obsidian.md/plugins/pdf-report-exporter",
+      "https://github.com/Phdhebde/Obisidian-pdf-export"
+    ],
     "author": { "@type": "Person", "name": "{{ config.site_author }}", "url": "https://github.com/Phdhebde" }
   }
   </script>

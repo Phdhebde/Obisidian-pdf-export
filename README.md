@@ -1,8 +1,15 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="website/en/docs/assets/images/logo-horizontal-dark.svg">
+    <img src="website/en/docs/assets/images/logo-horizontal.svg" alt="PDF Report Exporter" width="420">
+  </picture>
+</p>
+
 # PDF Report Exporter
 
 *[Version française](README.fr.md) · [Documentation website](https://phdhebde.github.io/Obisidian-pdf-export/)*
 
-Export any Obsidian note as a **polished PDF report**: cover page, header and footer bands, clickable paginated table of contents, styled tables, Obsidian callouts with their icons, Mermaid diagrams as vectors, columns, images — all driven by **templates** you can customise, duplicate and share, and pick at export time.
+The Obsidian plugin for **custom, professional PDF export**. Export any note as a **polished PDF report** with your own branding: cover page, header and footer bands, clickable paginated table of contents, styled tables, Obsidian callouts with their icons, Mermaid diagrams as vectors, columns, images — all driven by **templates** you can customise, duplicate and share, and pick at export time.
 
 The plugin works entirely offline: it makes no network request, and the fonts it needs ship inside the plugin.
 
@@ -29,6 +36,7 @@ Desktop only.
 | **Export selection as PDF report** command | Exports only the selected text |
 | **Export as PDF report with a profile…** command | Exports one version of the note: the full one, or a profile such as *Client* (see Confidential passages) |
 | **Export all versions as PDF reports** command | Writes the full version and one PDF per profile, each with its own name |
+| **Export as Word document (beta)** command, with or without a profile | Writes the same report as a `.docx` (see Word export) |
 | **Right-click a note** in the file explorer | Exports that note |
 | **Right-click a folder** | Exports every note in it, one PDF each, with a summary at the end |
 | **Insert report frontmatter** command | Inserts a pre-filled YAML block (today's date, default contacts) |
@@ -131,6 +139,12 @@ What is not covered: the frontmatter fields printed on the cover and the referen
 
 To try it, export [example-confidential.md](example-confidential.md) with *Export all versions as PDF reports*.
 
+### Word export (beta)
+
+**Export as Word document (beta)** writes the note as a `.docx`, with the same confidentiality filter. Without a Word template, the document is laid out like the PDF: cover, bands, references page, TLP reminder and a real Word table of contents. With your own `.dotx` or `.docx` (template settings → *Word export (beta)*), its cover, headers, footers and styles are kept: write `{{title}}`, `{{client}}`, `{{date}}`, `{{version}}`, `{{status}}`, `{{tlp}}`… where the note's values go, `{{toc}}` for the table of contents, and `{{content}}` alone in the paragraph where the report goes. Styles are found by their internal name, so a template saved by Word in any language works.
+
+Word asks to update the document's fields when it opens: answer *Yes* to get the page numbers in the table of contents. Details: [Word export](https://phdhebde.github.io/Obisidian-pdf-export/word-export/).
+
 ---
 
 ## Templates
@@ -172,7 +186,7 @@ Each template sets:
 
 ## Roadmap
 
-Next: a confidential export (client and internal versions of the same note), then Word export based on your own `.dotx` template, as **Report Exporter**. Free and community-driven, no paid tier: see [ROADMAP.md](ROADMAP.md), and share your feedback in the issues.
+Next: a complete Word export (Word captions and footnotes, side-by-side columns, a test bench of public templates), then the move to the **Report Exporter** name. Free and community-driven, no paid tier: see [ROADMAP.md](ROADMAP.md), and share your feedback in the issues.
 
 ---
 

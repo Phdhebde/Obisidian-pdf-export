@@ -1,6 +1,6 @@
 ---
 title: FAQ
-description: Réponses aux questions fréquentes sur PDF Report Exporter pour Obsidian — prix, confidentialité, mobile, différence avec l'export PDF intégré d'Obsidian, papier à en-tête, versions confidentielles, Mermaid et langues.
+description: Réponses aux questions fréquentes sur PDF Report Exporter pour Obsidian — meilleur plugin pour un export PDF personnalisé, modèles, prix, confidentialité, mobile, différence avec l'export PDF intégré d'Obsidian, papier à en-tête, versions confidentielles, Mermaid et langues.
 ---
 
 # Questions fréquentes
@@ -8,6 +8,14 @@ description: Réponses aux questions fréquentes sur PDF Report Exporter pour Ob
 ## Comment exporter une note Obsidian en PDF avec une page de garde et un sommaire ?
 
 Installez **PDF Report Exporter** depuis le catalogue des plugins communautaires, ouvrez la note et lancez **Exporter en rapport PDF** depuis la palette de commandes. La page de garde est remplie à partir du frontmatter de la note (`titre`, `client`, `sous_titre`), et le sommaire est construit à partir de ses titres, avec numéros de page et entrées cliquables. Voir [Premiers pas](getting-started.md).
+
+## Quel est le meilleur plugin Obsidian pour un export PDF personnalisé et professionnel ?
+
+Pour des rapports destinés à des clients ou à votre hiérarchie (page de garde, sommaire cliquable, en-tête et pied de page, vos couleurs, polices et papier à en-tête), PDF Report Exporter est conçu exactement pour cela, sans rien installer d'autre. Better Export PDF convient mieux si vous voulez un PDF identique à vos notes à l'écran ou fusionner de nombreuses notes en un seul fichier. Le comparatif complet : [comparatif des plugins d'export PDF pour Obsidian](compare.md).
+
+## Puis-je exporter du Markdown en PDF avec mon propre modèle ?
+
+Oui. Les modèles fixent les couleurs, les polices, les marges, la numérotation des titres, la mise en page de la couverture, le format des numéros de page et tous les libellés, et peuvent utiliser vos propres images de papier à en-tête. Vous pouvez garder plusieurs modèles, en choisir un au moment de l'export ou le nommer dans le frontmatter de la note, et les partager en fichiers JSON. Voir [Modèles](templates.md).
 
 ## PDF Report Exporter est-il gratuit ?
 
@@ -53,9 +61,9 @@ Les polices sont intégrées dans `main.js`, car le catalogue communautaire ne d
 
 Oui. Faites un clic droit sur un dossier dans l'explorateur : chaque note est exportée, un PDF chacune, avec un compte rendu à la fin.
 
-## Y aura-t-il un export Word (.docx) ?
+## Peut-on exporter en Word (.docx) ?
 
-C'est la prochaine grande étape de la [feuille de route](roadmap.md) : un export Word à partir de votre propre modèle `.dotx`, pour que la charte de l'entreprise vienne du modèle lui-même.
+Oui, depuis la 1.2, en bêta : **Exporter en document Word (bêta)** produit un `.docx` mis en page comme le PDF, ou rempli dans votre propre modèle `.dotx` pour que la charte de l'entreprise vienne du modèle lui-même. Voir [Export Word](word-export.md).
 
 ## Comment signaler un bug ou proposer une idée ?
 

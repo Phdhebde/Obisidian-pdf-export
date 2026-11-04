@@ -1,8 +1,15 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="website/en/docs/assets/images/logo-horizontal-dark.svg">
+    <img src="website/en/docs/assets/images/logo-horizontal.svg" alt="PDF Report Exporter" width="420">
+  </picture>
+</p>
+
 # PDF Report Exporter
 
 *[English version](README.md) · [Site de documentation](https://phdhebde.github.io/Obisidian-pdf-export/fr/)*
 
-Exporte n'importe quelle note Obsidian en **rapport PDF soigné** : page de garde, bandeaux d'en-tête et de pied de page, sommaire paginé cliquable, tableaux stylés, callouts Obsidian avec leurs icônes, schémas Mermaid en vectoriel, colonnes, images — le tout piloté par des **modèles** personnalisables, duplicables et partageables, sélectionnés au moment de l'export.
+Le plugin Obsidian pour un **export PDF personnalisé et professionnel**. Exporte n'importe quelle note en **rapport PDF soigné**, à votre charte : page de garde, bandeaux d'en-tête et de pied de page, sommaire paginé cliquable, tableaux stylés, callouts Obsidian avec leurs icônes, schémas Mermaid en vectoriel, colonnes, images — le tout piloté par des **modèles** personnalisables, duplicables et partageables, sélectionnés au moment de l'export.
 
 Le plugin fonctionne entièrement hors ligne : aucune requête réseau, et les polices nécessaires sont embarquées.
 
@@ -31,6 +38,7 @@ Ordinateur uniquement.
 | Commande **« Exporter la sélection en rapport PDF »** | N'exporte que le texte sélectionné |
 | Commande **« Exporter en rapport PDF avec un profil… »** | Exporte une version de la note : la complète, ou un profil comme *Client* (voir Passages confidentiels) |
 | Commande **« Exporter toutes les versions en rapports PDF »** | Écrit la version complète et un PDF par profil, chacun sous son propre nom |
+| Commande **« Exporter en document Word (bêta) »**, avec ou sans profil | Écrit le même rapport en `.docx` (voir Export Word) |
 | **Clic droit sur une note** | Exporte cette note |
 | **Clic droit sur un dossier** | Exporte toutes ses notes, une par une, avec un compte-rendu final |
 | Commande **« Insérer le frontmatter de rapport »** | Insère le bloc YAML pré-rempli (date du jour, contacts par défaut) |
@@ -105,6 +113,12 @@ Limite : les champs du frontmatter imprimés sur la couverture et la page de ré
 
 Pour essayer, exportez [example-confidential.md](example-confidential.md) avec *Exporter toutes les versions en rapports PDF*.
 
+### Export Word (bêta)
+
+**« Exporter en document Word (bêta) »** écrit la note en `.docx`, avec le même filtre de confidentialité. Sans modèle Word, le document est mis en page comme le PDF : page de garde, bandeaux, page de références, rappel TLP et vrai sommaire Word. Avec votre propre `.dotx` ou `.docx` (réglages du modèle → *Export Word (bêta)*), sa page de garde, ses en-têtes, ses pieds de page et ses styles sont conservés : écrivez `{{title}}`, `{{client}}`, `{{date}}`, `{{version}}`, `{{status}}`, `{{tlp}}`… là où vont les valeurs de la note, `{{toc}}` pour le sommaire, et `{{content}}`, seul, dans le paragraphe où va le rapport. Les styles sont retrouvés par leur nom interne : un modèle enregistré par Word dans n'importe quelle langue fonctionne.
+
+À l'ouverture, Word demande de mettre à jour les champs du document : répondez *Oui* pour avoir les numéros de page dans le sommaire. Détails : [Export Word](https://phdhebde.github.io/Obisidian-pdf-export/fr/word-export/).
+
 ---
 
 ## Modèles
@@ -128,7 +142,7 @@ Pour essayer, exportez [example-confidential.md](example-confidential.md) avec *
 
 ## Feuille de route
 
-À venir : un export confidentiel (versions client et interne d'une même note), puis l'export Word à partir de votre propre modèle `.dotx`, sous le nom **Report Exporter**. Gratuit et communautaire, sans version payante : voir [ROADMAP.md](ROADMAP.md) (en anglais), et donnez votre avis dans les issues.
+À venir : un export Word complet (légendes et notes de bas de page Word, colonnes côte à côte, banc de test de modèles publics), puis le passage au nom **Report Exporter**. Gratuit et communautaire, sans version payante : voir [ROADMAP.md](ROADMAP.md) (en anglais), et donnez votre avis dans les issues.
 
 ## Licence
 

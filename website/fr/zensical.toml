@@ -5,7 +5,7 @@
 [project]
 site_name = "PDF Report Exporter pour Obsidian"
 site_url = "https://phdhebde.github.io/Obisidian-pdf-export/fr/"
-site_description = "Plugin Obsidian gratuit qui exporte vos notes en rapports PDF professionnels : page de garde, sommaire cliquable, modèles, schémas Mermaid, callouts et versions client sans les passages confidentiels."
+site_description = "Plugin Obsidian gratuit pour un export PDF personnalisé et professionnel : page de garde, sommaire cliquable, modèles à votre charte et papier à en-tête, schémas Mermaid, callouts et versions client sans les passages confidentiels."
 site_author = "Maxence H"
 copyright = "Code sous licence MIT — PDF Report Exporter n’est pas affilié à Obsidian."
 repo_url = "https://github.com/Phdhebde/Obisidian-pdf-export"
@@ -13,6 +13,7 @@ repo_name = "Phdhebde/Obisidian-pdf-export"
 edit_uri = "edit/main/website/fr/docs/"
 docs_dir = "docs"
 site_dir = "site"
+extra_css = ["assets/stylesheets/extra.css"]
 
 nav = [
   { "Accueil" = "index.md" },
@@ -22,7 +23,9 @@ nav = [
     "markdown.md",
     "templates.md",
     "confidential-export.md",
+    "word-export.md",
   ] },
+  { "Comparatif" = "compare.md" },
   { "FAQ" = "faq.md" },
   { "Projet" = [
     "changelog.md",
@@ -38,7 +41,7 @@ locale = "fr_FR"
 base_en = "https://phdhebde.github.io/Obisidian-pdf-export/"
 base_fr = "https://phdhebde.github.io/Obisidian-pdf-export/fr/"
 social_image = "https://phdhebde.github.io/Obisidian-pdf-export/assets/images/social-card.png"
-version = "1.1.0"
+version = "1.2.1"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"
@@ -47,6 +50,8 @@ link = "https://github.com/Phdhebde/Obisidian-pdf-export"
 [project.theme]
 language = "fr"
 custom_dir = "../overrides"
+logo = "assets/images/logo.svg"
+favicon = "assets/images/favicon.svg"
 features = [
   "content.code.copy",
   "content.tooltips",
@@ -63,7 +68,6 @@ features = [
 ]
 
 [project.theme.icon]
-logo = "lucide/file-text"
 repo = "fontawesome/brands/github"
 
 [[project.theme.palette]]

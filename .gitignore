@@ -15,3 +15,8 @@ data.json
 /_site/
 website/*/site/
 website/*/.cache/
+
+# Sample Word exports checked by tools/ooxml-validate in CI
+/word-samples/
+tools/ooxml-validate/bin/
+tools/ooxml-validate/obj/

@@ -7,6 +7,8 @@ description: PDF Report Exporter is a free, open-source Obsidian plugin that tur
 
 **PDF Report Exporter** is a free, open-source [Obsidian](https://obsidian.md) plugin that turns a Markdown note into a report you can send: a cover page, header and footer bands, a clickable table of contents, styled tables, Obsidian callouts with their icons, and Mermaid diagrams drawn as vectors. Templates set the look; the note stays plain Markdown.
 
+If you are looking for an Obsidian plugin to **export custom, professional PDFs** — with your company's colours, fonts, logo and letterhead, and nothing else to install — this is what it was built for. How it compares with Obsidian's built-in export, Better Export PDF and the others: [Obsidian PDF export plugins compared](compare.md).
+
 [Get started](getting-started.md){ .md-button .md-button--primary }
 [Download the latest release](https://github.com/Phdhebde/Obisidian-pdf-export/releases/latest){ .md-button }
 
@@ -28,6 +30,7 @@ description: PDF Report Exporter is a free, open-source Obsidian plugin that tur
 | ` ```mermaid ` blocks | Diagrams drawn by Obsidian's own Mermaid, embedded as vectors |
 | `![[image.png]]`, `![[another note]]` | Embedded images (WEBP, SVG, GIF… converted) and inlined notes |
 | `## Pricing %%internal%%` | A full internal version, and a client version with that section removed |
+| **Export as Word document (beta)** | The same report as a `.docx`, or filled into your own `.dotx` template — see [Word export](word-export.md) |
 
 ## Why use it
 
@@ -50,4 +53,4 @@ Details, manual installation and the first-export walkthrough: [Getting started]
 
 ## Free and community-driven
 
-The plugin is MIT-licensed, has no paid tier and never will. Ideas, bug reports, templates and translations are welcome in the [GitHub issues](https://github.com/Phdhebde/Obisidian-pdf-export/issues). What comes next — Word export from your own `.dotx` template — is in the [roadmap](roadmap.md).
+The plugin is MIT-licensed, has no paid tier and never will. Ideas, bug reports, templates and translations are welcome in the [GitHub issues](https://github.com/Phdhebde/Obisidian-pdf-export/issues). What comes next — footnotes, captions and columns in Word, then the move to the *Report Exporter* name — is in the [roadmap](roadmap.md).

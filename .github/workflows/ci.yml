@@ -18,3 +18,13 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+
+      # Microsoft's Open XML validator on sample Word exports: a schema error
+      # here is a document Word would offer to "repair".
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Validate the Word export
+        run: |
+          node scripts/word-samples.ts word-samples
+          dotnet run -c Release --project tools/ooxml-validate -- word-samples/*.docx
