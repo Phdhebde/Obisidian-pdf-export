@@ -7,6 +7,8 @@ description: PDF Report Exporter est un plugin Obsidian gratuit et open source q
 
 **PDF Report Exporter** est un plugin [Obsidian](https://obsidian.md) gratuit et open source qui transforme une note Markdown en rapport prêt à envoyer : page de garde, bandeaux d'en-tête et de pied de page, sommaire cliquable, tableaux mis en forme, callouts Obsidian avec leurs icônes et schémas Mermaid en vectoriel. Les modèles fixent l'apparence ; la note reste du Markdown ordinaire.
 
+Si vous cherchez un plugin Obsidian pour **exporter des PDF personnalisés et professionnels** — aux couleurs, polices, logo et papier à en-tête de votre entreprise, sans rien installer d'autre — c'est précisément son rôle. Comment il se situe par rapport à l'export intégré d'Obsidian, Better Export PDF et les autres : [comparatif des plugins d'export PDF pour Obsidian](compare.md).
+
 [Premiers pas](getting-started.md){ .md-button .md-button--primary }
 [Télécharger la dernière version](https://github.com/Phdhebde/Obisidian-pdf-export/releases/latest){ .md-button }
 

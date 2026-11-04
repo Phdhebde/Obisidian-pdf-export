@@ -10,7 +10,7 @@
 [project]
 site_name = "PDF Report Exporter for Obsidian"
 site_url = "https://phdhebde.github.io/Obisidian-pdf-export/"
-site_description = "Free Obsidian plugin that exports notes as professional PDF reports: cover page, clickable table of contents, templates, Mermaid diagrams, callouts, and confidential client versions."
+site_description = "Free Obsidian plugin for custom, professional PDF export: cover page, clickable table of contents, branded templates and letterhead, Mermaid diagrams, callouts, and confidential client versions."
 site_author = "Maxence H"
 copyright = "Code under the MIT licence — PDF Report Exporter is not affiliated with Obsidian."
 repo_url = "https://github.com/Phdhebde/Obisidian-pdf-export"
@@ -28,6 +28,7 @@ nav = [
     "templates.md",
     "confidential-export.md",
   ] },
+  { "Compare" = "compare.md" },
   { "FAQ" = "faq.md" },
   { "Project" = [
     "changelog.md",
@@ -43,7 +44,7 @@ locale = "en_US"
 base_en = "https://phdhebde.github.io/Obisidian-pdf-export/"
 base_fr = "https://phdhebde.github.io/Obisidian-pdf-export/fr/"
 social_image = "https://phdhebde.github.io/Obisidian-pdf-export/assets/images/social-card.png"
-version = "1.1.0"
+version = "1.1.1"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"
