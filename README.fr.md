@@ -1,15 +1,19 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="website/en/docs/assets/images/logo-horizontal-dark.svg">
-    <img src="website/en/docs/assets/images/logo-horizontal.svg" alt="PDF Report Exporter" width="420">
+    <img src="website/en/docs/assets/images/logo-horizontal.svg" alt="Report Exporter" width="420">
   </picture>
 </p>
 
-# PDF Report Exporter
+# Report Exporter
 
 *[English version](README.md) · [Site de documentation](https://phdhebde.github.io/Obisidian-pdf-export/fr/)*
 
-Le plugin Obsidian pour un **export PDF personnalisé et professionnel**. Exporte n'importe quelle note en **rapport PDF soigné**, à votre charte : page de garde, bandeaux d'en-tête et de pied de page, sommaire paginé cliquable, tableaux stylés, callouts Obsidian avec leurs icônes, schémas Mermaid en vectoriel, colonnes, images — le tout piloté par des **modèles** personnalisables, duplicables et partageables, sélectionnés au moment de l'export.
+Le plugin Obsidian pour des **rapports PDF et Word personnalisés et professionnels**. Exporte n'importe quelle note en **rapport soigné**, à votre charte : page de garde, bandeaux d'en-tête et de pied de page, sommaire, tableaux stylés, callouts Obsidian avec leurs icônes, schémas Mermaid en vectoriel, colonnes, notes de bas de page, images — le tout piloté par des **modèles** personnalisables, duplicables et partageables, sélectionnés au moment de l'export.
+
+Une note, plusieurs livrables : un **PDF**, un **document Word** (mis en page comme le PDF, ou rempli dans le modèle `.dotx` de votre entreprise) et une **version par public** — le rapport interne complet et une version client sans les passages marqués comme internes.
+
+*Report Exporter s'appelait PDF Report Exporter jusqu'à la version 2.0. L'identifiant du plugin, les réglages et les commandes ne changent pas.*
 
 Le plugin fonctionne entièrement hors ligne : aucune requête réseau, et les polices nécessaires sont embarquées.
 
@@ -19,7 +23,7 @@ L'interface suit la langue d'Obsidian (français ou anglais).
 
 ## Installation
 
-**Depuis le store :** *Paramètres → Modules complémentaires → Parcourir*, cherchez **PDF Report Exporter**, installez puis activez.
+**Depuis le store :** *Paramètres → Modules complémentaires → Parcourir*, cherchez **Report Exporter**, installez puis activez.
 
 **Manuellement :** téléchargez `main.js`, `manifest.json` et `styles.css` depuis la [dernière release](https://github.com/Phdhebde/Obisidian-pdf-export/releases/latest) dans `<coffre>/.obsidian/plugins/pdf-report-exporter/`, puis activez le plugin.
 
@@ -38,7 +42,7 @@ Ordinateur uniquement.
 | Commande **« Exporter la sélection en rapport PDF »** | N'exporte que le texte sélectionné |
 | Commande **« Exporter en rapport PDF avec un profil… »** | Exporte une version de la note : la complète, ou un profil comme *Client* (voir Passages confidentiels) |
 | Commande **« Exporter toutes les versions en rapports PDF »** | Écrit la version complète et un PDF par profil, chacun sous son propre nom |
-| Commande **« Exporter en document Word (bêta) »**, avec ou sans profil | Écrit le même rapport en `.docx` (voir Export Word) |
+| Commande **« Exporter en document Word »**, avec ou sans profil | Écrit le même rapport en `.docx` (voir Export Word) |
 | **Clic droit sur une note** | Exporte cette note |
 | **Clic droit sur un dossier** | Exporte toutes ses notes, une par une, avec un compte-rendu final |
 | Commande **« Insérer le frontmatter de rapport »** | Insère le bloc YAML pré-rempli (date du jour, contacts par défaut) |
@@ -113,9 +117,9 @@ Limite : les champs du frontmatter imprimés sur la couverture et la page de ré
 
 Pour essayer, exportez [example-confidential.md](example-confidential.md) avec *Exporter toutes les versions en rapports PDF*.
 
-### Export Word (bêta)
+### Export Word
 
-**« Exporter en document Word (bêta) »** écrit la note en `.docx`, avec le même filtre de confidentialité. Sans modèle Word, le document est mis en page comme le PDF : page de garde, bandeaux, page de références, rappel TLP et vrai sommaire Word. Avec votre propre `.dotx` ou `.docx` (réglages du modèle → *Export Word (bêta)*), sa page de garde, ses en-têtes, ses pieds de page et ses styles sont conservés : écrivez `{{title}}`, `{{client}}`, `{{date}}`, `{{version}}`, `{{status}}`, `{{tlp}}`… là où vont les valeurs de la note, `{{toc}}` pour le sommaire, et `{{content}}`, seul, dans le paragraphe où va le rapport. Les styles sont retrouvés par leur nom interne : un modèle enregistré par Word dans n'importe quelle langue fonctionne.
+**« Exporter en document Word »** écrit la note en `.docx`, avec le même filtre de confidentialité. Sans modèle Word, le document est mis en page comme le PDF : page de garde, bandeaux, page de références, rappel TLP et vrai sommaire Word. Avec votre propre `.dotx` ou `.docx` (réglages du modèle → *Export Word*), sa page de garde, ses en-têtes, ses pieds de page et ses styles sont conservés : écrivez `{{title}}`, `{{client}}`, `{{date}}`, `{{version}}`, `{{status}}`, `{{tlp}}`… là où vont les valeurs de la note, `{{toc}}` pour le sommaire, et `{{content}}`, seul, dans le paragraphe où va le rapport. Les styles sont retrouvés par leur nom interne : un modèle enregistré par Word dans n'importe quelle langue fonctionne.
 
 Les notes de bas de page deviennent de vraies notes Word, les légendes numérotées reçoivent un champ de séquence pour la table des illustrations de Word, et les colonnes Obsidian Columns se placent côte à côte. Trois modèles d'exemple écrits dans Word sont dans [`templates/word`](templates/word).
 
@@ -125,7 +129,7 @@ Les notes de bas de page deviennent de vraies notes Word, les légendes numérot
 
 ## Modèles
 
-*Paramètres → PDF Report Exporter.* Un modèle **Rapport** est créé au premier lancement. Pour chaque modèle : sections et leur ordre, numérotation et sommaire par niveau de titre, couleurs, polices et taille du texte, positions de la page de garde, format de pagination, libellés fixes, et **habillage** — par défaut le modèle dessine lui-même son décor à ses couleurs ; choisissez vos propres images A4 (fond de couverture, cadre des pages avec votre papier à en-tête) pour le remplacer.
+*Paramètres → Report Exporter.* Un modèle **Rapport** est créé au premier lancement. Pour chaque modèle : sections et leur ordre, numérotation et sommaire par niveau de titre, couleurs, polices et taille du texte, positions de la page de garde, format de pagination, libellés fixes, et **habillage** — par défaut le modèle dessine lui-même son décor à ses couleurs ; choisissez vos propres images A4 (fond de couverture, cadre des pages avec votre papier à en-tête) pour le remplacer.
 
 **Partage d'équipe :** « Exporter ce modèle » écrit un `.report-template.json` autonome (images incluses) dans le coffre ; un collègue l'importe depuis la même liste.
 
@@ -144,7 +148,7 @@ Les notes de bas de page deviennent de vraies notes Word, les légendes numérot
 
 ## Feuille de route
 
-À venir : le passage au nom **Report Exporter**, avec une documentation réécrite autour du PDF, du Word et des profils. Gratuit et communautaire, sans version payante : voir [ROADMAP.md](ROADMAP.md) (en anglais), et donnez votre avis dans les issues.
+La suite se décide avec la communauté. Gratuit et communautaire, sans version payante : voir [ROADMAP.md](ROADMAP.md) (en anglais), [CONTRIBUTING.md](CONTRIBUTING.md) pour contribuer, et donnez votre avis dans les issues.
 
 ## Licence
 

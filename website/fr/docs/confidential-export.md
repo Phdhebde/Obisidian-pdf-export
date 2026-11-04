@@ -55,7 +55,7 @@ Après chaque export restreint, une notice indique ce qui a été retiré, par e
 
 ## Profils et niveaux
 
-**Réglages → PDF Report Exporter → Passages confidentiels** :
+**Réglages → Report Exporter → Passages confidentiels** :
 
 - **Niveaux de diffusion** : `internal` par défaut ; ajoutez les vôtres (`management`, `direction`…). Un passage marqué de plusieurs niveaux ne figure que dans une version qui les conserve tous.
 - **Profils** : pour chaque public, les niveaux conservés, le suffixe ajouté au nom du fichier, l'affichage éventuel d'une mention *[passage retiré]* à chaque coupe, et le marquage TLP. Un profil *Client* qui retire tous les passages marqués est créé à l'installation.

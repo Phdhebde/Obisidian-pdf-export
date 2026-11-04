@@ -64,7 +64,7 @@ async function fileToDataUrl(app: App, file: TFile): Promise<{ url: string; w?: 
     ctx.drawImage(img, 0, 0);
     return { url: canvas.toDataURL('image/png'), w };
   } catch (e) {
-    console.warn('[PDF Report Exporter] image could not be converted:', file.path, e);
+    console.warn('[Report Exporter] image could not be converted:', file.path, e);
     return null;
   }
 }
@@ -86,7 +86,7 @@ export async function svgToPng(svg: string, width: number, height: number, scale
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     return canvas.toDataURL('image/png');
   } catch (e) {
-    console.warn('[PDF Report Exporter] drawing could not be rasterised:', e);
+    console.warn('[Report Exporter] drawing could not be rasterised:', e);
     return null;
   }
 }

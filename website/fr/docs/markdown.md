@@ -1,11 +1,11 @@
 ---
 title: Markdown pris en charge
-description: Comment PDF Report Exporter rend le Markdown d'Obsidian dans un PDF — titres numérotés, callouts avec icônes, tableaux ajustés à la page, listes de tâches, schémas Mermaid vectoriels, colonnes, images, notes incluses et sauts de page.
+description: Comment Report Exporter rend le Markdown d'Obsidian dans un PDF — titres numérotés, callouts avec icônes, tableaux ajustés à la page, listes de tâches, schémas Mermaid vectoriels, colonnes, images, notes incluses et sauts de page.
 ---
 
 # Markdown pris en charge
 
-PDF Report Exporter lit le Markdown que vous écrivez déjà dans Obsidian. Vos notes n'ont rien à changer.
+Report Exporter lit le Markdown que vous écrivez déjà dans Obsidian. Vos notes n'ont rien à changer.
 
 | Markdown | Dans le PDF |
 |---|---|

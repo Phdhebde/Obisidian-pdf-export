@@ -1,23 +1,27 @@
 ---
 title: FAQ
-description: Answers to common questions about PDF Report Exporter for Obsidian — the best plugin for a custom PDF export, templates, price, privacy, mobile support, the difference with Obsidian's built-in PDF export, letterheads, confidential versions, Mermaid and languages.
+description: Answers to common questions about Report Exporter for Obsidian — the best plugin for a custom PDF export, templates, price, privacy, mobile support, the difference with Obsidian's built-in PDF export, letterheads, confidential versions, Mermaid and languages.
 ---
 
 # Frequently asked questions
 
 ## How do I export an Obsidian note to PDF with a cover page and a table of contents?
 
-Install **PDF Report Exporter** from the community plugin store, open the note and run **Export as PDF report** from the command palette. The cover page is filled from the note's frontmatter (`title`, `client`, `subtitle`), and the table of contents is built from its headings, with page numbers and clickable entries. See [Getting started](getting-started.md).
+Install **Report Exporter** from the community plugin store, open the note and run **Export as PDF report** from the command palette. The cover page is filled from the note's frontmatter (`title`, `client`, `subtitle`), and the table of contents is built from its headings, with page numbers and clickable entries. See [Getting started](getting-started.md).
+
+## Is Report Exporter the same plugin as PDF Report Exporter?
+
+Yes. *PDF Report Exporter* was renamed **Report Exporter** in version 2.0, because it now writes Word documents as well as PDFs. The plugin id (`pdf-report-exporter`), your templates, profiles and settings, and the commands are unchanged: the update arrives through Obsidian as usual, with nothing to do.
 
 ## What is the best Obsidian plugin for a custom, professional PDF export?
 
-For reports you send to clients or managers — cover page, clickable table of contents, header and footer, your own colours, fonts and letterhead — PDF Report Exporter is built for exactly that, and needs nothing else installed. Better Export PDF is a better fit when you want the PDF to look like your notes on screen or to merge many notes into one file. The full comparison is in [Obsidian PDF export plugins compared](compare.md).
+For reports you send to clients or managers — cover page, clickable table of contents, header and footer, your own colours, fonts and letterhead — Report Exporter is built for exactly that, and needs nothing else installed. Better Export PDF is a better fit when you want the PDF to look like your notes on screen or to merge many notes into one file. The full comparison is in [Obsidian PDF export plugins compared](compare.md).
 
 ## Can I export Markdown to PDF with my own template?
 
 Yes. Templates set the colours, fonts, margins, heading numbering, cover layout, page number format and every fixed label, and can use your own letterhead images. You can keep several templates, pick one at export time or name it in the note's frontmatter, and share them as JSON files. See [Templates](templates.md).
 
-## Is PDF Report Exporter free?
+## Is Report Exporter free?
 
 Yes. It is open source under the MIT licence, with no paid tier, no account and no usage limit.
 
@@ -27,7 +31,7 @@ No. It makes no network request: the PDF is generated on your computer, and the 
 
 ## How is it different from Obsidian's built-in "Export to PDF"?
 
-Obsidian's built-in export prints the note as it looks on screen. PDF Report Exporter lays the note out as a report: a cover page, a references page with document status and contacts, a running header and footer, numbered headings, a clickable table of contents, styled tables and callouts, and an optional TLP marking — all driven by reusable templates.
+Obsidian's built-in export prints the note as it looks on screen. Report Exporter lays the note out as a report: a cover page, a references page with document status and contacts, a running header and footer, numbered headings, a clickable table of contents, styled tables and callouts, and an optional TLP marking — all driven by reusable templates.
 
 ## Can I use my company's letterhead or branding?
 
@@ -63,7 +67,7 @@ Yes. Right-click a folder in the file explorer: every note in it is exported, on
 
 ## Can I export to Word (.docx)?
 
-Yes, since 1.2, in beta: **Export as Word document (beta)** writes a `.docx` laid out like the PDF, or filled into your own `.dotx` template so the company's house style comes from the template itself. See [Word export](word-export.md).
+Yes: **Export as Word document** writes a `.docx` laid out like the PDF, or filled into your own `.dotx` template so the company's house style comes from the template itself. See [Word export](word-export.md).
 
 ## How do I report a bug or suggest a feature?
 

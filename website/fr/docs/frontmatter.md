@@ -1,6 +1,6 @@
 ---
 title: Frontmatter
-description: Les clés de frontmatter lues par PDF Report Exporter pour remplir la page de garde, l'en-tête, la page de références et les métadonnées du PDF — en français ou en anglais — dont versions, contacts, destinataires et marquage TLP.
+description: Les clés de frontmatter lues par Report Exporter pour remplir la page de garde, l'en-tête, la page de références et les métadonnées du PDF — en français ou en anglais — dont versions, contacts, destinataires et marquage TLP.
 ---
 
 # Frontmatter

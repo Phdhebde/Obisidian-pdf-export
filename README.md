@@ -1,15 +1,19 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="website/en/docs/assets/images/logo-horizontal-dark.svg">
-    <img src="website/en/docs/assets/images/logo-horizontal.svg" alt="PDF Report Exporter" width="420">
+    <img src="website/en/docs/assets/images/logo-horizontal.svg" alt="Report Exporter" width="420">
   </picture>
 </p>
 
-# PDF Report Exporter
+# Report Exporter
 
 *[Version française](README.fr.md) · [Documentation website](https://phdhebde.github.io/Obisidian-pdf-export/)*
 
-The Obsidian plugin for **custom, professional PDF export**. Export any note as a **polished PDF report** with your own branding: cover page, header and footer bands, clickable paginated table of contents, styled tables, Obsidian callouts with their icons, Mermaid diagrams as vectors, columns, images — all driven by **templates** you can customise, duplicate and share, and pick at export time.
+The Obsidian plugin for **custom, professional PDF and Word reports**. Export any note as a **polished report** with your own branding: cover page, header and footer bands, table of contents, styled tables, Obsidian callouts with their icons, Mermaid diagrams as vectors, columns, footnotes, images — all driven by **templates** you can customise, duplicate and share, and pick at export time.
+
+One note, several deliverables: a **PDF**, a **Word document** (laid out like the PDF, or filled into your company's own `.dotx` template), and a **version per audience** — the full internal report and a client version without the passages marked internal.
+
+*Report Exporter was called PDF Report Exporter until version 2.0. The plugin id, the settings and the commands are unchanged.*
 
 The plugin works entirely offline: it makes no network request, and the fonts it needs ship inside the plugin.
 
@@ -17,7 +21,7 @@ The plugin works entirely offline: it makes no network request, and the fonts it
 
 ## Installation
 
-**From the community plugin store:** *Settings → Community plugins → Browse*, search for **PDF Report Exporter**, install, then enable it.
+**From the community plugin store:** *Settings → Community plugins → Browse*, search for **Report Exporter**, install, then enable it.
 
 **Manually:** download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/Phdhebde/Obisidian-pdf-export/releases/latest) into `<vault>/.obsidian/plugins/pdf-report-exporter/`, then enable the plugin.
 
@@ -36,7 +40,7 @@ Desktop only.
 | **Export selection as PDF report** command | Exports only the selected text |
 | **Export as PDF report with a profile…** command | Exports one version of the note: the full one, or a profile such as *Client* (see Confidential passages) |
 | **Export all versions as PDF reports** command | Writes the full version and one PDF per profile, each with its own name |
-| **Export as Word document (beta)** command, with or without a profile | Writes the same report as a `.docx` (see Word export) |
+| **Export as Word document** command, with or without a profile | Writes the same report as a `.docx` (see Word export) |
 | **Right-click a note** in the file explorer | Exports that note |
 | **Right-click a folder** | Exports every note in it, one PDF each, with a summary at the end |
 | **Insert report frontmatter** command | Inserts a pre-filled YAML block (today's date, default contacts) |
@@ -140,9 +144,9 @@ What is not covered: the frontmatter fields printed on the cover and the referen
 
 To try it, export [example-confidential.md](example-confidential.md) with *Export all versions as PDF reports*.
 
-### Word export (beta)
+### Word export
 
-**Export as Word document (beta)** writes the note as a `.docx`, with the same confidentiality filter. Without a Word template, the document is laid out like the PDF: cover, bands, references page, TLP reminder and a real Word table of contents. With your own `.dotx` or `.docx` (template settings → *Word export (beta)*), its cover, headers, footers and styles are kept: write `{{title}}`, `{{client}}`, `{{date}}`, `{{version}}`, `{{status}}`, `{{tlp}}`… where the note's values go, `{{toc}}` for the table of contents, and `{{content}}` alone in the paragraph where the report goes. Styles are found by their internal name, so a template saved by Word in any language works.
+**Export as Word document** writes the note as a `.docx`, with the same confidentiality filter. Without a Word template, the document is laid out like the PDF: cover, bands, references page, TLP reminder and a real Word table of contents. With your own `.dotx` or `.docx` (template settings → *Word export*), its cover, headers, footers and styles are kept: write `{{title}}`, `{{client}}`, `{{date}}`, `{{version}}`, `{{status}}`, `{{tlp}}`… where the note's values go, `{{toc}}` for the table of contents, and `{{content}}` alone in the paragraph where the report goes. Styles are found by their internal name, so a template saved by Word in any language works.
 
 Footnotes become real Word footnotes, numbered captions get a sequence field for Word's table of figures, and Obsidian Columns sit side by side. Three example templates written in Word are in [`templates/word`](templates/word).
 
@@ -152,7 +156,7 @@ Word asks to update the document's fields when it opens: answer *Yes* to get the
 
 ## Templates
 
-*Settings → PDF Report Exporter.* A template named **Report** is created on first launch. Buttons: **new**, **duplicate**, **export as JSON**, **import a JSON**, **delete** (with confirmation).
+*Settings → Report Exporter.* A template named **Report** is created on first launch. Buttons: **new**, **duplicate**, **export as JSON**, **import a JSON**, **delete** (with confirmation).
 
 **Sharing:** *Export this template* writes a self-contained `.report-template.json` (images included) into the vault. A colleague drops that file into their vault and imports it from the same list.
 
@@ -189,7 +193,7 @@ Each template sets:
 
 ## Roadmap
 
-Next: the move to the **Report Exporter** name, with the documentation rewritten around PDF, Word and profiles. Free and community-driven, no paid tier: see [ROADMAP.md](ROADMAP.md), and share your feedback in the issues.
+What comes next is decided with the community. Free and community-driven, no paid tier: see [ROADMAP.md](ROADMAP.md), [CONTRIBUTING.md](CONTRIBUTING.md) to contribute, and share your feedback in the issues.
 
 ---
 
@@ -202,7 +206,7 @@ npm run check     # tsc --noEmit (strict)
 npm run lint      # eslint with the rules of the Obsidian plugin review
 npm test          # test suite, including an end-to-end PDF render
 npm run build     # check + production build -> main.js
-npm run version-bump 1.2.0   # sync package.json / manifest.json / versions.json
+npm run version-bump -- 2.0.0   # sync package.json / manifest.json / versions.json
 ```
 
 Tests run directly on the TypeScript sources (Node ≥ 22.18, native type stripping) — hence the explicit `.ts` extensions in imports.
@@ -212,8 +216,12 @@ Tests run directly on the TypeScript sources (Node ≥ 22.18, native type stripp
 ```
 src/
   main.ts        # plugin lifecycle, commands, context menus
-  exporter.ts    # orchestration: frontmatter -> document -> PDF -> file
+  exporter.ts    # orchestration: frontmatter -> document -> PDF or Word -> file
   generator.ts   # Markdown -> pdfmake document, theme and decoration (pure, tested)
+  docx.ts        # Markdown -> Word document, generated or filled into a template (pure, tested)
+  ooxml.ts       # Word package plumbing: zip, parts, relationships, styles, markers (pure, tested)
+  redact.ts      # confidentiality filter, run before either engine (pure, tested)
+  footnotes.ts   # Obsidian footnotes, for both engines (pure, tested)
   i18n.ts        # English and French interface strings
   textScan.ts    # code spans, wikilinks, callouts (pure, tested)
   columns.ts     # Obsidian Columns syntax (pure, tested)

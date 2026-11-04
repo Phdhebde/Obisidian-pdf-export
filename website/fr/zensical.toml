@@ -3,11 +3,11 @@
 # the hreflang links in ../overrides/main.html stay valid.
 
 [project]
-site_name = "PDF Report Exporter pour Obsidian"
+site_name = "Report Exporter pour Obsidian"
 site_url = "https://phdhebde.github.io/Obisidian-pdf-export/fr/"
-site_description = "Plugin Obsidian gratuit pour un export PDF personnalisé et professionnel : page de garde, sommaire cliquable, modèles à votre charte et papier à en-tête, schémas Mermaid, callouts et versions client sans les passages confidentiels."
+site_description = "Plugin Obsidian gratuit pour des rapports PDF et Word personnalisés et professionnels : page de garde, sommaire, modèles à votre charte et papier à en-tête ou votre propre modèle Word, schémas Mermaid, callouts, notes de bas de page et versions client sans les passages confidentiels."
 site_author = "Maxence H"
-copyright = "Code sous licence MIT — PDF Report Exporter n’est pas affilié à Obsidian."
+copyright = "Code sous licence MIT — Report Exporter n’est pas affilié à Obsidian."
 repo_url = "https://github.com/Phdhebde/Obisidian-pdf-export"
 repo_name = "Phdhebde/Obisidian-pdf-export"
 edit_uri = "edit/main/website/fr/docs/"
@@ -41,7 +41,7 @@ locale = "fr_FR"
 base_en = "https://phdhebde.github.io/Obisidian-pdf-export/"
 base_fr = "https://phdhebde.github.io/Obisidian-pdf-export/fr/"
 social_image = "https://phdhebde.github.io/Obisidian-pdf-export/assets/images/social-card.png"
-version = "1.3.0"
+version = "2.0.0"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"

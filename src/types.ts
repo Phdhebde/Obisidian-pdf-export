@@ -1,5 +1,5 @@
 /*
- * Shared types for PDF Report Exporter.
+ * Shared types for Report Exporter.
  *
  * `Preset` describes a report template as it is persisted in data.json, or
  * shared as JSON. migratePreset() in storage.ts backfills whatever a stored or
@@ -277,7 +277,7 @@ export interface Preset {
   /** Justify body text or align it left. */
   justify: boolean;
   transclusions: TransclusionMode;
-  /** Word export (beta). */
+  /** Word export. */
   word: PresetWord;
 }
 

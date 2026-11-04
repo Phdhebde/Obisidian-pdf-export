@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.0
+
+- **PDF Report Exporter is now Report Exporter**: one note, a PDF or a Word document, a full or a client version. The plugin id, your templates, profiles and settings, and the commands do not change; the update needs nothing from you.
+- **The Word export leaves beta.** Its commands and settings drop the "(beta)" label. Every build checks the sample documents with Microsoft's Open XML validator and opens them in LibreOffice.
+- Word: a generated document's tables have white header text and tight rows, as in the PDF — the body style's colour and spacing used to win over the table's.
+- Word: the table of contents written into the document shows a tag in a heading (`<words>`) as the heading does, before Word or LibreOffice updates it.
+- New logo with the new name; the documentation is rewritten around PDF, Word and confidential versions.
+- [`CONTRIBUTING.md`](CONTRIBUTING.md): reporting a bug, sharing a Word template, translating, contributing code.
+
 ## 1.3.0
 
 - **Footnotes**, as Obsidian writes them: `text[^1]` with `[^1]: note` anywhere in the note, and inline `text^[note]`. In Word they are real footnotes, at the foot of the page that cites them. In the PDF, a superscript number links to the note, and the notes are gathered under *Notes* at the end of the report (its title is one of the template's labels). A note cited twice keeps its number.

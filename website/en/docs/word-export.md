@@ -1,25 +1,25 @@
 ---
-title: Word export (beta)
+title: Word export
 description: Export an Obsidian note as a Word document (.docx) laid out like the PDF report, or filled into your company's own .dotx template — cover, headers, footers and styles kept, markers replaced, a real Word table of contents, footnotes and captions.
 ---
 
-# Word export (beta)
+# Word export
 
 The same note, with the same confidentiality filter, can leave as a Word document (`.docx`) instead of a PDF. Two ways:
 
 - **Without a Word template**, the document is laid out like the PDF: same cover, header and footer bands, references page, TLP reminder and table of contents, in the template's colours — or with its own letterhead artwork and the note's logo.
 - **With a Word template of your own** (`.dotx` or `.docx`), the plugin fills it: its cover page, headers, footers, theme and styles stay as they are, and the report goes where you put `{{content}}`.
 
-!!! warning "Beta"
+!!! info "Checked in Word and LibreOffice"
     The Word export is checked in Microsoft Word, and every build opens its sample documents in LibreOffice (see [below](#libreoffice-and-google-docs)). If a document opens wrongly, please [open an issue](https://github.com/Phdhebde/Obisidian-pdf-export/issues) with the note and, if you can, the Word template.
 
 ## Export
 
 | How | What it does |
 |---|---|
-| **Export as Word document (beta)** command | Exports the active note |
-| **Export as Word document with a profile… (beta)** command | Exports one version: the full one, or a profile such as *Client* (see [Confidential export](confidential-export.md)) |
-| **Right-click a note** → **Export as Word document (beta)** | Exports that note |
+| **Export as Word document** command | Exports the active note |
+| **Export as Word document with a profile…** command | Exports one version: the full one, or a profile such as *Client* (see [Confidential export](confidential-export.md)) |
+| **Right-click a note** → **Export as Word document** | Exports that note |
 
 The file goes where the PDF would: same folder, same name, with the `.docx` extension. The template picker and the profiles work as for the PDF.
 
@@ -43,7 +43,7 @@ The file goes where the PDF would: same folder, same name, with the `.docx` exte
     | `{{content}}` | The report, alone in its paragraph |
 
 2. Save it as `.dotx` or `.docx` into the vault. Macro-enabled files (`.dotm`, `.docm`) are refused.
-3. In **Settings → PDF Report Exporter**, open the plugin template to use, then **Word export (beta) → Word template → Choose…**.
+3. In **Settings → Report Exporter**, open the plugin template to use, then **Word export → Word template → Choose…**.
 
 Markers keep the formatting of the text they replace. Word sometimes splits a marker into several pieces after a spell check or a formatting change; the plugin finds it anyway. A marker written in the note itself is left as it is.
 

@@ -1,5 +1,5 @@
 /*
- * PDF Report Exporter — Word engine (environment-agnostic, beta).
+ * Report Exporter — Word engine (environment-agnostic).
  *
  * Exposes:
  *   buildDocx(md, vars, preset, options) -> .docx bytes, and what went wrong
@@ -285,6 +285,8 @@ class StyleBook {
   private ids = new Set<string>();
   private added: string[] = [];
   readonly unknown: string[] = [];
+  /** Styles added from the PDF template, which the template had no say in. */
+  private own = new Set<string>();
   private xml: string;
   private preset: Preset;
   private names: Partial<Record<WordRole, string>>;
@@ -341,9 +343,15 @@ class StyleBook {
         (body.extra || '') +
         '</w:style>'
     );
+    this.own.add(id);
     const info: StyleInfo = { id, name, type, numbered: false };
     this.byName.set(name.toLowerCase(), info);
     return info;
+  }
+
+  /** True when the role's style was added from the PDF template rather than found in the Word one. */
+  isOwn(role: WordRole): boolean {
+    return this.own.has(this.id(role));
   }
 
   toXml(): string {
@@ -758,9 +766,17 @@ function inline(tokens: MdToken[] | undefined, w: W, f: Fmt = {}): string {
   return out;
 }
 
+/** A tag `inline` prints as written, as the plain text shows it too. */
+function printedTag(html: string): string {
+  const tag = html.trim();
+  if (/^<\/?span\b/i.test(tag) || FOOTNOTE_TAG_RE.test(tag)) return '';
+  return /^<br\s*\/?>$/i.test(tag) ? ' ' : tag;
+}
+
+/** The text of inline tokens as the reader sees it: the table of contents shows it before Word updates it. */
 function plainText(tokens: MdToken[] | undefined): string {
   return (tokens || [])
-    .map((tk) => (tk.tokens ? plainText(tk.tokens) : tk.type === 'html' ? '' : decodeEntities(tk.text ?? '')))
+    .map((tk) => (tk.tokens ? plainText(tk.tokens) : tk.type === 'html' ? printedTag(String(tk.text ?? '')) : decodeEntities(tk.text ?? '')))
     .join('');
 }
 
@@ -890,7 +906,7 @@ function grid(
   header: string[],
   rows: string[][],
   w: W,
-  o: { widths?: number[]; align?: string[]; cell?: (text: string, row: number, col: number) => string } = {}
+  o: { widths?: number[]; align?: string[]; cell?: (text: string, row: number, col: number, f: Fmt) => string } = {}
 ): string {
   const cols = Math.max(header.length, ...rows.map((r) => r.length));
   if (!cols) return '';
@@ -904,9 +920,15 @@ function grid(
   }
   const total = pts.reduce((a, b) => a + b, 0) || 1;
   const twips = pts.map((p) => Math.max(200, Math.round((p / total) * w.width)));
+  // A table style of our own is the PDF's: its header text and tight rows are
+  // written on the cells too, as the body style's colour and spacing would
+  // otherwise win over the table style's. A template's own style is left alone.
+  const own = w.styles.isOwn('table');
+  const head: Fmt = own ? { bold: true, color: hex(w.preset.colors.tableHeaderText, 'FFFFFF') } : { bold: true };
+  const tight = own ? '<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>' : undefined;
   const cell = (text: string, i: number, j: number) =>
     `<w:tc><w:tcPr><w:tcW w:w="${twips[j]}" w:type="dxa"/></w:tcPr>` +
-    para({ jc: o.align?.[j] || 'left' }, o.cell ? o.cell(text, i, j) : run(text, i === 0 ? { bold: true } : {}, w)) +
+    para({ jc: o.align?.[j] || 'left', spacing: tight }, o.cell ? o.cell(text, i, j, i === 0 ? head : {}) : run(text, i === 0 ? head : {}, w)) +
     '</w:tc>';
   const row = (r: string[], i: number) =>
     `<w:tr>${i === 0 ? '<w:trPr><w:tblHeader/></w:trPr>' : ''}` +
@@ -934,7 +956,7 @@ function table(t: MdToken, w: W): string {
     w,
     {
       align: (t.align || []).map((a) => (a === 'center' ? 'center' : a === 'right' ? 'right' : 'left')),
-      cell: (_text, i, j) => inline(tokens[i]?.[j] || [], w, i === 0 ? { bold: true } : {})
+      cell: (_text, i, j, f) => inline(tokens[i]?.[j] || [], w, f)
     }
   );
 }
@@ -1408,7 +1430,7 @@ function references(vars: ReportVars, w: W): string {
   const people = (list: DocContact[], headers: string[]) =>
     grid(headers, pad(list.map((c) => [c.nom ?? '', c.poste || c.societe || '', c.courriel ?? ''])), w, {
       widths: [1, 1, 1],
-      cell: (text, i, j) => run(text, i === 0 ? { bold: true } : j === 2 ? { color: hex(w.preset.colors.link) } : {}, w)
+      cell: (text, i, j, f) => run(text, i === 0 ? f : j === 2 ? { color: hex(w.preset.colors.link) } : {}, w)
     });
   const title = (role: WordRole, text: string) => para({ style: w.styles.id(role) }, run(text, {}, w));
   const recipients = vars.recipients || [];

@@ -8,11 +8,11 @@
 # root CHANGELOG.md and ROADMAP.md through pymdownx.snippets.
 
 [project]
-site_name = "PDF Report Exporter for Obsidian"
+site_name = "Report Exporter for Obsidian"
 site_url = "https://phdhebde.github.io/Obisidian-pdf-export/"
-site_description = "Free Obsidian plugin for custom, professional PDF export: cover page, clickable table of contents, branded templates and letterhead, Mermaid diagrams, callouts, and confidential client versions."
+site_description = "Free Obsidian plugin for custom, professional PDF and Word reports: cover page, table of contents, branded templates and letterhead or your own Word template, Mermaid diagrams, callouts, footnotes, and confidential client versions."
 site_author = "Maxence H"
-copyright = "Code under the MIT licence — PDF Report Exporter is not affiliated with Obsidian."
+copyright = "Code under the MIT licence — Report Exporter is not affiliated with Obsidian."
 repo_url = "https://github.com/Phdhebde/Obisidian-pdf-export"
 repo_name = "Phdhebde/Obisidian-pdf-export"
 edit_uri = "edit/main/website/en/docs/"
@@ -46,7 +46,7 @@ locale = "en_US"
 base_en = "https://phdhebde.github.io/Obisidian-pdf-export/"
 base_fr = "https://phdhebde.github.io/Obisidian-pdf-export/fr/"
 social_image = "https://phdhebde.github.io/Obisidian-pdf-export/assets/images/social-card.png"
-version = "1.3.0"
+version = "2.0.0"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"

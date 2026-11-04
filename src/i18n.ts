@@ -335,10 +335,10 @@ const EN = {
   'set.deleteProfile': 'Delete this profile',
   'set.newProfileName': 'New profile',
 
-  /* Word export (beta) */
-  'cmd.exportWord': 'Export as Word document (beta)',
-  'cmd.exportWordProfile': 'Export as Word document with a profile… (beta)',
-  'menu.exportWord': 'Export as Word document (beta)',
+  /* Word export */
+  'cmd.exportWord': 'Export as Word document',
+  'cmd.exportWordProfile': 'Export as Word document with a profile…',
+  'menu.exportWord': 'Export as Word document',
   'notice.generatingWord': 'Generating Word document…',
   'notice.exportedWord': 'Word document exported: {{path}}',
   'word.templateMissing': 'Word template not found: {{path}}. Choose it again in the template settings.',
@@ -347,7 +347,7 @@ const EN = {
   'word.noContentMarker': 'The Word template has no {{content}} paragraph: the report was added at the end.',
   'word.stylesUnknown': 'Styles named in the settings but missing from the Word template, defaults used: {{names}}.',
   'word.diagramsAsCode': 'Mermaid diagrams are printed as code in Word for now.',
-  'set.word': 'Word export (beta)',
+  'set.word': 'Word export',
   'set.wordDesc':
     'The report can also be exported as a Word document. With a Word template of your own, its cover, headers, footers and styles are kept; without one, a document is generated from this template’s colours and fonts.',
   'set.wordTemplate': 'Word template',
@@ -704,9 +704,9 @@ const FR: Record<MessageKey, string> = {
   'set.deleteProfile': 'Supprimer ce profil',
   'set.newProfileName': 'Nouveau profil',
 
-  'cmd.exportWord': 'Exporter en document Word (bêta)',
-  'cmd.exportWordProfile': 'Exporter en document Word avec un profil… (bêta)',
-  'menu.exportWord': 'Exporter en document Word (bêta)',
+  'cmd.exportWord': 'Exporter en document Word',
+  'cmd.exportWordProfile': 'Exporter en document Word avec un profil…',
+  'menu.exportWord': 'Exporter en document Word',
   'notice.generatingWord': 'Génération du document Word…',
   'notice.exportedWord': 'Document Word exporté : {{path}}',
   'word.templateMissing': 'Modèle Word introuvable : {{path}}. Choisissez-le à nouveau dans les réglages du modèle.',
@@ -715,7 +715,7 @@ const FR: Record<MessageKey, string> = {
   'word.noContentMarker': 'Le modèle Word n’a pas de paragraphe {{content}} : le rapport a été ajouté à la fin.',
   'word.stylesUnknown': 'Styles nommés dans les réglages mais absents du modèle Word, remplacés par ceux par défaut : {{names}}.',
   'word.diagramsAsCode': 'Les schémas Mermaid sont imprimés en code dans Word pour l’instant.',
-  'set.word': 'Export Word (bêta)',
+  'set.word': 'Export Word',
   'set.wordDesc':
     'Le rapport peut aussi être exporté en document Word. Avec votre propre modèle Word, sa page de garde, ses en-têtes, ses pieds de page et ses styles sont conservés ; sans modèle, un document est généré avec les couleurs et les polices de ce modèle.',
   'set.wordTemplate': 'Modèle Word',
