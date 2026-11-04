@@ -38,7 +38,7 @@ Choisissez **Omd to Typst**. Vous installez le compilateur Typst et décrivez la
 
 ### Il vous faut aussi un fichier Word
 
-**Document Export** produit du PDF et du DOCX à partir de la même note. PDF Report Exporter ne produit que du PDF pour l'instant ; l'export Word à partir de votre propre modèle `.dotx` est la prochaine étape de sa [feuille de route](roadmap.md).
+**PDF Report Exporter** exporte aussi la même note en document Word (bêta, depuis la 1.2) : mis en page comme le PDF, ou rempli dans le modèle `.dotx` de votre entreprise, avec sa page de garde, ses en-têtes, ses pieds de page et ses styles. Voir [Export Word](word-export.md). **Document Export** produit aussi du PDF et du DOCX à partir de la même note.
 
 ## Ce que PDF Report Exporter ne fait pas
 

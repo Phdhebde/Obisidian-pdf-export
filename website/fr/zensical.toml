@@ -22,6 +22,7 @@ nav = [
     "markdown.md",
     "templates.md",
     "confidential-export.md",
+    "word-export.md",
   ] },
   { "Comparatif" = "compare.md" },
   { "FAQ" = "faq.md" },
@@ -39,7 +40,7 @@ locale = "fr_FR"
 base_en = "https://phdhebde.github.io/Obisidian-pdf-export/"
 base_fr = "https://phdhebde.github.io/Obisidian-pdf-export/fr/"
 social_image = "https://phdhebde.github.io/Obisidian-pdf-export/assets/images/social-card.png"
-version = "1.1.1"
+version = "1.2.1"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"

@@ -30,6 +30,7 @@ If you are looking for an Obsidian plugin to **export custom, professional PDFs*
 | ` ```mermaid ` blocks | Diagrams drawn by Obsidian's own Mermaid, embedded as vectors |
 | `![[image.png]]`, `![[another note]]` | Embedded images (WEBP, SVG, GIF… converted) and inlined notes |
 | `## Pricing %%internal%%` | A full internal version, and a client version with that section removed |
+| **Export as Word document (beta)** | The same report as a `.docx`, or filled into your own `.dotx` template — see [Word export](word-export.md) |
 
 ## Why use it
 
@@ -52,4 +53,4 @@ Details, manual installation and the first-export walkthrough: [Getting started]
 
 ## Free and community-driven
 
-The plugin is MIT-licensed, has no paid tier and never will. Ideas, bug reports, templates and translations are welcome in the [GitHub issues](https://github.com/Phdhebde/Obisidian-pdf-export/issues). What comes next — Word export from your own `.dotx` template — is in the [roadmap](roadmap.md).
+The plugin is MIT-licensed, has no paid tier and never will. Ideas, bug reports, templates and translations are welcome in the [GitHub issues](https://github.com/Phdhebde/Obisidian-pdf-export/issues). What comes next — footnotes, captions and columns in Word, then the move to the *Report Exporter* name — is in the [roadmap](roadmap.md).

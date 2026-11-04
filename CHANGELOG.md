@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+- **Word export documentation**, in English and French: exporting, writing markers in your own Word template, style mapping, what is rendered, and why Word asks to update the fields on opening.
+- Every build now checks sample Word exports with Microsoft's Open XML validator, so a document Word would offer to repair cannot be released.
+- *Obsidian PDF export plugins compared*: a page on the site that compares the built-in export, PDF Report Exporter and the other export plugins.
+
 ## 1.2.0 (beta)
 
 - **Word export (beta).** New commands *Export as Word document (beta)* and *Export as Word document with a profile… (beta)*, and an entry in the file menu. The same note, with the same confidentiality filter, becomes a `.docx`.

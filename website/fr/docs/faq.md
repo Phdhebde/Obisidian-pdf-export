@@ -61,9 +61,9 @@ Les polices sont intégrées dans `main.js`, car le catalogue communautaire ne d
 
 Oui. Faites un clic droit sur un dossier dans l'explorateur : chaque note est exportée, un PDF chacune, avec un compte rendu à la fin.
 
-## Y aura-t-il un export Word (.docx) ?
+## Peut-on exporter en Word (.docx) ?
 
-C'est la prochaine grande étape de la [feuille de route](roadmap.md) : un export Word à partir de votre propre modèle `.dotx`, pour que la charte de l'entreprise vienne du modèle lui-même.
+Oui, depuis la 1.2, en bêta : **Exporter en document Word (bêta)** produit un `.docx` mis en page comme le PDF, ou rempli dans votre propre modèle `.dotx` pour que la charte de l'entreprise vienne du modèle lui-même. Voir [Export Word](word-export.md).
 
 ## Comment signaler un bug ou proposer une idée ?
 

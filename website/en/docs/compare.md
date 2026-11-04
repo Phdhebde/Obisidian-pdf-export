@@ -38,7 +38,7 @@ Pick **Omd to Typst**. You install the Typst compiler and write the layout in Ty
 
 ### You also need a Word file
 
-**Document Export** writes PDF and DOCX from the same note. PDF Report Exporter writes PDF only today; Word export from your own `.dotx` template is the next step on its [roadmap](roadmap.md).
+**PDF Report Exporter** exports the same note as a Word document too (beta, since 1.2): laid out like the PDF, or filled into your company's own `.dotx` template with its cover, headers, footers and styles. See [Word export](word-export.md). **Document Export** also writes PDF and DOCX from the same note.
 
 ## What PDF Report Exporter does not do
 

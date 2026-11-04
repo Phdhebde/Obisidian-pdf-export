@@ -133,7 +133,7 @@ The plugin writes the table of contents with its entries and links already in pl
 - [x] Generated document when there is no Word template
 - [x] *Export as Word* command, beta label
 - [x] XML unit tests, and the sentinel leak tests on the `.docx`
-- [ ] OOXML validation in CI
+- [x] OOXML validation in CI
 
 1.3:
 - [ ] 1.3 rows of the rendering table

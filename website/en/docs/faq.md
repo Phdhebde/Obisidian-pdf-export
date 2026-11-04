@@ -61,9 +61,9 @@ The fonts are embedded in `main.js`, because the community store only distribute
 
 Yes. Right-click a folder in the file explorer: every note in it is exported, one PDF each, with a summary at the end.
 
-## Will there be a Word (.docx) export?
+## Can I export to Word (.docx)?
 
-It is the next major step on the [roadmap](roadmap.md): Word export based on your own `.dotx` template, so the company's house style comes from the template itself.
+Yes, since 1.2, in beta: **Export as Word document (beta)** writes a `.docx` laid out like the PDF, or filled into your own `.dotx` template so the company's house style comes from the template itself. See [Word export](word-export.md).
 
 ## How do I report a bug or suggest a feature?
 
