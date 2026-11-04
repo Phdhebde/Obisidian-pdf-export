@@ -41,8 +41,10 @@ import {
   tlpColor,
   type MdToken
 } from './generator.ts';
-import { columnsLang, parseColBlock, parseColMd } from './columns.ts';
+import { columnsLang, parseColBlock, parseColMd, type ColSettings, type ColumnSpec } from './columns.ts';
+import { FOOTNOTE_TAG_RE, extractFootnotes, type Footnote } from './footnotes.ts';
 import { iconSvg, type IconName } from './icons.ts';
+import { calloutSpan } from './columns.ts';
 import { parseCallout } from './textScan.ts';
 import { fitTable, type TableCell } from './tableLayout.ts';
 import { imageSize } from './imageSize.ts';
@@ -157,6 +159,8 @@ export const DEFAULT_WORD_STYLES: Record<WordRole, { name: string; type: StyleTy
   inlineCode: { name: 'HTML Code', type: 'character' },
   hyperlink: { name: 'Hyperlink', type: 'character' },
   table: { name: 'Table Grid', type: 'table' },
+  footnoteText: { name: 'footnote text', type: 'paragraph' },
+  footnoteReference: { name: 'footnote reference', type: 'character' },
   // Titles of the pages around the body. Not headings: they stay out of the
   // table of contents, as in the PDF.
   sectionTitle: { name: 'Report Section Title', type: 'paragraph' },
@@ -248,6 +252,10 @@ function styleBody(role: WordRole, preset: Preset): { pPr?: string; rPr?: string
       return { rPr: `${fontEl(mono)}${sizeEl(B - 1.5)}<w:shd w:val="clear" w:color="auto" w:fill="F0F0F0"/>` };
     case 'hyperlink':
       return { rPr: `<w:color w:val="${hex(C.link)}"/><w:u w:val="single"/>` };
+    case 'footnoteText':
+      return { pPr: `<w:spacing w:after="${tw(2)}" w:line="240" w:lineRule="auto"/><w:jc w:val="left"/>`, rPr: sizeEl(B - 2) };
+    case 'footnoteReference':
+      return { rPr: '<w:vertAlign w:val="superscript"/>' };
     case 'table': {
       const border = (side: string) => `<w:${side} w:val="single" w:sz="6" w:space="0" w:color="${hex(C.tableBorder)}"/>`;
       return {
@@ -324,7 +332,7 @@ class StyleBook {
     const isDefault = role === 'body' && !parseStyles(this.xml).some((s) => s.type === 'paragraph');
     const basedOn = type === 'paragraph' && role !== 'body' ? `<w:basedOn w:val="${this.id('body')}"/>` : '';
     const next = /^heading|^title|^subtitle|^section|^tocHeading/.test(role) ? `<w:next w:val="${this.id('body')}"/>` : '';
-    const hidden = role === 'hyperlink' || /^toc\d/.test(role) ? '<w:uiPriority w:val="39"/><w:unhideWhenUsed/>' : '';
+    const hidden = role === 'hyperlink' || /^toc\d|^footnote/.test(role) ? '<w:uiPriority w:val="39"/><w:unhideWhenUsed/>' : '';
     this.added.push(
       `<w:style w:type="${type}"${isDefault ? ' w:default="1"' : ''} w:styleId="${xmlEscape(id)}">` +
         `<w:name w:val="${xmlEscape(name)}"/>${basedOn}${next}${hidden}<w:qFormat/>` +
@@ -413,6 +421,69 @@ class NumberingBook {
       ? xml.slice(0, firstNum.index) + abstracts + xml.slice(firstNum.index)
       : xml.replace(/<\/w:numbering>\s*$/, abstracts + '</w:numbering>');
     return withAbstracts.replace(/<\/w:numbering>\s*$/, this.nums.join('') + '</w:numbering>');
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Footnotes                                                           */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The note's footnotes as Word's own, in the footnotes part: Word numbers them
+ * and places each at the foot of the page that cites it. Appended after a
+ * template's own notes, with ids clear of theirs.
+ */
+class FootnoteBook {
+  /** Relationships of the footnotes part: a link in a note is related from it. */
+  readonly rels: Relationships;
+  private notes = new Map<number, string>();
+  /** Note number -> its place among the document's footnotes, as Word numbers them. */
+  private shown = new Map<number, number>();
+  /** Footnotes the template has already, which Word counts before ours. */
+  private before: number;
+  private written: string[] = [];
+  private next: number;
+  private xml: string | null;
+
+  constructor(xml: string | null, rels: string | null, notes: Footnote[]) {
+    this.xml = xml;
+    this.rels = new Relationships(rels);
+    for (const f of notes) this.notes.set(f.n, f.md);
+    const ids = [...(xml || '').matchAll(/<w:footnote\s[^>]*w:id="(-?\d+)"/g)].map((m) => parseInt(m[1], 10));
+    this.next = Math.max(0, ...ids) + 1;
+    this.before = [...(xml || '').matchAll(/<w:footnote\s(?![^>]*w:type=)[^>]*>/g)].length;
+  }
+
+  get used(): boolean {
+    return this.written.length > 0;
+  }
+
+  /** The reference mark; the note itself is written the first time only. */
+  ref(n: number, w: W): string {
+    const refStyle = xmlEscape(w.styles.id('footnoteReference'));
+    const known = this.shown.get(n);
+    // Cited again: the same number, as Obsidian shows it.
+    if (known !== undefined) return `<w:r><w:rPr><w:rStyle w:val="${refStyle}"/></w:rPr><w:t>${known}</w:t></w:r>`;
+    const md = this.notes.get(n);
+    if (md === undefined) return '';
+    const id = this.next++;
+    const text = inline(marked.Lexer.lexInline(md), { ...w, rels: this.rels });
+    this.written.push(
+      `<w:footnote w:id="${id}"><w:p>${pPr({ style: w.styles.id('footnoteText') })}` +
+        `<w:r><w:rPr><w:rStyle w:val="${refStyle}"/></w:rPr><w:footnoteRef/></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r>${text}</w:p></w:footnote>`
+    );
+    this.shown.set(n, this.before + this.written.length);
+    return `<w:r><w:rPr><w:rStyle w:val="${refStyle}"/></w:rPr><w:footnoteReference w:id="${id}"/></w:r>`;
+  }
+
+  toXml(): string {
+    const sep = (type: string, id: number, mark: string) =>
+      `<w:footnote w:type="${type}" w:id="${id}"><w:p><w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr><w:r>${mark}</w:r></w:p></w:footnote>`;
+    const xml = this.xml ||
+      `${XML_DECL}<w:footnotes xmlns:w="${NS.w}" xmlns:r="${NS.r}">` +
+        sep('separator', -1, '<w:separator/>') + sep('continuationSeparator', 0, '<w:continuationSeparator/>') +
+        '</w:footnotes>';
+    return ensureRootNs(xml, 'r', NS.r).replace(/<\/w:footnotes>\s*$/, this.written.join('') + '</w:footnotes>');
   }
 }
 
@@ -552,6 +623,8 @@ interface W {
   ids: { drawing: number; bookmark: number };
   /** Headings met so far, for the table of contents. */
   toc: TocEntry[];
+  /** The note's footnotes, written as Word's own. */
+  notes: FootnoteBook;
   warnings: Set<string>;
   /** At the top level of the body, where headings may open a new page. */
   top: boolean;
@@ -673,8 +746,10 @@ function inline(tokens: MdToken[] | undefined, w: W, f: Fmt = {}): string {
       }
       case 'image': break; // a block of its own, see paragraph()
       case 'html':
-        // As in the PDF: a line break breaks, any other tag is printed as written.
-        out += /^<br\s*\/?>$/i.test(html.trim()) ? '<w:r><w:br/></w:r>' : run(html, g, w);
+        // A footnote reference; as in the PDF, a line break breaks, any other
+        // tag is printed as written.
+        if (FOOTNOTE_TAG_RE.test(html.trim())) out += w.notes.ref(Number(FOOTNOTE_TAG_RE.exec(html.trim())?.[1]), w);
+        else out += /^<br\s*\/?>$/i.test(html.trim()) ? '<w:r><w:br/></w:r>' : run(html, g, w);
         break;
       default:
         if (tk.text) out += run(decodeEntities(tk.text), g, w);
@@ -731,8 +806,23 @@ function paragraph(t: MdToken, w: W): string {
     return out;
   }
   const plain = plainText(toks).trim();
-  if (CAPTION_RE.test(plain)) return para({ style: w.styles.id('caption') }, run(plain, {}, w));
+  if (CAPTION_RE.test(plain)) return caption(plain, w);
   return para({ style: w.styles.id('body') }, inline(toks, w));
+}
+
+/**
+ * A caption. "Figure 3: …" gets its number as a sequence field, as Word's own
+ * Insert Caption does, so Word's table of figures lists it and numbers it
+ * again when a figure is added; the number written stays shown until then.
+ */
+function caption(text: string, w: W): string {
+  const style = w.styles.id('caption');
+  const m = /^(\S+?)(\s+)(\d+)(?![\d.,]\d)([\s\S]*)$/.exec(text);
+  if (!m || !CAPTION_RE.test(m[1])) return para({ style }, run(text, {}, w));
+  // "Fig." counts with the figures; any other label keeps a list of its own.
+  const label = /^fig\.?$/i.test(m[1]) ? 'Figure' : m[1].replace(/[^\p{L}\p{N}_]/gu, '');
+  const seq = label.charAt(0).toUpperCase() + label.slice(1);
+  return para({ style }, run(m[1] + m[2], {}, w) + field(`SEQ ${seq} \\* ARABIC`, m[3], {}, w) + run(m[4], {}, w));
 }
 
 function heading(t: MdToken, w: W, breakBefore: boolean): string {
@@ -758,7 +848,7 @@ function heading(t: MdToken, w: W, breakBefore: boolean): string {
 
 function list(t: MdToken, w: W, depth: number, numId: number | null): string {
   const asColumns = listColumns(t);
-  if (asColumns) return asColumns.map((c) => blocks(c.content, { ...w, top: false })).join('');
+  if (asColumns) return columns(asColumns, {}, w);
 
   const items = t.items || [];
   const tasks = items.some((it) => it.task);
@@ -778,7 +868,11 @@ function list(t: MdToken, w: W, depth: number, numId: number | null): string {
         continue;
       }
       if (tk.type === 'text' || tk.type === 'paragraph') {
-        const box = item.task && first ? run(item.checked ? '☑ ' : '☐ ', { color: item.checked ? hex(w.preset.colors.brand) : '767676' }, w) : '';
+        // A task list has no Word numbering: its boxes are text, and so is the
+        // bullet of an item in it that is not a task.
+        const box = !first || !tasks ? ''
+          : item.task ? run(item.checked ? '☑ ' : '☐ ', { color: item.checked ? hex(w.preset.colors.brand) : '767676' }, w)
+          : run('• ', {}, w);
         const runs = inline(tk.tokens || [{ type: 'text', text: tk.text }], w);
         out += para(first && id !== null ? { style, num: { id, level } } : { style, ind: indent }, box + runs);
         first = false;
@@ -869,12 +963,12 @@ function diagram(t: MdToken, w: W): string {
 
 function fence(t: MdToken, w: W): string {
   const kind = columnsLang(t.lang);
-  const inner = { ...w, top: false };
-  // Columns are laid out side by side from 1.3; until then, one after the other.
   if (kind === 'col') {
-    return parseColBlock(String(t.text ?? '')).rows.flat().map((c) => blocks(c.content, inner)).join('');
+    const group = parseColBlock(String(t.text ?? ''));
+    return group.rows.filter((r) => r.length).map((r) => columns(r, group.settings, w)).join('');
   }
-  if (kind === 'col-md') return blocks(parseColMd(String(t.text ?? '')).content, inner);
+  // A col-md on its own spans the width, as in the plugin.
+  if (kind === 'col-md') return columns([parseColMd(String(t.text ?? ''))], {}, w);
   if (isMermaidLang(t.lang)) return diagram(t, w);
   return code(String(t.text ?? ''), w);
 }
@@ -914,7 +1008,8 @@ export function calloutIcons(preset: Preset): { key: string; svg: string }[] {
 function blockquote(t: MdToken, w: W): string {
   const call = parseCallout(String(t.raw || ''));
   const inner: W = { ...w, top: false, width: Math.max(tw(40), w.width - BOX_INSET) };
-  if (call && (call.type === 'col' || columnsLang(call.type) === 'col-md')) return blocks(call.body, { ...w, top: false });
+  if (call && call.type === 'col') return calloutColumns(call.body, w);
+  if (call && columnsLang(call.type) === 'col-md') return columns([{ settings: {}, content: call.body }], {}, w);
   const brand = w.preset.colors.brand;
   if (!call) {
     const body = (t.tokens || []).map((x) => block(x, inner)).join('');
@@ -933,6 +1028,106 @@ function blockquote(t: MdToken, w: W): string {
       inline(marked.Lexer.lexInline(call.title || label), w, { bold: true, color: accent, size })
   );
   return box(title + (call.body.trim() ? blocks(call.body, inner) : ''), accent, hex(style.tint), w);
+}
+
+/* Columns ----------------------------------------------------------- */
+
+/** Gutter between two columns, as in the PDF: 12pt. */
+const COL_GAP = tw(12);
+
+/** CSS `text-align` as Word's `w:jc`. */
+const COL_ALIGN: Record<string, string> = { start: 'left', left: 'left', end: 'right', right: 'right', center: 'center', centre: 'center', justify: 'both' };
+
+/** Align every paragraph of a column, as the PDF pushes it down to every line. */
+function alignAll(xml: string, jc: string): string {
+  return xml
+    .replace(/<w:p>(?!<w:pPr>)/g, `<w:p><w:pPr><w:jc w:val="${jc}"/></w:pPr>`)
+    .replace(/<w:pPr>((?:(?!<\/w:pPr>)[\s\S])*?)<\/w:pPr>/g, (_m, inner: string) =>
+      `<w:pPr>${inner.replace(/<w:jc w:val="[^"]*"\/>/, '')}<w:jc w:val="${jc}"/></w:pPr>`);
+}
+
+/** A CSS length in twips; a bare number is pixels, as in CSS. */
+function cssTwips(value: string | undefined): number | null {
+  const m = /^(\d+(?:\.\d+)?)[ \t]*(px|pt|em|rem)?$/i.exec(String(value ?? '').trim());
+  if (!m) return null;
+  const n = parseFloat(m[1]);
+  const unit = (m[2] || 'px').toLowerCase();
+  return tw(unit === 'pt' ? n : unit === 'px' ? n * 0.75 : n * 11);
+}
+
+/** The border a column asks for, on every side of its cell; null for none. */
+function colBorder(s: ColSettings, w: W): { xml: string; pad: number } | null {
+  if (!['bordercolor', 'borderstyle', 'borderwidth', 'borderradius', 'borderpadding'].some((k) => k in s)) return null;
+  const style = String(s.borderstyle ?? '').trim().toLowerCase();
+  if (style === 'none' || style === 'hidden') return null;
+  const width = cssTwips(s.borderwidth) ?? tw(0.75);
+  const val = style === 'dashed' ? 'dashed' : style === 'dotted' ? 'dotted' : 'single';
+  // `w:sz` is in eighths of a point; the plugin's white default is invisible on paper.
+  const color = hex(s.bordercolor, hex(w.preset.colors.tableBorder));
+  const sz = Math.min(96, Math.max(2, Math.round((width / 20) * 8)));
+  const side = (k: string) => `<w:${k} w:val="${val}" w:sz="${sz}" w:space="0" w:color="${color}"/>`;
+  return { xml: `<w:tcBorders>${['top', 'left', 'bottom', 'right'].map(side).join('')}</w:tcBorders>`, pad: cssTwips(s.borderpadding) ?? 0 };
+}
+
+/**
+ * One row of columns, side by side: a borderless table, each cell as wide as
+ * its `flexGrow` share, with the PDF's gutter between them. A table rather
+ * than Word's own section columns, which flow text from one column into the
+ * next instead of keeping each column's content apart.
+ */
+function columns(cols: ColumnSpec[], group: ColSettings, w: W): string {
+  if (!cols.length) return '';
+  const grows = cols.map((c) => {
+    const g = parseFloat(String(c.settings.flexgrow ?? ''));
+    return isFinite(g) && g > 0 ? g : 1;
+  });
+  const total = grows.reduce((a, b) => a + b, 0);
+  const avail = Math.max(tw(40) * cols.length, w.width - COL_GAP * (cols.length - 1));
+  const half = Math.round(COL_GAP / 2);
+  const widths = grows.map((g, i) => Math.max(tw(40), Math.round((avail * g) / total)) + (i > 0 ? half : 0) + (i < cols.length - 1 ? half : 0));
+  const nil = (side: string) => `<w:${side} w:val="nil"/>`;
+  const groupAlign = COL_ALIGN[String(group.textalign ?? '').trim().toLowerCase()];
+  const cells = cols.map((c, i) => {
+    const border = colBorder(c.settings, w);
+    const left = i > 0 ? half : 0;
+    const right = i < cols.length - 1 ? half : 0;
+    const pad = border ? border.pad : 0;
+    const inner = widths[i] - left - right - 2 * pad;
+    let xml = blocks(c.content, { ...w, top: false, width: Math.max(tw(40), inner) });
+    const align = COL_ALIGN[String(c.settings.textalign ?? '').trim().toLowerCase()] || groupAlign;
+    if (align) xml = alignAll(xml, align);
+    // A cell must end with a paragraph.
+    if (!/<\/w:p>$/.test(xml)) xml += '<w:p/>';
+    const mar = `<w:tcMar><w:top w:w="${pad}" w:type="dxa"/><w:left w:w="${left + pad}" w:type="dxa"/><w:bottom w:w="${pad}" w:type="dxa"/><w:right w:w="${right + pad}" w:type="dxa"/></w:tcMar>`;
+    return `<w:tc><w:tcPr><w:tcW w:w="${widths[i]}" w:type="dxa"/>${border ? border.xml : ''}${mar}</w:tcPr>${xml}</w:tc>`;
+  });
+  const sum = widths.reduce((a, b) => a + b, 0);
+  return (
+    `<w:tbl><w:tblPr><w:tblW w:w="${sum}" w:type="dxa"/>` +
+    `<w:tblBorders>${['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map(nil).join('')}</w:tblBorders>` +
+    '<w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="0" w:type="dxa"/><w:right w:w="0" w:type="dxa"/></w:tblCellMar>' +
+    '<w:tblLook w:val="0000" w:firstRow="0" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/></w:tblPr>' +
+    `<w:tblGrid>${widths.map((x) => `<w:gridCol w:w="${x}"/>`).join('')}</w:tblGrid>` +
+    // A row of columns stays on one page, as in the PDF.
+    `<w:tr><w:trPr><w:cantSplit/></w:trPr>${cells.join('')}</w:tr></w:tbl>` +
+    para({ spacing: `<w:spacing w:before="0" w:after="${tw(6)}"/>` }, '')
+  );
+}
+
+/** `> [!col]`: each item a column; a nested `> [!col-md-2]` one column 2 units wide. */
+function calloutColumns(body: string, w: W): string {
+  const cols: ColumnSpec[] = [];
+  for (const tk of lex(body)) {
+    if (tk.type === 'space') continue;
+    const inner = tk.type === 'blockquote' ? parseCallout(String(tk.raw || '')) : null;
+    if (inner && columnsLang(inner.type) === 'col-md') {
+      const span = calloutSpan(inner.type);
+      cols.push({ settings: span ? { flexgrow: String(span) } : {}, content: inner.body });
+      continue;
+    }
+    cols.push({ settings: {}, content: String(tk.raw || '') });
+  }
+  return columns(cols, {}, w);
 }
 
 function hr(): string {
@@ -1400,6 +1595,9 @@ export function buildDocx(md: string, vars: ReportVars, preset: Preset, o: DocxO
   );
   const numberingRel = rels.ofType(REL_TYPES.numbering)[0];
   const numberingPath = numberingRel ? resolveTarget(main, numberingRel.target) : null;
+  const footnotesRel = rels.ofType(REL_TYPES.footnotes)[0];
+  const footnotesPath = footnotesRel ? resolveTarget(main, footnotesRel.target) : null;
+  const fn = extractFootnotes(md);
 
   // A generated page has the PDF template's side margins.
   const margins = preset.layout.pageMargins;
@@ -1423,6 +1621,11 @@ export function buildDocx(md: string, vars: ReportVars, preset: Preset, o: DocxO
     counters: new Array<number>(HEADING_LEVELS).fill(0),
     ids: { drawing: 10000, bookmark: 10000 },
     toc: [],
+    notes: new FootnoteBook(
+      footnotesPath ? pkg.text(footnotesPath) : null,
+      footnotesPath ? pkg.text(relsPath(footnotesPath)) : null,
+      fn.notes
+    ),
     warnings: new Set(),
     top: true,
     breakable: false
@@ -1431,7 +1634,7 @@ export function buildDocx(md: string, vars: ReportVars, preset: Preset, o: DocxO
   const values = markerValues(vars, preset, o.date || '');
   const fill = (name: string) => values[name] ?? null;
   // The body first: the table of contents lists its headings.
-  const report = blocks(md, w);
+  const report = blocks(fn.md, w);
   let usesToc = false;
   let out: string;
 
@@ -1508,6 +1711,11 @@ export function buildDocx(md: string, vars: ReportVars, preset: Preset, o: DocxO
   if (w.numbering.used) {
     const path = numberingPath ?? partOf(main, rels, ct, REL_TYPES.numbering, 'numbering.xml', CONTENT_TYPES.numbering);
     pkg.setText(path, w.numbering.toXml());
+  }
+  if (w.notes.used) {
+    const path = footnotesPath ?? partOf(main, rels, ct, REL_TYPES.footnotes, 'footnotes.xml', CONTENT_TYPES.footnotes);
+    pkg.setText(path, w.notes.toXml());
+    if (w.notes.rels.list.length) pkg.setText(relsPath(path), w.notes.rels.toXml());
   }
   pkg.setText(stylesPath, styles.toXml());
   pkg.setText(relsPath(main), rels.toXml());

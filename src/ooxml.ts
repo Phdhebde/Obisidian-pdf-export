@@ -29,6 +29,7 @@ export const REL_TYPES = {
   header: REL + 'header',
   hyperlink: REL + 'hyperlink',
   image: REL + 'image',
+  footnotes: REL + 'footnotes',
   core: 'http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties'
 };
 
@@ -41,6 +42,7 @@ export const CONTENT_TYPES = {
   settings: WML + 'settings+xml',
   footer: WML + 'footer+xml',
   header: WML + 'header+xml',
+  footnotes: WML + 'footnotes+xml',
   core: 'application/vnd.openxmlformats-package.core-properties+xml',
   rels: 'application/vnd.openxmlformats-package.relationships+xml'
 };

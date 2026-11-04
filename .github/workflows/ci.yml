@@ -28,3 +28,29 @@ jobs:
         run: |
           node scripts/word-samples.ts word-samples
           dotnet run -c Release --project tools/ooxml-validate -- word-samples/*.docx
+
+  # Every sample Word export, the test bench templates included, opened and
+  # printed by LibreOffice. A file it cannot open fails the job; the PDFs are
+  # kept as an artifact to compare its rendering with Word's.
+  libreoffice:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libreoffice-writer-nogui
+      - name: Open the Word export in LibreOffice
+        run: |
+          node scripts/word-samples.ts word-samples
+          soffice --headless --convert-to pdf --outdir word-samples/pdf word-samples/*.docx
+          for f in word-samples/*.docx; do
+            pdf="word-samples/pdf/$(basename "${f%.docx}").pdf"
+            if [ ! -s "$pdf" ]; then echo "LibreOffice could not open $f" >&2; exit 1; fi
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: libreoffice-pdf
+          path: word-samples/pdf

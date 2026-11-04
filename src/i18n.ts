@@ -260,6 +260,7 @@ const EN = {
   'label.tlpReminder': 'TLP reminder title',
   'label.tlpReminderSubtitle': 'TLP reminder subtitle',
   'label.toc': 'Default table of contents title',
+  'label.notes': 'Title of the footnotes at the end of the PDF',
   'set.artwork': 'Artwork',
   'set.artworkDesc':
     'Without images, the template draws its own cover and header and footer bands in its colors. Pick your own full-page A4 images to replace them: the title, client, page numbers and TLP marking stay live text on top. Images are picked from the vault — add the file to it first if needed.',
@@ -376,6 +377,8 @@ const EN = {
   'wordRole.inlineCode': 'Inline code',
   'wordRole.hyperlink': 'Links',
   'wordRole.table': 'Tables',
+  'wordRole.footnoteText': 'Footnotes',
+  'wordRole.footnoteReference': 'Footnote numbers',
 
   /* Pagination samples */
   'pagination.sample': 'Page {{page}} of {{total}}',
@@ -626,6 +629,7 @@ const FR: Record<MessageKey, string> = {
   'label.tlpReminder': 'Titre du rappel TLP',
   'label.tlpReminderSubtitle': 'Sous-titre du rappel TLP',
   'label.toc': 'Titre du sommaire par défaut',
+  'label.notes': 'Titre des notes de bas de page en fin de PDF',
   'set.artwork': 'Habillage',
   'set.artworkDesc':
     'Sans image, le modèle dessine lui-même sa couverture et ses bandeaux d’en-tête et de pied de page, à ses couleurs. Choisissez vos propres images A4 pleine page pour les remplacer : le titre, le client, la pagination et le marquage TLP restent du texte posé par-dessus. Les images se prennent dans le coffre — déposez-y le fichier au préalable s’il n’y est pas encore.',
@@ -741,6 +745,8 @@ const FR: Record<MessageKey, string> = {
   'wordRole.inlineCode': 'Code dans le texte',
   'wordRole.hyperlink': 'Liens',
   'wordRole.table': 'Tableaux',
+  'wordRole.footnoteText': 'Notes de bas de page',
+  'wordRole.footnoteReference': 'Appels de note',
 
   'pagination.sample': 'Page {{page}} sur {{total}}',
   'pagination.none': 'Aucune',

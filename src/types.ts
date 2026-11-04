@@ -180,6 +180,8 @@ export interface PresetLabels {
   tlpReminder: string;
   tlpReminderSubtitle: string;
   toc: string;
+  /** Title of the notes at the end of the body, for the note's footnotes. */
+  notes: string;
 }
 
 /** What to do with an `![[note]]` transclusion in the body. */
@@ -219,6 +221,8 @@ export const WORD_ROLES = [
   'inlineCode',
   'hyperlink',
   'table',
+  'footnoteText',
+  'footnoteReference',
   // The pages a generated document adds around the body.
   'sectionTitle',
   'sectionSubtitle',

@@ -466,3 +466,26 @@ test('an inline <br> breaks the line, in a table cell as in a paragraph (#9)', (
   const para = nodes.find((n) => n.style === 'body')?.text as PdfNode[];
   assert.deepEqual(para.map((r) => r.text), ['One', '\n', 'Two ', '<b>', 'bold', '</b>']);
 });
+
+test('footnotes become superscript numbers linked to notes at the end of the body', () => {
+  const md = '# Part\n\nA claim.[^a] Again[^a], and inline.^[Inline **note**.]\n\n[^a]: The source.';
+  const dd = buildDocDefinition(md, vars({ sections: ['body'] }), preset());
+  const marks: PdfNode[] = [];
+  walk(dd.content, (n) => { if (n.sup) marks.push(n); });
+  assert.deepEqual(marks.map((m) => [m.text, m.linkToDestination]), [['1', 'report-fn-1'], ['1', 'report-fn-1'], ['2', 'report-fn-2']]);
+  // Each note is a destination, under the template's title, after the body.
+  const content = dd.content as PdfNode[];
+  const title = content.findIndex((n) => n.text === 'Notes');
+  assert.ok(title > 0);
+  assert.equal(content[title + 1].id, 'report-fn-1');
+  assert.match(collectText(content[title + 1]), /1\. [\s\S]*The source\./);
+  assert.equal(content[title + 2].id, 'report-fn-2');
+  assert.ok(content[title + 2].text.some((r: PdfNode) => r.bold && r.text === 'note'));
+  // No definition line is printed in the body.
+  assert.ok(!collectText(content).includes('[^a]'));
+});
+
+test('a note without footnotes has no notes title', () => {
+  const dd = buildDocDefinition('Plain text.', vars({ sections: ['body'] }), preset());
+  assert.ok(!collectText(dd.content).includes('Notes'));
+});

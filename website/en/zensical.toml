@@ -46,7 +46,7 @@ locale = "en_US"
 base_en = "https://phdhebde.github.io/Obisidian-pdf-export/"
 base_fr = "https://phdhebde.github.io/Obisidian-pdf-export/fr/"
 social_image = "https://phdhebde.github.io/Obisidian-pdf-export/assets/images/social-card.png"
-version = "1.2.1"
+version = "1.3.0"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"

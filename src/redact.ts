@@ -16,6 +16,7 @@
  */
 import { t } from './i18n.ts';
 import { codeRegions, overlaps, type Region } from './textScan.ts';
+import { pruneFootnotes } from './footnotes.ts';
 import { TLP_KEYS, asText, type TlpKey } from './types.ts';
 
 export interface AudienceFilter {
@@ -438,5 +439,6 @@ export function redact(md: string, filter: AudienceFilter, counts: RedactionCoun
   let text = cutSections(splitLines(md), filter, counts).join('\n');
   text = cutCallouts(splitLines(text), filter, counts).join('\n');
   text = stripComments(text);
-  return cutPhrases(text, filter, counts);
+  // Last: a footnote cited only from a removed passage goes too.
+  return pruneFootnotes(cutPhrases(text, filter, counts));
 }

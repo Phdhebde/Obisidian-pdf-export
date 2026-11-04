@@ -40,6 +40,7 @@ import { iconSvg, type IconName } from './icons.ts';
 import { fitTable, type TableCell } from './tableLayout.ts';
 import { getLocale, t as tr, type Locale } from './i18n.ts';
 import { MARK_END_RE, MARK_START_RE, PHRASE_MARK_ATTR } from './redact.ts';
+import { FOOTNOTE_TAG_RE, extractFootnotes, type Footnote } from './footnotes.ts';
 
 /**
  * A pdfmake content node. pdfmake has no published types, and its node shape is
@@ -220,7 +221,8 @@ const LABELS: Record<Locale, PresetLabels> = {
     versionState: 'STATUS',
     tlpReminder: 'Traffic Light Protocol reminder',
     tlpReminderSubtitle: 'Traffic Light Protocol (TLP) for information sharing',
-    toc: 'Table of contents'
+    toc: 'Table of contents',
+    notes: 'Notes'
   },
   fr: {
     references: 'Références du document',
@@ -238,7 +240,8 @@ const LABELS: Record<Locale, PresetLabels> = {
     versionState: 'ÉTAT',
     tlpReminder: 'Rappel du référentiel Traffic Light',
     tlpReminderSubtitle: "Traffic Light Protocol (TLP) pour le partage d'information",
-    toc: 'Table des matières'
+    toc: 'Table des matières',
+    notes: 'Notes'
   }
 };
 
@@ -434,11 +437,17 @@ function inlineRuns(tokens: MdToken[] | undefined, preset: Preset): PdfNode[] {
       case 'br': out.push({ text: '\n' }); break;
       case 'escape': out.push({ text: t.text }); break;
       case 'image': break; // images are rendered as blocks in paragraphNode
-      case 'html':
+      case 'html': {
+        const tag = String(t.text ?? '').trim();
+        const fn = FOOTNOTE_TAG_RE.exec(tag);
+        // A footnote reference: its number, linked to the note at the end, in
+        // the colour of the text around it — a header cell is on the brand colour.
+        if (fn) out.push({ text: fn[1], sup: true, linkToDestination: footnoteId(fn[1]) });
         // An inline <br> breaks the line — the only way to get one inside a
         // table cell — as in the Word export; any other tag is printed as written.
-        out.push({ text: /^<br\s*\/?>$/i.test(String(t.text ?? '').trim()) ? '\n' : decodeEntities(t.text) });
+        else out.push({ text: /^<br\s*\/?>$/i.test(tag) ? '\n' : decodeEntities(t.text) });
         break;
+      }
       default: if (t.text) out.push({ text: decodeEntities(t.text) });
     }
     if (spans.includes(true)) {
@@ -641,7 +650,7 @@ function imageNode(tk: MdToken, width: number): PdfNode {
  * The previous rule also treated *any* fully-italic paragraph as a caption,
  * which silently centred and greyed out ordinary emphasised prose.
  */
-export const CAPTION_RE = /^(figure|fig\.|tableau|table|graphique|chart|schéma|diagram|illustration|annexe|appendix|exhibit|listing)\b/i;
+export const CAPTION_RE = /^(figure|fig\.|tableau|table|graphique|chart|schéma|diagram|illustration|annexe|appendix|exhibit|listing)(?!\p{L})/iu;
 
 function paragraphNode(t: MdToken, preset: Preset, ctx: Ctx): PdfNode {
   const toks: MdToken[] = t.tokens || [];
@@ -1285,6 +1294,33 @@ function markEndNode(preset: Preset, ctx: Ctx): PdfNode {
   };
 }
 
+/** The destination a footnote reference links to. */
+function footnoteId(n: string | number): string {
+  return `report-fn-${n}`;
+}
+
+/**
+ * The note's footnotes, at the end of the body: a short rule, the template's
+ * "Notes" title, then each note under its number. pdfmake cannot place a note
+ * at the foot of the page that cites it, so they are gathered here, each one
+ * reached from its reference by a link.
+ */
+function footnoteNodes(notes: Footnote[], preset: Preset): PdfNode[] {
+  if (!notes.length) return [];
+  const size = bodySize(preset) - 1.5;
+  return [
+    { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 120, y2: 0, lineWidth: 0.6, lineColor: preset.colors.tableBorder }], margin: [0, 14, 0, 6] },
+    { text: preset.labels.notes || defaultLabels().notes, bold: true, fontSize: size + 1, color: preset.colors.brand, margin: [0, 0, 0, 4] },
+    ...notes.map((f) => ({
+      id: footnoteId(f.n),
+      text: [{ text: `${f.n}. `, bold: true }, ...inlineRuns(marked.Lexer.lexInline(f.md) as MdToken[], preset)],
+      fontSize: size,
+      color: preset.colors.text,
+      margin: [0, 0, 0, 3]
+    }))
+  ];
+}
+
 export function markdownToPdf(md: string, preset: Preset, ctx?: Ctx): PdfNode[] {
   const tokens = lex(md);
   const c: Ctx = ctx || newCtx(preset);
@@ -1619,7 +1655,10 @@ export function buildDocDefinition(
     else if (sec === 'references') nodes = buildReferences(v, p);
     else if (sec === 'tlp') nodes = buildTlpReminder(p);
     else if (sec === 'toc') nodes = [buildToc(v, p)];
-    else if (sec === 'body') nodes = markdownToPdf(md, p, newCtx(p, rendered));
+    else if (sec === 'body') {
+      const fn = extractFootnotes(md);
+      nodes = [...markdownToPdf(fn.md, p, newCtx(p, rendered)), ...footnoteNodes(fn.notes, p)];
+    }
     if (!nodes.length) continue;
     if (started) content.push({ text: '', pageBreak: 'before' });
     content.push(...nodes);

@@ -15,7 +15,7 @@ import { buildDocx, calloutIcons, type DocxOptions } from '../src/docx.ts';
 import { defaultPreset } from '../src/generator.ts';
 import { setLocale } from '../src/i18n.ts';
 import { stripFrontmatter } from '../src/textScan.ts';
-import type { Preset, ReportVars } from '../src/types.ts';
+import type { Preset, ReportVars, WordRole } from '../src/types.ts';
 import { makeTemplate } from '../tests/docxRead.ts';
 
 const out = process.argv[2];
@@ -86,6 +86,41 @@ const DEMO = [
   '',
   'Ships in May<span data-report-mark>, unless it slips</span>.',
   '',
+  'A claim worth a source.[^src] Cited again[^src], and an inline note.^[With `code` and [a link](https://example.com).]',
+  '',
+  '[^src]: The source, with **bold** text',
+  '    and a second line.',
+  '',
+  '| Item | Cost |',
+  '|---|---:|',
+  '| Hosting | 12 € |',
+  '',
+  'Table 1: yearly costs',
+  '',
+  '````col',
+  'textAlign=center',
+  '===',
+  '```col-md',
+  'flexGrow=2',
+  'borderColor=#1F5F8B',
+  'borderPadding=6px',
+  '===',
+  '**Left**, twice as wide, with a list:',
+  '',
+  '- one',
+  '- two',
+  '```',
+  '```col-md',
+  '> [!tip] Right',
+  '> A callout in a column.',
+  '```',
+  '````',
+  '',
+  '> [!col]',
+  '> First column of a callout group.',
+  '>',
+  '> Second column.',
+  '',
   '\\pagebreak',
   '',
   '### Last <words> & "quotes"'
@@ -122,6 +157,21 @@ const samples: Record<string, () => Uint8Array> = {
   'example-confidential.docx': () => buildDocx(note('example-confidential.md'), vars, preset()).bytes,
   'template.docx': () => buildDocx(DEMO, vars, preset(), { ...drawn(preset()), template }).bytes
 };
+
+// The test bench: templates written by Word itself (templates/word), each
+// filled with the demo note and with the bundled example.
+const BENCH: Record<string, Partial<Record<WordRole, string>>> = {
+  'consulting-report': {},
+  // Its body text is a style of its own, picked in the settings.
+  memo: { body: 'Corps de rapport' },
+  'landscape-brief': {}
+};
+for (const [name, styles] of Object.entries(BENCH)) {
+  const bytes = readFileSync(join(root, 'templates', 'word', `${name}.dotx`));
+  const p = (): Preset => ({ ...preset(), word: { template: `${name}.dotx`, styles } });
+  samples[`bench-${name}.docx`] = () => buildDocx(DEMO, vars, p(), { ...drawn(p()), template: bytes }).bytes;
+  samples[`bench-${name}-example.docx`] = () => buildDocx(note('example-report.md'), vars, p(), { template: bytes }).bytes;
+}
 
 for (const [name, build] of Object.entries(samples)) {
   writeFileSync(join(out, name), build());

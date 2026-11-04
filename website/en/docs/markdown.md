@@ -24,6 +24,7 @@ PDF Report Exporter reads the Markdown you already write in Obsidian. Nothing ne
 | ` ```mermaid ` | Mermaid diagram, drawn by Obsidian's own Mermaid and embedded as vectors |
 | ` ```col `, `> [!col]` | Columns from the [Obsidian Columns](https://github.com/tnichols217/obsidian-columns) plugin, all three syntaxes |
 | `*Figure 1: …*` | Centred italic caption |
+| `text[^1]` and `[^1]: note`, `text^[inline note]` | Footnotes: a superscript number linked to the note, the notes gathered under *Notes* at the end of the report |
 | `%%comment%%` | Left out, as in Obsidian's reading view |
 
 Callout types: `note`, `tip`, `info`, `todo`, `success`, `question`, `warning`, `failure`, `danger`, `bug`, `example`, `quote` and their aliases.
