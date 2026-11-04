@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="website/en/docs/assets/images/logo-horizontal-dark.svg">
+    <img src="website/en/docs/assets/images/logo-horizontal.svg" alt="PDF Report Exporter" width="420">
+  </picture>
+</p>
+
 # PDF Report Exporter
 
 *[English version](README.md) · [Site de documentation](https://phdhebde.github.io/Obisidian-pdf-export/fr/)*

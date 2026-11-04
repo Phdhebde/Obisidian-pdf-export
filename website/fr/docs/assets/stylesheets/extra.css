@@ -1,0 +1,4 @@
+/* The logo in the header: ink on the light scheme, reversed on the dark one. */
+[data-md-color-scheme="slate"] .md-logo img {
+  content: url("../images/logo-dark.svg");
+}

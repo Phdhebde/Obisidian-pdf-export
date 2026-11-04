@@ -18,6 +18,7 @@ repo_name = "Phdhebde/Obisidian-pdf-export"
 edit_uri = "edit/main/website/en/docs/"
 docs_dir = "docs"
 site_dir = "site"
+extra_css = ["assets/stylesheets/extra.css"]
 
 nav = [
   { "Home" = "index.md" },
@@ -54,6 +55,8 @@ link = "https://github.com/Phdhebde/Obisidian-pdf-export"
 [project.theme]
 language = "en"
 custom_dir = "../overrides"
+logo = "assets/images/logo.svg"
+favicon = "assets/images/favicon.svg"
 features = [
   "content.code.copy",
   "content.tooltips",
@@ -70,7 +73,6 @@ features = [
 ]
 
 [project.theme.icon]
-logo = "lucide/file-text"
 repo = "fontawesome/brands/github"
 
 [[project.theme.palette]]

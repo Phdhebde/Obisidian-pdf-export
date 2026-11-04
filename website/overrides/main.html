@@ -6,6 +6,7 @@
   the same path under each base URL.
 #}
 {% block extrahead %}
+  <link rel="apple-touch-icon" href="{{ 'assets/images/apple-touch-icon.png' | url }}">
   {% set path = page.url if page and page.url else "" %}
   {% set home = path == "" or path == "./" or path == "index.html" %}
   {% set heading = page.meta.title if page and page.meta and page.meta.title else (page.title if page else "") %}
