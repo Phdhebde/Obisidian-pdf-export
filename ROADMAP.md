@@ -111,7 +111,7 @@ Word often splits a marker across several runs (`{{ti` + `tle}}` after a spell c
 | Callouts | One-cell shaded table, icon as an image, bold title | 1.2 |
 | Mermaid | SVG image with a PNG fallback for older Word | 1.2 |
 | "Figure 1: …" captions | Caption style plus a sequence field, so Word's table of figures works | 1.3 |
-| Footnotes | Real Word footnotes (`footnotes.xml`) | 1.3 |
+| Footnotes | Real Word footnotes (`footnotes.xml`); notes at the end of the PDF | 1.3 |
 | Columns | Borderless table | 1.3 |
 
 The plugin writes the table of contents with its entries and links already in place, so it reads anywhere; only the page numbers wait for Word to update the fields, which the plugin asks it to do on open. Word then shows a confirmation prompt. The documentation must say so.
@@ -136,9 +136,9 @@ The plugin writes the table of contents with its entries and links already in pl
 - [x] OOXML validation in CI
 
 1.3:
-- [ ] 1.3 rows of the rendering table
-- [ ] Test bench of at least three public templates, rendered in Word and LibreOffice
-- [ ] Documentation (EN/FR): writing a Word template, known differences in LibreOffice and Google Docs
+- [x] 1.3 rows of the rendering table
+- [x] Test bench of at least three public templates, rendered in Word and LibreOffice
+- [x] Documentation (EN/FR): writing a Word template, known differences in LibreOffice and Google Docs
 
 The confidential export applies to Word from the first beta: same filter, same sentinel tests on the `.docx` XML.
 

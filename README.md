@@ -100,6 +100,7 @@ French equivalents: `titre`, `sous_titre`, `acronyme`, `auteur`, `modele`, `dest
 | ```` ```mermaid ```` | **Mermaid diagram**, drawn by Obsidian's own Mermaid (light theme) and embedded **as vectors**. An invalid diagram is printed as code, with a notice |
 | ```` ```col ```` / `> [!col]` | **Columns** from the [Obsidian Columns](https://github.com/tnichols217/obsidian-columns) plugin, all three syntaxes |
 | `*Figure 1: …*` | Centered italic caption |
+| `text[^1]` + `[^1]: note`, `text^[inline note]` | **Footnotes**: a superscript number linked to its note; the notes are gathered under *Notes* at the end of the report |
 
 Only paragraphs starting with *Figure*, *Table*, *Chart*, *Diagram*, *Illustration*, *Appendix*, *Exhibit* or *Listing* (or their French equivalents) become captions; an ordinary italic paragraph stays body text.
 
@@ -142,6 +143,8 @@ To try it, export [example-confidential.md](example-confidential.md) with *Expor
 ### Word export (beta)
 
 **Export as Word document (beta)** writes the note as a `.docx`, with the same confidentiality filter. Without a Word template, the document is laid out like the PDF: cover, bands, references page, TLP reminder and a real Word table of contents. With your own `.dotx` or `.docx` (template settings → *Word export (beta)*), its cover, headers, footers and styles are kept: write `{{title}}`, `{{client}}`, `{{date}}`, `{{version}}`, `{{status}}`, `{{tlp}}`… where the note's values go, `{{toc}}` for the table of contents, and `{{content}}` alone in the paragraph where the report goes. Styles are found by their internal name, so a template saved by Word in any language works.
+
+Footnotes become real Word footnotes, numbered captions get a sequence field for Word's table of figures, and Obsidian Columns sit side by side. Three example templates written in Word are in [`templates/word`](templates/word).
 
 Word asks to update the document's fields when it opens: answer *Yes* to get the page numbers in the table of contents. Details: [Word export](https://phdhebde.github.io/Obisidian-pdf-export/word-export/).
 
@@ -186,7 +189,7 @@ Each template sets:
 
 ## Roadmap
 
-Next: a complete Word export (Word captions and footnotes, side-by-side columns, a test bench of public templates), then the move to the **Report Exporter** name. Free and community-driven, no paid tier: see [ROADMAP.md](ROADMAP.md), and share your feedback in the issues.
+Next: the move to the **Report Exporter** name, with the documentation rewritten around PDF, Word and profiles. Free and community-driven, no paid tier: see [ROADMAP.md](ROADMAP.md), and share your feedback in the issues.
 
 ---
 

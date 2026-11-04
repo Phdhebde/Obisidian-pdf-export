@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.3.0
+
+- **Footnotes**, as Obsidian writes them: `text[^1]` with `[^1]: note` anywhere in the note, and inline `text^[note]`. In Word they are real footnotes, at the foot of the page that cites them. In the PDF, a superscript number links to the note, and the notes are gathered under *Notes* at the end of the report (its title is one of the template's labels). A note cited twice keeps its number.
+- The confidentiality filter drops a footnote cited only from a removed passage, even when its definition sits at the end of the note.
+- **Word captions.** "Figure 3: …", "Table 2: …" get their number as a sequence field, as Word's *Insert Caption* does, so *Insert Table of Figures* lists them and Word renumbers them when a figure is added.
+- **Columns side by side in Word**: the three Obsidian Columns syntaxes, as a borderless table sized by `flexGrow`, with the column's border, padding and alignment; a row of columns stays on one page.
+- **Three example Word templates** in `templates/word` (CC0), written in Word: a consulting report with headings numbered by Word, a memo with its markers in a table and a custom body style, a landscape brief with a footnote of its own. The tests fill each of them, and every build checks the results with the Open XML validator and opens them in LibreOffice.
+- New Word style roles for footnotes and footnote numbers in the settings.
+- Word: an item that is not a task keeps its bullet in a task list.
+- PDF and Word: "Fig. 2" is recognised as a caption.
+- Documentation: tips for writing a Word template, the example templates, LibreOffice and Google Docs.
+
 ## 1.2.1
 
 - **Word export documentation**, in English and French: exporting, writing markers in your own Word template, style mapping, what is rendered, and why Word asks to update the fields on opening.

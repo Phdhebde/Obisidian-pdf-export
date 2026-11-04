@@ -81,7 +81,7 @@ Attention à ne pas confondre `destinataire` (singulier, alias de `client`) et `
 
 ### Markdown
 
-Titres numérotés automatiquement (`A.`, `1.`, `a)` par défaut, réglable par niveau), liens cliquables, listes et cases à cocher, **callouts** Obsidian avec leur icône, tableaux ajustés à la page, blocs de code, **schémas Mermaid** vectoriels, **colonnes** du plugin *Obsidian Columns*, légendes (`*Figure 1 : …*`), images (`![[capture.png|400]]`), notes incluses (`![[autre note]]`) et sauts de page (`\pagebreak` sur sa propre ligne). Les listes placées sous un titre `# Recommandations` prennent des puces losange (désactivable).
+Titres numérotés automatiquement (`A.`, `1.`, `a)` par défaut, réglable par niveau), liens cliquables, listes et cases à cocher, **callouts** Obsidian avec leur icône, tableaux ajustés à la page, blocs de code, **schémas Mermaid** vectoriels, **colonnes** du plugin *Obsidian Columns*, légendes (`*Figure 1 : …*`), **notes de bas de page** (`texte[^1]` et `[^1]: note`, ou `texte^[note]`, réunies sous *Notes* à la fin du rapport), images (`![[capture.png|400]]`), notes incluses (`![[autre note]]`) et sauts de page (`\pagebreak` sur sa propre ligne). Les listes placées sous un titre `# Recommandations` prennent des puces losange (désactivable).
 
 Le détail de chaque convention est dans le [README anglais](README.md#markdown). Les commentaires Obsidian (`%%…%%`) ne figurent dans aucun export.
 
@@ -117,6 +117,8 @@ Pour essayer, exportez [example-confidential.md](example-confidential.md) avec *
 
 **« Exporter en document Word (bêta) »** écrit la note en `.docx`, avec le même filtre de confidentialité. Sans modèle Word, le document est mis en page comme le PDF : page de garde, bandeaux, page de références, rappel TLP et vrai sommaire Word. Avec votre propre `.dotx` ou `.docx` (réglages du modèle → *Export Word (bêta)*), sa page de garde, ses en-têtes, ses pieds de page et ses styles sont conservés : écrivez `{{title}}`, `{{client}}`, `{{date}}`, `{{version}}`, `{{status}}`, `{{tlp}}`… là où vont les valeurs de la note, `{{toc}}` pour le sommaire, et `{{content}}`, seul, dans le paragraphe où va le rapport. Les styles sont retrouvés par leur nom interne : un modèle enregistré par Word dans n'importe quelle langue fonctionne.
 
+Les notes de bas de page deviennent de vraies notes Word, les légendes numérotées reçoivent un champ de séquence pour la table des illustrations de Word, et les colonnes Obsidian Columns se placent côte à côte. Trois modèles d'exemple écrits dans Word sont dans [`templates/word`](templates/word).
+
 À l'ouverture, Word demande de mettre à jour les champs du document : répondez *Oui* pour avoir les numéros de page dans le sommaire. Détails : [Export Word](https://phdhebde.github.io/Obisidian-pdf-export/fr/word-export/).
 
 ---
@@ -142,7 +144,7 @@ Pour essayer, exportez [example-confidential.md](example-confidential.md) avec *
 
 ## Feuille de route
 
-À venir : un export Word complet (légendes et notes de bas de page Word, colonnes côte à côte, banc de test de modèles publics), puis le passage au nom **Report Exporter**. Gratuit et communautaire, sans version payante : voir [ROADMAP.md](ROADMAP.md) (en anglais), et donnez votre avis dans les issues.
+À venir : le passage au nom **Report Exporter**, avec une documentation réécrite autour du PDF, du Word et des profils. Gratuit et communautaire, sans version payante : voir [ROADMAP.md](ROADMAP.md) (en anglais), et donnez votre avis dans les issues.
 
 ## Licence
 

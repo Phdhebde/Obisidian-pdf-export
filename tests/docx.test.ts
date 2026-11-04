@@ -396,3 +396,191 @@ function rezip(bytes: Uint8Array, files: Record<string, string>): Uint8Array {
   for (const [k, v] of Object.entries(files)) all[k] = strToU8(v);
   return zipSync(all);
 }
+
+/* ------------------------------------------------------------------ */
+/* 1.3: footnotes, captions, columns                                   */
+/* ------------------------------------------------------------------ */
+
+test('footnotes become Word footnotes, with their own part and relationships', () => {
+  const md = 'A claim.[^a] Again[^a], and inline.^[See [the site](https://example.com/n).]\n\n[^a]: The **source**.';
+  const { bytes, warnings } = buildDocx(md, { ...vars, sections: ['body'] }, preset());
+  assertPackageWellFormed(bytes);
+  assert.deepEqual(warnings, []);
+  const p = parts(bytes);
+  const doc = p['word/document.xml'];
+  // Two notes; the second citation of the first shows its number only.
+  assert.deepEqual([...doc.matchAll(/<w:footnoteReference w:id="(\d+)"\/>/g)].map((m) => m[1]), ['1', '2']);
+  assert.match(doc, /<w:rStyle w:val="FootnoteReference"\/><\/w:rPr><w:t>1<\/w:t>/);
+  assert.ok(!doc.includes('[^a]'));
+  const notes = p['word/footnotes.xml'];
+  assert.match(notes, /<w:footnote w:type="separator" w:id="-1">[\s\S]*<w:footnote w:type="continuationSeparator" w:id="0">/);
+  assert.match(notes, /<w:footnote w:id="1"><w:p><w:pPr><w:pStyle w:val="FootnoteText"\/><\/w:pPr><w:r><w:rPr><w:rStyle w:val="FootnoteReference"\/><\/w:rPr><w:footnoteRef\/>[\s\S]*?<w:b\/>[\s\S]*?source/);
+  // A link in a note is related from the footnotes part, not the document.
+  assert.match(notes, /<w:footnote w:id="2">[\s\S]*<w:hyperlink r:id="(rIdReport\d+)"/);
+  assert.match(p['word/_rels/footnotes.xml.rels'], /Target="https:\/\/example\.com\/n" TargetMode="External"/);
+  assert.ok(!p['word/_rels/document.xml.rels'].includes('example.com/n'));
+  assert.match(p['word/_rels/document.xml.rels'], /relationships\/footnotes" Target="footnotes\.xml"/);
+  assert.match(p['[Content_Types].xml'], /PartName="\/word\/footnotes\.xml" ContentType="[^"]*footnotes\+xml"/);
+  assert.match(p['word/styles.xml'], /w:styleId="FootnoteReference"[\s\S]*?<w:vertAlign w:val="superscript"\/>/);
+});
+
+test('a template’s own footnotes are kept, and ours come after them', () => {
+  const W_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+  const template = makeTemplate({ body: '<w:p><w:r><w:t>{{content}}</w:t></w:r></w:p>' });
+  const withNotes = rezip(template, {
+    'word/footnotes.xml':
+      `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:footnotes xmlns:w="${W_NS}">` +
+      '<w:footnote w:type="separator" w:id="-1"><w:p><w:r><w:separator/></w:r></w:p></w:footnote>' +
+      '<w:footnote w:type="continuationSeparator" w:id="0"><w:p><w:r><w:continuationSeparator/></w:r></w:p></w:footnote>' +
+      '<w:footnote w:id="1"><w:p><w:r><w:t>Template note</w:t></w:r></w:p></w:footnote></w:footnotes>',
+    'word/_rels/document.xml.rels': parts(template)['word/_rels/document.xml.rels'].replace(
+      '</Relationships>',
+      '<Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/></Relationships>'
+    )
+  });
+  const { bytes } = buildDocx('X[^a] and X[^a].\n\n[^a]: Ours', vars, preset(), { template: withNotes });
+  assertPackageWellFormed(bytes);
+  const p = parts(bytes);
+  assert.match(p['word/footnotes.xml'], /Template note[\s\S]*<w:footnote w:id="2">[\s\S]*Ours/);
+  assert.match(p['word/document.xml'], /<w:footnoteReference w:id="2"\/>/);
+  // Word numbers the template's note first, so ours shows as 2.
+  assert.match(p['word/document.xml'], /<w:rStyle w:val="FootnoteReference"\/><\/w:rPr><w:t>2<\/w:t>/);
+  assert.equal((p['word/_rels/document.xml.rels'].match(/relationships\/footnotes"/g) || []).length, 1);
+});
+
+test('numbered captions carry a sequence field, so Word’s table of figures lists them', () => {
+  const md = '*Figure 3: a chart*\n\nTableau 2 : les coûts\n\nFig. 4 - a photo\n\nFigure 2.1: by chapter\n\nFigure: no number';
+  const doc = parts(buildDocx(md, { ...vars, sections: ['body'] }, preset()).bytes)['word/document.xml'];
+  assert.match(doc, /<w:pStyle w:val="Caption"\/><\/w:pPr><w:r><w:t xml:space="preserve">Figure <\/w:t><\/w:r><w:r><w:fldChar w:fldCharType="begin"\/><\/w:r><w:r><w:instrText xml:space="preserve"> SEQ Figure \\\* ARABIC <\/w:instrText><\/w:r><w:r><w:fldChar w:fldCharType="separate"\/><\/w:r><w:r><w:t xml:space="preserve">3<\/w:t><\/w:r><w:r><w:fldChar w:fldCharType="end"\/><\/w:r><w:r><w:t xml:space="preserve">: a chart<\/w:t>/);
+  assert.match(doc, /SEQ Tableau [\s\S]*?>2<\/w:t>[\s\S]*? : les coûts/);
+  // "Fig." counts with the figures.
+  assert.equal((doc.match(/SEQ Figure /g) || []).length, 2);
+  // A chapter number or no number at all: left as written.
+  assert.match(doc, />Figure 2\.1: by chapter</);
+  assert.match(doc, />Figure: no number</);
+});
+
+test('columns sit side by side in a borderless table, sized by their flexGrow', () => {
+  const md = [
+    '````col',
+    'textAlign=center',
+    '===',
+    '```col-md',
+    'flexGrow=3',
+    'borderColor=#336699',
+    '===',
+    'Left',
+    '```',
+    '```col-md',
+    'Right',
+    '```',
+    '````',
+    '',
+    '> [!col]',
+    '> One',
+    '>',
+    '> Two'
+  ].join('\n');
+  const { bytes } = buildDocx(md, { ...vars, sections: ['body'] }, preset());
+  assertPackageWellFormed(bytes);
+  const doc = parts(bytes)['word/document.xml'];
+  const grids = [...doc.matchAll(/<w:tblGrid>((?:<w:gridCol w:w="\d+"\/>)+)<\/w:tblGrid>/g)].map((m) =>
+    [...m[1].matchAll(/w:w="(\d+)"/g)].map((x) => Number(x[1])));
+  assert.equal(grids.length, 2);
+  // 3 : 1, with the 12pt gutter shared between the two cells.
+  const [a, b] = grids[0];
+  assert.ok(Math.abs((a - 120) / (b - 120) - 3) < 0.05, `${a} / ${b}`);
+  assert.equal(grids[1].length, 2);
+  assert.match(doc, /<w:tblBorders><w:top w:val="nil"\/>/);
+  assert.match(doc, /<w:tcBorders><w:top w:val="single" w:sz="6" w:space="0" w:color="336699"\/>/);
+  assert.match(doc, /<w:cantSplit\/>/);
+  // The group's alignment reaches every paragraph of its columns.
+  assert.match(doc, /<w:jc w:val="center"\/><\/w:pPr><w:r><w:t xml:space="preserve">Left/);
+  assert.match(doc, /<w:jc w:val="center"\/><\/w:pPr><w:r><w:t xml:space="preserve">Right/);
+  assert.ok(!doc.includes('flexGrow'));
+});
+
+test('an item that is not a task keeps a bullet in a task list', () => {
+  const doc = parts(buildDocx('- plain\n- [ ] open\n- [x] done', { ...vars, sections: ['body'] }, preset()).bytes)['word/document.xml'];
+  assert.match(doc, /<w:t xml:space="preserve">• <\/w:t><\/w:r><w:r><w:t xml:space="preserve">plain/);
+  assert.match(doc, /☐ [\s\S]*open/);
+});
+
+/* ------------------------------------------------------------------ */
+/* Test bench: templates written by Word itself (templates/word)       */
+/* ------------------------------------------------------------------ */
+
+const bench = (name: string) => new Uint8Array(readFileSync(join(root, 'templates', 'word', `${name}.dotx`)));
+const BENCH_NOTE = [
+  '# Introduction',
+  '',
+  'A claim.[^a]',
+  '',
+  '## Findings',
+  '',
+  'Body text.',
+  '',
+  '| Item | Cost |',
+  '|---|---|',
+  '| Hosting | 12 € |',
+  '',
+  '[^a]: A source.'
+].join('\n');
+
+/** Every marker of the template's body, headers and footers is filled. */
+function assertFilled(p: Record<string, string>): void {
+  for (const [path, xml] of Object.entries(p)) {
+    if (/^word\/(document|header\d*|footer\d*)\.xml$/.test(path)) {
+      assert.ok(!/\{\{/.test(xml.replace(/<[^>]+>/g, '')), `marker left in ${path}`);
+    }
+  }
+}
+
+test('bench: a consulting report keeps Word’s own heading numbering, cover, contents and running header', () => {
+  const { bytes, warnings } = buildDocx(BENCH_NOTE, vars, preset(), { template: bench('consulting-report') });
+  assertPackageWellFormed(bytes);
+  assert.deepEqual(warnings, []);
+  const p = parts(bytes);
+  assertFilled(p);
+  const doc = p['word/document.xml'];
+  // Found by internal name in a template saved by a French Word.
+  assert.match(doc, /<w:pStyle w:val="Titre1"\/>[\s\S]*?Introduction/);
+  // Its headings number themselves: no "A." written as text.
+  assert.ok(!/<w:pStyle w:val="Titre2"\/>(?:(?!<\/w:p>)[\s\S])*A\. /.test(doc));
+  assert.match(doc, /TOC \\o "1-3"[\s\S]*_TocReport/);
+  assert.match(doc, /Prepared for ACME Corp by Jane Doe/);
+  assert.match(doc, /Version 1\.1 - 2026-10-21 - Final/);
+  const header = Object.entries(p).find(([k, v]) => /^word\/header\d\.xml$/.test(k) && v.includes('Website Migration Review'));
+  assert.ok(header, 'running header filled');
+  // Word's own footnotes part, separators included, gets the note.
+  assert.match(p['word/footnotes.xml'], /w:type="separator"[\s\S]*A source\./);
+});
+
+test('bench: a memo fills the markers in its table and takes the body style chosen in the settings', () => {
+  const p0 = preset({ word: { template: 'memo.dotx', styles: { body: 'Corps de rapport' } } });
+  const { bytes, warnings } = buildDocx(BENCH_NOTE, vars, p0, { template: bench('memo') });
+  assertPackageWellFormed(bytes);
+  assert.deepEqual(warnings, []);
+  const p = parts(bytes);
+  assertFilled(p);
+  const doc = p['word/document.xml'];
+  assert.match(doc, /<w:tc>(?:(?!<\/w:tc>)[\s\S])*Client[\s\S]*?<w:tc>(?:(?!<\/w:tc>)[\s\S])*ACME Corp/);
+  assert.match(doc, /<w:pStyle w:val="Corpsderapport"\/><\/w:pPr><w:r><w:t xml:space="preserve">Body text\./);
+});
+
+test('bench: a landscape brief keeps its own footnote first and lays tables on its width', () => {
+  const { bytes } = buildDocx(BENCH_NOTE, vars, preset(), { template: bench('landscape-brief') });
+  assertPackageWellFormed(bytes);
+  const p = parts(bytes);
+  assertFilled(p);
+  const notes = p['word/footnotes.xml'];
+  assert.ok(notes.indexOf('Template footnote') < notes.indexOf('A source.'));
+  // Its own footnote styles, by internal name.
+  assert.match(notes, /<w:pStyle w:val="Notedebasdepage"\/>[\s\S]*?A source\./);
+  // Our note is the template's second: Word shows it as 2.
+  const doc = p['word/document.xml'];
+  assert.match(doc, /<w:rStyle w:val="Appelnotedebasdep"\/><\/w:rPr><w:footnoteReference w:id="\d+"\/>/);
+  // 297mm minus its 42pt margins.
+  const tblW = Number(/<w:tblW w:w="(\d+)" w:type="dxa"\/>/.exec(doc)?.[1]);
+  assert.ok(tblW > 14000, `table width ${tblW}`);
+});

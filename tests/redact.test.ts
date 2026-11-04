@@ -47,7 +47,7 @@ const SENTINEL_NOTE = [
   '',
   '## Pricing LEAK-03 %%internal%%',
   '',
-  'The margin is LEAK-04.',
+  'The margin is LEAK-04.[^deal] Agreed^[LEAK-18 inline note].',
   '',
   '### Detail',
   '',
@@ -79,10 +79,14 @@ const SENTINEL_NOTE = [
   '',
   '## Next steps <span data-audience="internal">LEAK-16 in a heading</span>',
   '',
-  'Closing words.'
+  'Closing words.[^public]',
+  '',
+  '[^deal]: LEAK-17 footnote cited only from the restricted section',
+  '    LEAK-19 its second line',
+  '[^public]: A public footnote.'
 ].join('\n');
 
-const SECRETS = Array.from({ length: 16 }, (_, i) => `LEAK-${String(i + 1).padStart(2, '0')}`);
+const SECRETS = Array.from({ length: 19 }, (_, i) => `LEAK-${String(i + 1).padStart(2, '0')}`);
 /** Comments are cut from every export, whatever the profile. */
 const COMMENT_SECRETS = ['LEAK-01', 'LEAK-02'];
 
@@ -115,7 +119,7 @@ test('a client export leaks none of the sentinels, in the Markdown, the PDF defi
 
   assert.deepEqual(counts, { notes: 0, sections: 1, blocks: 1, phrases: 4 });
   // What is not marked stays.
-  for (const kept of ['Public text before.', 'Public text after.', 'The plan ships in May.', 'Closing words.', 'Second item']) {
+  for (const kept of ['Public text before.', 'Public text after.', 'The plan ships in May.', 'Closing words.', 'Second item', 'A public footnote.']) {
     assert.ok(md.includes(kept), kept);
   }
 });
@@ -133,7 +137,7 @@ test('a full export keeps every marked passage, and only comments go', () => {
   const dd = JSON.stringify(buildDocDefinition(md, vars, defaultPreset({}, 'en')));
   // The mermaid source and the image alt text are consumed by the renderer.
   const docx = allXml(buildDocx(md, vars, defaultPreset({}, 'en')).bytes);
-  for (const s of ['LEAK-03', 'LEAK-04', 'LEAK-05', 'LEAK-08', 'LEAK-09', 'LEAK-13', 'LEAK-14', 'LEAK-15', 'LEAK-16']) {
+  for (const s of ['LEAK-03', 'LEAK-04', 'LEAK-05', 'LEAK-08', 'LEAK-09', 'LEAK-13', 'LEAK-14', 'LEAK-15', 'LEAK-16', 'LEAK-17', 'LEAK-18', 'LEAK-19']) {
     assert.ok(dd.includes(s), s);
     assert.ok(docx.includes(s), `${s} in the Word file`);
   }

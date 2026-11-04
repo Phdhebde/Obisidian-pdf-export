@@ -65,7 +65,7 @@ const FONT_KEYS = ['Liberation', 'Archivo', 'LiberationMono'] as const;
  */
 const WORD_STYLE_ROLES: WordRole[] = [
   'body', 'heading1', 'heading2', 'heading3', 'heading4', 'heading5', 'heading6',
-  'listParagraph', 'caption', 'code', 'inlineCode', 'hyperlink', 'table'
+  'listParagraph', 'caption', 'code', 'inlineCode', 'hyperlink', 'table', 'footnoteText', 'footnoteReference'
 ];
 
 const CONFLICT_OPTIONS: [ConflictMode, MessageKey][] = [
@@ -105,7 +105,8 @@ const LABEL_KEYS: (keyof PresetLabels)[] = [
   'recipientEmail',
   'tlpReminder',
   'tlpReminderSubtitle',
-  'toc'
+  'toc',
+  'notes'
 ];
 
 /**
