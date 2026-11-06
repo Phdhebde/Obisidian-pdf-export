@@ -26,12 +26,12 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^26",
     "esbuild": "^0.28.2",
-    "eslint": "^9.39.5",
+    "eslint": "^10.14.0",
     "eslint-plugin-obsidianmd": "^0.5.1",
     "obsidian": "^1.14.4",
-    "typescript": "^5",
+    "typescript": "^7",
     "typescript-eslint": "^8.71.2"
   },
   "dependencies": {
