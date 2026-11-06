@@ -1,0 +1,75 @@
+name: Sign existing releases
+
+# Run by hand to sign releases published before the Release workflow attached
+# signed provenance. For each tag, the published main.js, manifest.json and
+# styles.css are signed with Sigstore (keyless: the signature is bound to this
+# repository's workflow identity) and a <file>.sigstore.json bundle is attached
+# to the release. The tag is also rebuilt, and the job summary says whether the
+# rebuilt main.js matches the published one.
+#
+# Verify a file:
+#   cosign verify-blob main.js --bundle main.js.sigstore.json \
+#     --certificate-identity-regexp '^https://github.com/Phdhebde/Obisidian-pdf-export/' \
+#     --certificate-oidc-issuer https://token.actions.githubusercontent.com
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: Release tags to sign, separated by spaces
+        required: true
+        default: "2.0.1 2.0.0 1.3.0 1.2.1 1.2.0"
+
+permissions:
+  contents: read
+
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # attach the bundles to the releases
+      id-token: write   # keyless Sigstore signing
+    steps:
+      - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532 # v4.1.3
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - name: Sign each release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAGS: ${{ inputs.tags }}
+        run: |
+          set -euo pipefail
+          echo "| Release | Signed | Rebuilt main.js identical |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          for tag in $TAGS; do
+            if ! [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "Not a release tag: $tag" >&2; exit 1
+            fi
+            dir="release-$tag"
+            mkdir -p "$dir"
+            gh release download "$tag" --dir "$dir" \
+              --pattern main.js --pattern manifest.json --pattern styles.css
+
+            # Rebuild the tag and compare (informational).
+            same="no"
+            git checkout --quiet "refs/tags/$tag"
+            if npm ci --silent && node esbuild.config.mjs production; then
+              cmp -s main.js "$dir/main.js" && same="yes"
+            fi
+            git checkout --quiet --force -
+            git clean -fdxq -e "release-*"
+
+            for f in main.js manifest.json styles.css; do
+              cosign sign-blob --yes --bundle "$dir/$f.sigstore.json" "$dir/$f"
+            done
+            gh release upload "$tag" --clobber \
+              "$dir/main.js.sigstore.json" "$dir/manifest.json.sigstore.json" "$dir/styles.css.sigstore.json"
+            echo "| $tag | yes | $same |" >> "$GITHUB_STEP_SUMMARY"
+          done
