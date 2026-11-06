@@ -7,13 +7,13 @@ site_name = "Report Exporter pour Obsidian"
 site_url = "https://phdhebde.github.io/Obisidian-pdf-export/fr/"
 site_description = "Plugin Obsidian gratuit pour des rapports PDF et Word personnalisés et professionnels : page de garde, sommaire, modèles à votre charte et papier à en-tête ou votre propre modèle Word, schémas Mermaid, callouts, notes de bas de page et versions client sans les passages confidentiels."
 site_author = "Maxence H"
-copyright = "Code sous licence MIT — Report Exporter n’est pas affilié à Obsidian."
+copyright = "Code sous licence MIT — Report Exporter n’est pas affilié à Obsidian. · <a href=\"https://phdhebde.github.io/Obisidian-pdf-export/fr/legal/\">Mentions légales</a>"
 repo_url = "https://github.com/Phdhebde/Obisidian-pdf-export"
 repo_name = "Phdhebde/Obisidian-pdf-export"
 edit_uri = "edit/main/website/fr/docs/"
 docs_dir = "docs"
 site_dir = "site"
-extra_css = ["assets/stylesheets/extra.css"]
+extra_css = ["assets/stylesheets/fonts.css", "assets/stylesheets/extra.css"]
 
 nav = [
   { "Accueil" = "index.md" },
@@ -30,6 +30,7 @@ nav = [
   { "Projet" = [
     "changelog.md",
     "roadmap.md",
+    "legal.md",
   ] },
   { "English" = "https://phdhebde.github.io/Obisidian-pdf-export/" },
 ]
@@ -48,6 +49,8 @@ icon = "fontawesome/brands/github"
 link = "https://github.com/Phdhebde/Obisidian-pdf-export"
 
 [project.theme]
+# Fonts are served with the site (assets/stylesheets/fonts.css), not by Google.
+font = false
 language = "fr"
 custom_dir = "../overrides"
 logo = "assets/images/logo.svg"
