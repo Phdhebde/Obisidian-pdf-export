@@ -1,0 +1,21 @@
+name: Feature request
+description: Suggest an idea or a template option.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The report you want to produce and what stops you today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would help?
+      description: How you imagine it working — a setting, a frontmatter key, a Markdown syntax…
+  - type: textarea
+    id: example
+    attributes:
+      label: Example (optional)
+      description: A screenshot, a PDF page or a Word document showing the expected result.

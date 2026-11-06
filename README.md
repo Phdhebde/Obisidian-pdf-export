@@ -5,17 +5,57 @@
   </picture>
 </p>
 
-# Report Exporter
+<p align="center">
+  <strong>Turn Obsidian notes into professional PDF and Word reports.</strong><br>
+  Branded templates · cover page · table of contents · Mermaid · callouts · client versions without internal passages
+</p>
 
-*[Version française](README.fr.md) · [Documentation website](https://phdhebde.github.io/Obisidian-pdf-export/)*
+<p align="center">
+  <a href="https://github.com/Phdhebde/Obisidian-pdf-export/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/Phdhebde/Obisidian-pdf-export?label=release&color=1F2547"></a>
+  <a href="https://github.com/Phdhebde/Obisidian-pdf-export/releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/Phdhebde/Obisidian-pdf-export/total?color=E8553A"></a>
+  <a href="https://github.com/Phdhebde/Obisidian-pdf-export/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Phdhebde/Obisidian-pdf-export/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="MIT licence" src="https://img.shields.io/github/license/Phdhebde/Obisidian-pdf-export?color=555"></a>
+  <img alt="Obsidian 1.8.7+" src="https://img.shields.io/badge/Obsidian-1.8.7%2B-7C3AED?logo=obsidian&logoColor=white">
+</p>
+
+<p align="center">
+  <a href="https://phdhebde.github.io/Obisidian-pdf-export/"><b>Documentation</b></a> ·
+  <a href="#installation"><b>Install</b></a> ·
+  <a href="https://github.com/Phdhebde/Obisidian-pdf-export/releases/latest"><b>Download</b></a> ·
+  <a href="README.fr.md"><b>Version française</b></a>
+</p>
+
+<table align="center">
+  <tr>
+    <td><img src="website/en/docs/assets/images/report-cover.webp" alt="Cover page" width="240"></td>
+    <td><img src="website/en/docs/assets/images/report-toc.webp" alt="Table of contents" width="240"></td>
+    <td><img src="website/en/docs/assets/images/report-body.webp" alt="Report body" width="240"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Cover page</sub></td>
+    <td align="center"><sub>Table of contents</sub></td>
+    <td align="center"><sub>Body: tables, callouts, Mermaid</sub></td>
+  </tr>
+</table>
+
+# Report Exporter
 
 The Obsidian plugin for **custom, professional PDF and Word reports**. Export any note as a **polished report** with your own branding: cover page, header and footer bands, table of contents, styled tables, Obsidian callouts with their icons, Mermaid diagrams as vectors, columns, footnotes, images — all driven by **templates** you can customise, duplicate and share, and pick at export time.
 
-One note, several deliverables: a **PDF**, a **Word document** (laid out like the PDF, or filled into your company's own `.dotx` template), and a **version per audience** — the full internal report and a client version without the passages marked internal.
+### Highlights
+
+- **PDF and Word from one note** — the `.docx` is laid out like the PDF, or filled into your company's own `.dotx` template.
+- **Reusable templates** — colours, fonts, numbering, cover layout, letterhead artwork; share them as a single JSON file.
+- **One version per audience** — the full internal report and a client version, with internal passages removed *before* rendering (never just hidden), fail-closed.
+- **Obsidian-native Markdown** — callouts, Mermaid as vectors, footnotes, task lists, embedded notes, Obsidian Columns, wikilinks.
+- **TLP marking** for security and CERT teams.
+- **Private by design** — fully offline: no network request, no account, fonts bundled.
 
 *Report Exporter was called PDF Report Exporter until version 2.0. The plugin id, the settings and the commands are unchanged.*
 
-The plugin works entirely offline: it makes no network request, and the fonts it needs ship inside the plugin.
+### Contents
+
+[Installation](#installation) · [Usage](#usage) · [Confidential passages](#confidential-passages) · [Word export](#word-export) · [Templates](#templates) · [Limits](#limits) · [Roadmap](#roadmap) · [Development](#development) · [License](#credits-and-license)
 
 ---
 

@@ -5,13 +5,55 @@
   </picture>
 </p>
 
-# Report Exporter
+<p align="center">
+  <strong>Transformez vos notes Obsidian en rapports PDF et Word professionnels.</strong><br>
+  Modèles à votre charte · page de garde · sommaire · Mermaid · callouts · versions client sans les passages internes
+</p>
 
-*[English version](README.md) · [Site de documentation](https://phdhebde.github.io/Obisidian-pdf-export/fr/)*
+<p align="center">
+  <a href="https://github.com/Phdhebde/Obisidian-pdf-export/releases/latest"><img alt="Dernière version" src="https://img.shields.io/github/v/release/Phdhebde/Obisidian-pdf-export?label=version&color=1F2547"></a>
+  <a href="https://github.com/Phdhebde/Obisidian-pdf-export/releases"><img alt="Téléchargements" src="https://img.shields.io/github/downloads/Phdhebde/Obisidian-pdf-export/total?label=t%C3%A9l%C3%A9chargements&color=E8553A"></a>
+  <a href="https://github.com/Phdhebde/Obisidian-pdf-export/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Phdhebde/Obisidian-pdf-export/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="Licence MIT" src="https://img.shields.io/github/license/Phdhebde/Obisidian-pdf-export?label=licence&color=555"></a>
+  <img alt="Obsidian 1.8.7+" src="https://img.shields.io/badge/Obsidian-1.8.7%2B-7C3AED?logo=obsidian&logoColor=white">
+</p>
+
+<p align="center">
+  <a href="https://phdhebde.github.io/Obisidian-pdf-export/fr/"><b>Documentation</b></a> ·
+  <a href="#installation"><b>Installer</b></a> ·
+  <a href="https://github.com/Phdhebde/Obisidian-pdf-export/releases/latest"><b>Télécharger</b></a> ·
+  <a href="README.md"><b>English version</b></a>
+</p>
+
+<table align="center">
+  <tr>
+    <td><img src="website/en/docs/assets/images/report-cover.webp" alt="Page de garde" width="240"></td>
+    <td><img src="website/en/docs/assets/images/report-toc.webp" alt="Sommaire" width="240"></td>
+    <td><img src="website/en/docs/assets/images/report-body.webp" alt="Corps du rapport" width="240"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Page de garde</sub></td>
+    <td align="center"><sub>Sommaire</sub></td>
+    <td align="center"><sub>Corps : tableaux, callouts, Mermaid</sub></td>
+  </tr>
+</table>
+
+# Report Exporter
 
 Le plugin Obsidian pour des **rapports PDF et Word personnalisés et professionnels**. Exporte n'importe quelle note en **rapport soigné**, à votre charte : page de garde, bandeaux d'en-tête et de pied de page, sommaire, tableaux stylés, callouts Obsidian avec leurs icônes, schémas Mermaid en vectoriel, colonnes, notes de bas de page, images — le tout piloté par des **modèles** personnalisables, duplicables et partageables, sélectionnés au moment de l'export.
 
-Une note, plusieurs livrables : un **PDF**, un **document Word** (mis en page comme le PDF, ou rempli dans le modèle `.dotx` de votre entreprise) et une **version par public** — le rapport interne complet et une version client sans les passages marqués comme internes.
+### Points forts
+
+- **PDF et Word depuis une seule note** — le `.docx` est mis en page comme le PDF, ou rempli dans le modèle `.dotx` de votre entreprise.
+- **Modèles réutilisables** — couleurs, polices, numérotation, page de garde, papier à en-tête ; partageables en un seul fichier JSON.
+- **Une version par public** — le rapport interne complet et une version client, dont les passages internes sont retirés *avant* le rendu (jamais simplement masqués), avec arrêt en cas de doute.
+- **Markdown Obsidian natif** — callouts, Mermaid en vectoriel, notes de bas de page, listes de tâches, notes intégrées, Obsidian Columns, wikiliens.
+- **Marquage TLP** pour les équipes sécurité et CERT.
+- **Confidentiel par conception** — entièrement hors ligne : aucune requête réseau, aucun compte, polices embarquées.
+
+### Sommaire
+
+[Installation](#installation) · [Utilisation](#utilisation) · [Passages confidentiels](#passages-confidentiels) · [Export Word](#export-word) · [Modèles](#modèles) · [Limites](#limites) · [Feuille de route](#feuille-de-route) · [Licence](#licence)
 
 *Report Exporter s'appelait PDF Report Exporter jusqu'à la version 2.0. L'identifiant du plugin, les réglages et les commandes ne changent pas.*
 
