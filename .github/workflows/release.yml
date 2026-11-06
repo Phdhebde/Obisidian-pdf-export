@@ -47,12 +47,21 @@ jobs:
           fi
 
       - name: Attest build provenance
+        id: attest
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
         with:
           subject-path: |
             main.js
             manifest.json
             styles.css
+
+      # The signed Sigstore bundle, attached to the release so it can be checked
+      # offline (`gh attestation verify main.js --bundle provenance.sigstore.json
+      # --owner Phdhebde`); OpenSSF Scorecard also looks for it.
+      - name: Keep the provenance bundle
+        env:
+          BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+        run: cp "$BUNDLE" provenance.sigstore.json
 
       - name: Create draft release
         env:
@@ -62,4 +71,4 @@ jobs:
             --title "$GITHUB_REF_NAME" \
             --draft \
             --generate-notes \
-            main.js manifest.json styles.css
+            main.js manifest.json styles.css provenance.sigstore.json

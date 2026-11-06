@@ -252,7 +252,7 @@ npm run version-bump -- 2.0.0   # sync package.json / manifest.json / versions.j
 
 Tests run directly on the TypeScript sources (Node ≥ 22.18, native type stripping) — hence the explicit `.ts` extensions in imports.
 
-**Releasing:** bump the version, commit, then push a tag equal to the version (no `v` prefix). The *Release* workflow tests, builds and creates a draft GitHub release with `main.js`, `manifest.json` and `styles.css`; publish that draft once checked. Do not create the release by hand on GitHub: a release without those files attached is rejected by the community plugin review.
+**Releasing:** bump the version, commit, then push a tag equal to the version (no `v` prefix). The *Release* workflow tests, builds and creates a draft GitHub release with `main.js`, `manifest.json` and `styles.css`, plus `provenance.sigstore.json`, the signed build provenance of those files; publish that draft once checked. Do not create the release by hand on GitHub: a release without those files attached is rejected by the community plugin review.
 
 ```
 src/
