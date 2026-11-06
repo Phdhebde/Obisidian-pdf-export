@@ -8,17 +8,19 @@ on:
     tags: ["*"]
 
 permissions:
-  contents: write
-  # Signed build provenance for the release assets (`gh attestation verify`).
-  id-token: write
-  attestations: write
+  contents: read
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # create the draft release
+      # Signed build provenance for the release assets (`gh attestation verify`).
+      id-token: write
+      attestations: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 24
           cache: npm
@@ -28,7 +30,7 @@ jobs:
 
       # Microsoft's Open XML validator on sample Word exports: a schema error
       # here is a document Word would offer to "repair".
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: 8.0.x
       - name: Validate the Word export
@@ -45,7 +47,7 @@ jobs:
           fi
 
       - name: Attest build provenance
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
         with:
           subject-path: |
             main.js
