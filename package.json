@@ -1,7 +1,7 @@
 {
   "name": "pdf-report-exporter",
   "version": "2.0.1",
-  "description": "Obsidian plugin: export notes as polished PDF reports, with reusable templates.",
+  "description": "Obsidian plugin: export notes as professional PDF and Word reports, with branded templates and client versions without internal passages.",
   "main": "main.js",
   "type": "module",
   "scripts": {
@@ -18,7 +18,11 @@
     "pdf",
     "report",
     "export",
-    "pdfmake"
+    "pdfmake",
+    "word",
+    "docx",
+    "obsidian-md",
+    "tlp"
   ],
   "license": "MIT",
   "devDependencies": {
@@ -42,5 +46,9 @@
   },
   "engines": {
     "node": ">=22.18"
+  },
+  "homepage": "https://phdhebde.github.io/Obisidian-pdf-export/",
+  "bugs": {
+    "url": "https://github.com/Phdhebde/Obisidian-pdf-export/issues"
   }
 }

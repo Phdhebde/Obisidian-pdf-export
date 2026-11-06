@@ -1,0 +1,48 @@
+name: Bug report
+description: Something in an export is wrong, missing or crashes.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Please **remove any confidential content** from the notes or files you attach.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what you got instead.
+    validations:
+      required: true
+  - type: textarea
+    id: markdown
+    attributes:
+      label: Minimal note that reproduces it
+      description: The smallest Markdown (with frontmatter if relevant) that shows the problem.
+      render: markdown
+  - type: dropdown
+    id: format
+    attributes:
+      label: Output
+      options: [PDF, Word (.docx), Both]
+    validations:
+      required: true
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Report Exporter version
+      placeholder: "2.0.1"
+    validations:
+      required: true
+  - type: input
+    id: obsidian-version
+    attributes:
+      label: Obsidian version and OS
+      placeholder: "Obsidian 1.9.x, Windows 11"
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors (optional)
+      description: "Ctrl+Shift+I (Cmd+Opt+I on macOS) → Console tab."
+      render: text
