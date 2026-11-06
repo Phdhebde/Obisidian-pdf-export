@@ -61,9 +61,21 @@ export function withPrintDirective(source: string): string {
     : PRINT_DIRECTIVE + '\n' + source;
 }
 
-/** Copy every resolved paint and text property onto the element itself. */
+/** Rounded corners Pele sets in `style=""` (`rx:var(--_r)`), which svg-to-pdfkit reads only as attributes. */
+const CORNERS = ['rx', 'ry'];
+const XML_NS = 'http://www.w3.org/XML/1998/namespace';
+
+/**
+ * Copy every resolved paint and text property onto the element itself.
+ *
+ * Everything is read before anything is written: Pele declares its colours as
+ * custom properties in the root group's `style=""`, and replacing that style
+ * first would leave every element below it without a colour — no strokes, and
+ * fills in the text colour.
+ */
 function inlineStyles(root: SVGSVGElement): void {
   const view = root.ownerDocument.defaultView || window;
+  const resolved: Array<[Element, string, Array<[string, string]>]> = [];
   for (const el of [root, ...Array.from(root.querySelectorAll('*'))]) {
     if (el.tagName.toLowerCase() === 'style') continue;
     const cs = view.getComputedStyle(el);
@@ -79,9 +91,53 @@ function inlineStyles(root: SVGSVGElement): void {
     // The `text-decoration` shorthand computes to "none solid rgb(…)".
     const line = cs.getPropertyValue('text-decoration-line');
     if (line && line !== 'none') decl.push(`text-decoration:${line.split(/\s+/)[0]}`);
-    el.setAttribute('style', decl.join(';'));
+    const attrs: Array<[string, string]> = [];
+    if (el.tagName.toLowerCase() === 'rect') {
+      for (const p of CORNERS) {
+        const v = cs.getPropertyValue(p);
+        if (!el.hasAttribute(p) && v && v !== 'auto') attrs.push([p, cssValue(p, v)]);
+      }
+    }
+    resolved.push([el, decl.join(';'), attrs]);
+  }
+  for (const [el, style, attrs] of resolved) {
+    el.setAttribute('style', style);
+    for (const [p, v] of attrs) el.setAttribute(p, v);
   }
   root.querySelectorAll('style').forEach((s) => s.remove());
+}
+
+/**
+ * Drop `xml:space="preserve"`, which Pele puts on its labels: svg-to-pdfkit
+ * then misplaces the text — centred lines start off-centre, and the runs of a
+ * formatted line (bold, italic) scatter. Without it, single spaces between
+ * runs are kept; only leading, trailing and repeated spaces collapse, as they
+ * did in Mermaid's labels.
+ */
+function collapseSpaces(root: SVGSVGElement): void {
+  for (const el of Array.from(root.querySelectorAll('*'))) {
+    el.removeAttributeNS(XML_NS, 'space');
+    el.removeAttribute('xml:space');
+  }
+}
+
+/**
+ * Run `render` with the labels measured in the print font. Pele (Obsidian
+ * 1.15+) ignores the directive's font and measures in `--font-mermaid` as the
+ * body has it; Mermaid before it ignores the variable. Pele renders
+ * synchronously, so the variable is set back before the next frame and no
+ * diagram on screen changes font (only a diagram with `$$` maths may wait for
+ * MathJax in between).
+ */
+async function inPrintFont<T>(render: () => Promise<T>): Promise<T> {
+  const body = document.body;
+  const before = body.style.getPropertyValue('--font-mermaid');
+  body.setCssProps({ '--font-mermaid': FONT });
+  try {
+    return await render();
+  } finally {
+    body.setCssProps({ '--font-mermaid': before });
+  }
 }
 
 /** Mermaid's markup -> standalone SVG that pdfmake can draw, and its size. */
@@ -102,6 +158,7 @@ function toPrintableSvg(markup: string): DiagramSvg | null {
     const svg = document.importNode(parsed, true);
     host.appendChild(svg);
     inlineStyles(svg);
+    collapseSpaces(svg);
     // pdfmake sizes the drawing from these; `100%` has nothing to refer to.
     svg.setAttribute('width', String(w));
     svg.setAttribute('height', String(h));
@@ -136,7 +193,7 @@ export async function renderMermaid(
   for (let i = 0; i < sources.length; i++) {
     const id = `pdf-report-mermaid-${stamp}-${i}`;
     try {
-      const { svg } = await mermaid.render(id, withPrintDirective(sources[i]));
+      const { svg } = await inPrintFont(() => mermaid.render(id, withPrintDirective(sources[i])));
       const out = toPrintableSvg(svg);
       if (out) diagrams[sources[i]] = out;
       else failed++;

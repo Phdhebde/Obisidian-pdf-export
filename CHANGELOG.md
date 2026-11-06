@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1
+
+- **Mermaid diagrams print correctly again with Obsidian 1.15**, which draws them with Pele instead of Mermaid.js ([#14](https://github.com/Phdhebde/Obisidian-pdf-export/issues/14)): shapes have their border, arrows and lines are back, multi-line and formatted labels are centred, and the diagram keeps light paper colours whatever Obsidian's theme — dark included. Labels are measured in the font the PDF prints them in.
+
 ## 2.0.0
 
 - **PDF Report Exporter is now Report Exporter**: one note, a PDF or a Word document, a full or a client version. The plugin id, your templates, profiles and settings, and the commands do not change; the update needs nothing from you.
