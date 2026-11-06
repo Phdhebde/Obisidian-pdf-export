@@ -15,6 +15,7 @@
   <a href="https://github.com/Phdhebde/Obisidian-pdf-export/releases"><img alt="Téléchargements" src="https://img.shields.io/github/downloads/Phdhebde/Obisidian-pdf-export/total?label=t%C3%A9l%C3%A9chargements&color=E8553A"></a>
   <a href="https://github.com/Phdhebde/Obisidian-pdf-export/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Phdhebde/Obisidian-pdf-export/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://scorecard.dev/viewer/?uri=github.com/Phdhebde/Obisidian-pdf-export"><img alt="OpenSSF Scorecard" src="https://api.scorecard.dev/projects/github.com/Phdhebde/Obisidian-pdf-export/badge"></a>
+  <a href="https://www.bestpractices.dev/projects/16382"><img alt="OpenSSF Best Practices" src="https://www.bestpractices.dev/projects/16382/badge"></a>
   <a href="LICENSE"><img alt="Licence MIT" src="https://img.shields.io/github/license/Phdhebde/Obisidian-pdf-export?label=licence&color=555"></a>
   <img alt="Obsidian 1.8.7+" src="https://img.shields.io/badge/Obsidian-1.8.7%2B-7C3AED?logo=obsidian&logoColor=white">
 </p>
