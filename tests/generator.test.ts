@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { collectDiagrams, coverShift, fitCoverTitle, defaultLabels, defaultPreset, normalizeTlp } from '../src/generator.ts';
+import { collectDiagrams, coverShift, fitCoverTitle, defaultLabels, defaultPreset, normalizeTlp, decodeEntities } from '../src/generator.ts';
 import { buildDocDefinition, markdownToPdf, type PdfNode } from './loose.ts';
 import type { Preset, ReportVars } from '../src/types.ts';
 
@@ -427,7 +427,7 @@ test('a rendered diagram prints as vectors, sized from its natural width', () =>
 });
 
 test('a wide diagram is held to the column it sits in', () => {
-  const dd = buildDocDefinition('> [!info]\n> ```mermaid\n> ' + FLOW.replace('\n', '\n> ') + '\n> ```',
+  const dd = buildDocDefinition('> [!info]\n> ```mermaid\n> ' + FLOW.split('\n').join('\n> ') + '\n> ```',
     vars({ sections: ['body'] }), preset(), { diagrams: { [FLOW]: drawn(2000, 300) } });
   const found: PdfNode[] = [];
   walk(dd.content, (n) => { if (n.svg === SVG) found.push(n); }); // not the callout icon
@@ -488,4 +488,10 @@ test('footnotes become superscript numbers linked to notes at the end of the bod
 test('a note without footnotes has no notes title', () => {
   const dd = buildDocDefinition('Plain text.', vars({ sections: ['body'] }), preset());
   assert.ok(!collectText(dd.content).includes('Notes'));
+});
+
+test('entities are decoded once: an escaped entity stays as text', () => {
+  assert.equal(decodeEntities('a &lt;b&gt; &amp; c'), 'a <b> & c');
+  assert.equal(decodeEntities('&amp;lt;tag&amp;gt;'), '&lt;tag&gt;');
+  assert.equal(decodeEntities('&#39;x&#x2019; &hellip; &unknown;'), "'x’ … &unknown;");
 });

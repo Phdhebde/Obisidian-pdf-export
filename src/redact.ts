@@ -147,7 +147,8 @@ export const MARK_START_RE = /^<!--\s*report-mark-start\s+(.+?)\s*-->$/;
 export const MARK_END_RE = /^<!--\s*report-mark-end\s*-->$/;
 
 export function markStart(mark: Mark): string {
-  return `<!-- report-mark-start ${markLabel(mark).replace(/-->/g, '')} -->`;
+  // No run of dashes in the label, so it can never close the comment early.
+  return `<!-- report-mark-start ${markLabel(mark).replace(/-{2,}/g, '-')} -->`;
 }
 
 export const MARK_END = '<!-- report-mark-end -->';

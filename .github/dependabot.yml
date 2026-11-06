@@ -16,3 +16,7 @@ updates:
     groups:
       actions:
         patterns: ["*"]
+  - package-ecosystem: pip
+    directory: /website
+    schedule:
+      interval: weekly

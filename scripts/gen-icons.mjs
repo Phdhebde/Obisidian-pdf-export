@@ -26,7 +26,7 @@ const inner = (file) => {
 };
 
 const entries = Object.entries(ICONS)
-  .map(([key, file]) => `  ${key}:\n    '${inner(file).replace(/'/g, "\'")}'`)
+  .map(([key, file]) => `  ${key}:\n    '${inner(file).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`)
   .join(',\n');
 
 const version = JSON.parse(readFileSync('node_modules/lucide-static/package.json', 'utf8')).version;

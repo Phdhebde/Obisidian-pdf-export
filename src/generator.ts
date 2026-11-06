@@ -387,13 +387,20 @@ export function tlpColor(preset: Preset, key: TlpKey): TlpColor {
 /* Inline rendering                                                    */
 /* ------------------------------------------------------------------ */
 
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: '&', lt: '<', gt: '>', quot: '"', rsquo: '’', lsquo: '‘', hellip: '…', nbsp: ' '
+};
+
+/**
+ * Decode the HTML entities marked leaves in text, in a single pass, so that an
+ * escaped entity (`&amp;lt;`) comes out as the text `&lt;`, not as `<`.
+ */
 export function decodeEntities(s: unknown): string {
-  return asText(s)
-    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&rsquo;/g, '’')
-    .replace(/&lsquo;/g, '‘').replace(/&hellip;/g, '…').replace(/&nbsp;/g, ' ')
-    .replace(/&#x([0-9a-f]+);/gi, (_, h: string) => String.fromCodePoint(parseInt(h, 16)))
-    .replace(/&#(\d+);/g, (_, d: string) => String.fromCodePoint(parseInt(d, 10)));
+  return asText(s).replace(/&(?:#x([0-9a-f]+)|#(\d+)|([a-z]+));/gi, (all, hex?: string, dec?: string, name?: string) => {
+    if (hex) return String.fromCodePoint(parseInt(hex, 16));
+    if (dec) return String.fromCodePoint(parseInt(dec, 10));
+    return NAMED_ENTITIES[(name ?? '').toLowerCase()] ?? all;
+  });
 }
 
 /** Fill behind a restricted phrase kept in this version. */

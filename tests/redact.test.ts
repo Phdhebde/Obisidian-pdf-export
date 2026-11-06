@@ -7,8 +7,10 @@ import { stripFrontmatter } from '../src/textScan.ts';
 import {
   AudienceError,
   MARK_END,
+  MARK_START_RE,
   emptyCounts,
   kept,
+  markStart,
   normalizeLevels,
   noteMark,
   parseTlp,
@@ -378,4 +380,10 @@ test('the example note exports as its closing paragraph says', () => {
 test('marking does not weaken a restricted version', () => {
   const md = redact(SENTINEL_NOTE, { ...client, mark: true });
   assert.deepEqual(leaked(md), []);
+});
+
+test('a level name cannot close the marker comment early', () => {
+  const start = markStart({ levels: ['a-->b', 'c--!>d'], tlp: null });
+  assert.equal((start.match(/--/g) ?? []).length, 2, 'only the opening and closing dashes');
+  assert.match(start, MARK_START_RE);
 });
