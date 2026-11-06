@@ -13,6 +13,30 @@
   inset-inline-start: -100000px;
   inset-block-start: 0;
   pointer-events: none;
+  /* Paper colours, whatever the theme. Obsidian 1.15+ draws diagrams with
+     Pele, which takes its palette from these variables (by default the
+     theme's); the values are Mermaid's default theme, which older versions
+     printed. */
+  --pele-bg: #ffffff;
+  --pele-fg: #333333;
+  --pele-muted: #666666;
+  --pele-line: #333333;
+  --pele-surface: #ececff;
+  --pele-surface-alt: #ffffde;
+  --pele-border: #9370db;
+  --pele-accent: #8a6fdf;
+  --pele-critical: #d0021b;
+  --pele-error: #c0392b;
+  --pele-radius: 3px;
+  --pele-font: Arial, "Liberation Sans", Helvetica, sans-serif;
+  --pele-series-1: #086ddd;
+  --pele-series-2: #ec7500;
+  --pele-series-3: #08b94e;
+  --pele-series-4: #e93147;
+  --pele-series-5: #00bfbc;
+  --pele-series-6: #e0ac00;
+  --pele-series-7: #7852ee;
+  --pele-series-8: #d53984;
 }
 
 /* --- Template picker ---------------------------------------------- */
