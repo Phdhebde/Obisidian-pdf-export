@@ -23,6 +23,9 @@ import { marked } from 'marked';
 import {
   CALLOUT_STYLES,
   CAPTION_RE,
+  DEFAULT_PAGE_MARGINS,
+  PAGE_H,
+  PAGE_W,
   IMAGE_REF_RE,
   bodySize,
   decodeEntities,
@@ -118,11 +121,10 @@ export class WordTemplateError extends Error {
 /* Units                                                               */
 /* ------------------------------------------------------------------ */
 
-/** A4 in points, then in twips. */
-const PAGE_W = 595.28;
-const PAGE_H = 841.89;
+/** A4 in twips (PAGE_W and PAGE_H, in points, come from the PDF engine). */
 const PAGE_W_TW = 11906;
 const PAGE_H_TW = 16838;
+const ONE_INCH_TW = 1440;
 
 const tw = (pt: number) => Math.round(pt * 20);
 const EMU_PER_PT = 12700;
@@ -584,21 +586,34 @@ function rasterPicture(img: RasterImage, key: string, rels: Relationships, ctx: 
   return { id, svg };
 }
 
-/** A solid rectangle on the page, behind the text, in points from the top-left corner. */
-function rect(color: string, x: number, y: number, width: number, height: number, rels: Relationships, ctx: WordContext): string {
-  const rgb = hex(color);
-  const id = ctx.media.add(rels, 'solid:' + rgb, solidPng(rgb), 'png');
-  return pictureRun({ id, cx: width * EMU_PER_PT, cy: height * EMU_PER_PT, anchor: { x: x * EMU_PER_PT, y: y * EMU_PER_PT } }, ctx);
+/**
+ * Draws behind the text of a header part, in points from the top-left corner
+ * of the page, with the argument order of a canvas (`x, y, width, height`).
+ */
+interface PageArt {
+  /** A solid rectangle. */
+  rect(color: string, x: number, y: number, width: number, height: number): string;
+  /** A data-URL picture, `width` points wide; without `height`, its height follows its proportions. */
+  image(url: string, key: string, x: number, y: number, width: number, height?: number): string;
 }
 
-/** A data-URL image placed on the page, `width` points wide, its height from its proportions. */
-function placedImage(url: string, key: string, x: number, y: number, width: number, height: number | null, rels: Relationships, ctx: WordContext): string {
-  const img = parseDataUrl(url);
-  if (!img || img.ext === 'svg') return '';
-  const size = imageSize(img.bytes);
-  const h = height ?? (size && size.w ? (width * size.h) / size.w : width);
-  const id = ctx.media.add(rels, key, img.bytes, img.ext);
-  return pictureRun({ id, cx: width * EMU_PER_PT, cy: h * EMU_PER_PT, anchor: { x: x * EMU_PER_PT, y: y * EMU_PER_PT } }, ctx);
+/** A `PageArt` whose pictures belong to the header part that `rels` describes. */
+function pageArt(rels: Relationships, ctx: WordContext): PageArt {
+  const anchored = (id: string, x: number, y: number, width: number, height: number) =>
+    pictureRun({ id, cx: width * EMU_PER_PT, cy: height * EMU_PER_PT, anchor: { x: x * EMU_PER_PT, y: y * EMU_PER_PT } }, ctx);
+  return {
+    rect(color, x, y, width, height) {
+      const rgb = hex(color);
+      return anchored(ctx.media.add(rels, 'solid:' + rgb, solidPng(rgb), 'png'), x, y, width, height);
+    },
+    image(url, key, x, y, width, height) {
+      const img = parseDataUrl(url);
+      if (!img || img.ext === 'svg') return '';
+      const size = imageSize(img.bytes);
+      const proportional = size && size.w ? (width * size.h) / size.w : width;
+      return anchored(ctx.media.add(rels, key, img.bytes, img.ext), x, y, width, height ?? proportional);
+    }
+  };
 }
 
 /* ------------------------------------------------------------------ */
@@ -1342,23 +1357,24 @@ function coverHeader(ctx: WordContext, rels: Relationships, ruleY: number, logo:
   const p = ctx.preset;
   const C = p.colors;
   const cv = p.layout.cover;
+  const draw = pageArt(rels, ctx);
   // The artwork, when Word can show it; otherwise the decoration, as in the PDF.
-  let art = p.assets.coverBg ? placedImage(p.assets.coverBg, 'coverBg', 0, 0, PAGE_W, PAGE_H, rels, ctx) : '';
+  let art = p.assets.coverBg ? draw.image(p.assets.coverBg, 'coverBg', 0, 0, PAGE_W, PAGE_H) : '';
   if (!art && p.layout.decor !== false) {
     const bx = Math.max(0, cv.x - 28);
     const top = Math.max(0, cv.titleY - 40);
     const bottom = Math.min(PAGE_H - 160, Math.max(cv.acronymY, cv.subtitleY) + (ruleY - cv.ruleY) + 90);
     const accent = tint(C.brand, 0.35);
     art +=
-      rect(C.brand, 0, 0, 14, PAGE_H, rels, ctx) +
-      rect(C.brand, bx - 1.25, top - 1.25, 2.5, bottom - top + 2.5, rels, ctx) +
-      rect(C.brand, bx, top - 1.25, 90, 2.5, rels, ctx) +
-      rect(accent, bx, bottom - 1.25, 90, 2.5, rels, ctx) +
-      rect(C.dark, 0, PAGE_H - 96, PAGE_W, 96, rels, ctx) +
-      rect(C.brand, 0, PAGE_H - 101, PAGE_W * 0.45, 5, rels, ctx);
+      draw.rect(C.brand, 0, 0, 14, PAGE_H) +
+      draw.rect(C.brand, bx - 1.25, top - 1.25, 2.5, bottom - top + 2.5) +
+      draw.rect(C.brand, bx, top - 1.25, 90, 2.5) +
+      draw.rect(accent, bx, bottom - 1.25, 90, 2.5) +
+      draw.rect(C.dark, 0, PAGE_H - 96, PAGE_W, 96) +
+      draw.rect(C.brand, 0, PAGE_H - 101, PAGE_W * 0.45, 5);
   }
-  if (cv.showRule !== false) art += rect('#141414', cv.x, ruleY, cv.ruleW, 3, rels, ctx);
-  if (logo) art += placedImage(logo, 'coverLogo', cv.logoX, cv.logoY, cv.logoW, null, rels, ctx);
+  if (cv.showRule !== false) art += draw.rect('#141414', cv.x, ruleY, cv.ruleW, 3);
+  if (logo) art += draw.image(logo, 'coverLogo', cv.logoX, cv.logoY, cv.logoW);
   return `${XML_DECL}<w:hdr xmlns:w="${NS.w}" xmlns:r="${NS.r}">${para({}, art)}</w:hdr>`;
 }
 
@@ -1366,13 +1382,14 @@ function coverHeader(ctx: WordContext, rels: Relationships, ruleY: number, logo:
 function frameHeader(vars: ReportVars, ctx: WordContext, rels: Relationships, right: number): string {
   const p = ctx.preset;
   const C = p.colors;
-  let art = p.assets.frame ? placedImage(p.assets.frame, 'frame', 0, 0, PAGE_W, PAGE_H, rels, ctx) : '';
+  const draw = pageArt(rels, ctx);
+  let art = p.assets.frame ? draw.image(p.assets.frame, 'frame', 0, 0, PAGE_W, PAGE_H) : '';
   if (!art && p.layout.decor !== false) {
     art +=
-      rect(C.banner, 0, 0, PAGE_W, 64, rels, ctx) +
-      rect(tint(C.banner, 0.55), 0, 64, PAGE_W, 3, rels, ctx) +
-      rect(C.dark, 0, PAGE_H - 48, PAGE_W, 48, rels, ctx) +
-      rect(C.brand, 0, PAGE_H - 51, PAGE_W * 0.45, 3, rels, ctx);
+      draw.rect(C.banner, 0, 0, PAGE_W, 64) +
+      draw.rect(tint(C.banner, 0.55), 0, 64, PAGE_W, 3) +
+      draw.rect(C.dark, 0, PAGE_H - 48, PAGE_W, 48) +
+      draw.rect(C.brand, 0, PAGE_H - 51, PAGE_W * 0.45, 3);
   }
   // The text ends where the PDF's does, `headerRight` from the edge of the page.
   const ind = `<w:ind w:right="${tw(p.layout.headerRight - right)}"/>`;
@@ -1546,25 +1563,47 @@ function mainPart(pkg: Package): string {
   return path;
 }
 
-/** The part a relationship of `type` points to, created when there is none. */
-function partOf(main: string, rels: Relationships, contentTypes: ContentTypes, type: string, name: string, contentType: string): string {
-  const rel = rels.ofType(type)[0];
-  if (rel) return resolveTarget(main, rel.target);
-  rels.add(type, name);
-  const path = resolveTarget(main, name);
-  contentTypes.setOverride(path, contentType);
+/** The package being written, with its main part's relationships and its content types. */
+interface DocumentParts {
+  pkg: Package;
+  /** Path of the main part, `word/document.xml` in a generated package. */
+  main: string;
+  rels: Relationships;
+  contentTypes: ContentTypes;
+}
+
+/** A part the main part has at most one of; its relationship and content type share its name. */
+type SinglePart = 'styles' | 'numbering' | 'settings' | 'footnotes';
+
+/** The path of the template's own `kind` part, or null when it has none. */
+function existingPart(parts: DocumentParts, kind: SinglePart): string | null {
+  const rel = parts.rels.ofType(REL_TYPES[kind])[0];
+  return rel ? resolveTarget(parts.main, rel.target) : null;
+}
+
+/** The path of the `kind` part, created (as `styles.xml`, `numbering.xml`…) when there is none. */
+function partOf(parts: DocumentParts, kind: SinglePart): string {
+  const existing = existingPart(parts, kind);
+  if (existing) return existing;
+  const name = `${kind}.xml`;
+  parts.rels.add(REL_TYPES[kind], name);
+  const path = resolveTarget(parts.main, name);
+  parts.contentTypes.setOverride(path, CONTENT_TYPES[kind]);
   return path;
 }
 
-/** Text width of the document's last section, in twips. */
+/**
+ * Text width of the document's last section, in twips. A margin the section
+ * does not give is Word's default, one inch; a width that is missing or
+ * narrower than an inch falls back to Word's blank A4 page.
+ */
 function textWidth(doc: string): number {
   const sect = doc.lastIndexOf('<w:sectPr');
   const tail = sect >= 0 ? doc.slice(sect) : '';
-  const w = parseInt(attrOf(tail, 'w:pgSz', 'w:w') ?? '', 10);
-  const l = parseInt(attrOf(tail, 'w:pgMar', 'w:left') ?? '', 10);
-  const r = parseInt(attrOf(tail, 'w:pgMar', 'w:right') ?? '', 10);
-  const width = w - (isNaN(l) ? 1440 : l) - (isNaN(r) ? 1440 : r);
-  return isFinite(width) && width > 1440 ? width : 9026;
+  const twips = (el: string, attr: string) => parseInt(attrOf(tail, el, attr) ?? '', 10);
+  const marginOr = (value: number) => (isNaN(value) ? ONE_INCH_TW : value);
+  const width = twips('w:pgSz', 'w:w') - marginOr(twips('w:pgMar', 'w:left')) - marginOr(twips('w:pgMar', 'w:right'));
+  return isFinite(width) && width > ONE_INCH_TW ? width : PAGE_W_TW - 2 * ONE_INCH_TW;
 }
 
 function setCoreTitle(xml: string, vars: ReportVars): string {
@@ -1593,12 +1632,21 @@ export function listWordStyles(template: Uint8Array): { name: string; type: Styl
   return xml ? parseStyles(xml).map((s) => ({ name: s.name, type: s.type })) : [];
 }
 
+/** A header or footer part: its file name under `word/`, its XML and its own relationships. */
+interface HeaderFooterPart {
+  kind: 'header' | 'footer';
+  name: string;
+  xml: string;
+  rels: Relationships;
+}
+
 /** Add a header or footer part to a generated package and return its relationship id. */
-function addPart(pkg: Package, docRels: Relationships, contentTypes: ContentTypes, kind: 'header' | 'footer', name: string, xml: string, rels: Relationships): string {
-  pkg.setText(`word/${name}`, xml);
-  if (rels.list.length) pkg.setText(relsPath(`word/${name}`), rels.toXml());
-  contentTypes.setOverride(`word/${name}`, kind === 'header' ? CONTENT_TYPES.header : CONTENT_TYPES.footer);
-  return docRels.add(kind === 'header' ? REL_TYPES.header : REL_TYPES.footer, name);
+function addPart(parts: DocumentParts, part: HeaderFooterPart): string {
+  const path = `word/${part.name}`;
+  parts.pkg.setText(path, part.xml);
+  if (part.rels.list.length) parts.pkg.setText(relsPath(path), part.rels.toXml());
+  parts.contentTypes.setOverride(path, CONTENT_TYPES[part.kind]);
+  return parts.rels.add(REL_TYPES[part.kind], part.name);
 }
 
 export function buildDocx(md: string, vars: ReportVars, preset: Preset, options: DocxOptions = {}): DocxResult {
@@ -1607,24 +1655,21 @@ export function buildDocx(md: string, vars: ReportVars, preset: Preset, options:
   const main = mainPart(pkg);
   const rels = new Relationships(pkg.text(relsPath(main)));
   const contentTypes = new ContentTypes(pkg.text('[Content_Types].xml') || '');
+  const parts: DocumentParts = { pkg, main, rels, contentTypes };
   const doc = ensureRootNs(pkg.text(main) || '', 'r', NS.r);
 
-  const stylesPath = partOf(main, rels, contentTypes, REL_TYPES.styles, 'styles.xml', CONTENT_TYPES.styles);
+  const stylesPath = partOf(parts, 'styles');
   const styles = new StyleBook(
     pkg.text(stylesPath) || `${XML_DECL}<w:styles xmlns:w="${NS.w}"></w:styles>`,
     preset,
     generated ? {} : preset.word?.styles || {}
   );
-  const numberingRel = rels.ofType(REL_TYPES.numbering)[0];
-  const numberingPath = numberingRel ? resolveTarget(main, numberingRel.target) : null;
-  const footnotesRel = rels.ofType(REL_TYPES.footnotes)[0];
-  const footnotesPath = footnotesRel ? resolveTarget(main, footnotesRel.target) : null;
+  const numberingPath = existingPart(parts, 'numbering');
+  const footnotesPath = existingPart(parts, 'footnotes');
   const extracted = extractFootnotes(md);
 
-  // A generated page has the PDF template's side margins.
-  const margins = preset.layout.pageMargins;
-  const left = margins[0] ?? 64;
-  const right = margins[2] ?? 64;
+  // A generated page has the PDF template's margins.
+  const [left, top, right, bottom] = DEFAULT_PAGE_MARGINS.map((fallback, i) => preset.layout.pageMargins[i] ?? fallback);
 
   const diagrams = new Map<string, RasterImage>();
   for (const [source, d] of Object.entries(options.diagrams || {})) {
@@ -1664,7 +1709,6 @@ export function buildDocx(md: string, vars: ReportVars, preset: Preset, options:
     const sections = resolveSections(vars, preset);
     const tlp = reportTlp(vars.tlp, sections);
     const hasCover = sections[0] === 'cover';
-    const top = margins[1] ?? 100;
     let cover: { xml: string; ruleY: number } | null = null;
     const pages: string[] = [];
     for (const sec of sections) {
@@ -1680,20 +1724,25 @@ export function buildDocx(md: string, vars: ReportVars, preset: Preset, options:
 
     // Headers and footers: the cover page has its own, every other page the frame.
     const headerRels = new Relationships(null);
-    const header = addPart(pkg, rels, contentTypes, 'header', 'header1.xml', frameHeader(vars, ctx, headerRels, right), headerRels);
-    const footer = addPart(pkg, rels, contentTypes, 'footer', 'footer1.xml', footerXml(ctx, tlp, right), new Relationships(null));
+    const header = addPart(parts, { kind: 'header', name: 'header1.xml', xml: frameHeader(vars, ctx, headerRels, right), rels: headerRels });
+    const footer = addPart(parts, { kind: 'footer', name: 'footer1.xml', xml: footerXml(ctx, tlp, right), rels: new Relationships(null) });
     let first = '';
     if (hasCover && cover) {
       const coverRels = new Relationships(null);
       const logo = options.clientLogo || preset.assets.clientLogo || null;
-      const id = addPart(pkg, rels, contentTypes, 'header', 'header2.xml', coverHeader(ctx, coverRels, cover.ruleY, logo), coverRels);
-      const blank = addPart(pkg, rels, contentTypes, 'footer', 'footer2.xml', `${XML_DECL}<w:ftr xmlns:w="${NS.w}">${para({}, '')}</w:ftr>`, new Relationships(null));
+      const id = addPart(parts, { kind: 'header', name: 'header2.xml', xml: coverHeader(ctx, coverRels, cover.ruleY, logo), rels: coverRels });
+      const blank = addPart(parts, {
+        kind: 'footer',
+        name: 'footer2.xml',
+        xml: `${XML_DECL}<w:ftr xmlns:w="${NS.w}">${para({}, '')}</w:ftr>`,
+        rels: new Relationships(null)
+      });
       first = `<w:headerReference w:type="first" r:id="${id}"/><w:footerReference w:type="first" r:id="${blank}"/>`;
     }
     const sectPr =
       `<w:sectPr><w:headerReference w:type="default" r:id="${header}"/><w:footerReference w:type="default" r:id="${footer}"/>${first}` +
       `<w:pgSz w:w="${PAGE_W_TW}" w:h="${PAGE_H_TW}"/>` +
-      `<w:pgMar w:top="${tw(top)}" w:right="${tw(right)}" w:bottom="${tw(margins[3] ?? 82)}" w:left="${tw(left)}" ` +
+      `<w:pgMar w:top="${tw(top)}" w:right="${tw(right)}" w:bottom="${tw(bottom)}" w:left="${tw(left)}" ` +
       `w:header="${tw(preset.layout.headerY)}" w:footer="${tw(footerDistance(ctx, !!tlp))}" w:gutter="0"/>` +
       `${hasCover ? '<w:titlePg/>' : ''}</w:sectPr>`;
     out = doc.replace(/<w:body>[\s\S]*<\/w:body>/, `<w:body>${body}${sectPr}</w:body>`);
@@ -1727,15 +1776,15 @@ export function buildDocx(md: string, vars: ReportVars, preset: Preset, options:
   pkg.setText(main, out);
 
   if (usesToc) {
-    const path = partOf(main, rels, contentTypes, REL_TYPES.settings, 'settings.xml', CONTENT_TYPES.settings);
+    const path = partOf(parts, 'settings');
     pkg.setText(path, withUpdateFields(pkg.text(path) || `${XML_DECL}<w:settings xmlns:w="${NS.w}"></w:settings>`));
   }
   if (ctx.numbering.used) {
-    const path = numberingPath ?? partOf(main, rels, contentTypes, REL_TYPES.numbering, 'numbering.xml', CONTENT_TYPES.numbering);
+    const path = partOf(parts, 'numbering');
     pkg.setText(path, ctx.numbering.toXml());
   }
   if (ctx.notes.used) {
-    const path = footnotesPath ?? partOf(main, rels, contentTypes, REL_TYPES.footnotes, 'footnotes.xml', CONTENT_TYPES.footnotes);
+    const path = partOf(parts, 'footnotes');
     pkg.setText(path, ctx.notes.toXml());
     if (ctx.notes.rels.list.length) pkg.setText(relsPath(path), ctx.notes.rels.toXml());
   }

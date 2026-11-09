@@ -92,8 +92,11 @@ export function lex(md: string): MdToken[] {
 }
 
 /** A4 in points — the only page size the generator emits. */
-const PAGE_W = 595.28;
-const PAGE_H = 841.89;
+export const PAGE_W = 595.28;
+export const PAGE_H = 841.89;
+
+/** A new template's page margins in points: left, top, right, bottom. */
+export const DEFAULT_PAGE_MARGINS: readonly [number, number, number, number] = [64, 100, 64, 82];
 
 /* ------------------------------------------------------------------ */
 /* Pagination                                                          */
@@ -297,7 +300,7 @@ export function defaultPreset(assets?: Partial<PresetAssets>, locale: Locale = g
     },
     fonts: { bodyFont: 'Liberation', headingFont: 'Archivo', monoFont: 'LiberationMono', bodySize: 11 },
     layout: {
-      pageMargins: [64, 100, 64, 82],
+      pageMargins: [...DEFAULT_PAGE_MARGINS],
       headerY: 15,
       headerRight: 40,
       footerY: 43,

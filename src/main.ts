@@ -26,6 +26,7 @@ import {
   targetPath,
   writeExport,
   type ExportDeps,
+  type ExportRequest,
   type ExportFormat
 } from './exporter.ts';
 import { getLocale, setLocale, t } from './i18n.ts';
@@ -265,7 +266,7 @@ export default class PdfReportPlugin extends Plugin {
     try {
       const deps = this.deps();
       const chosen = profile === undefined ? profileFromFrontmatter(this.app, file, this.data.profiles) : profile;
-      const result = await this.writeVersion(deps, file, preset, chosen, selection, format);
+      const result = await this.writeVersion(deps, { file, preset, profile: chosen, selection }, format);
       if (!result) { notice.hide(); return; }
 
       await this.rememberPreset(preset);
@@ -291,7 +292,7 @@ export default class PdfReportPlugin extends Plugin {
     const summaries: string[] = [];
     try {
       for (const profile of [null, ...this.data.profiles]) {
-        const result = await this.writeVersion(deps, file, preset, profile);
+        const result = await this.writeVersion(deps, { file, preset, profile });
         if (!result) continue;
         written.push(result.file);
         result.warnings.forEach((w) => warnings.add(w));
@@ -319,14 +320,12 @@ export default class PdfReportPlugin extends Plugin {
   /** Render one version and write it, asking about an existing file. Null when the user cancels. */
   private async writeVersion(
     deps: ExportDeps,
-    file: TFile,
-    preset: Preset,
-    profile: ExportProfile | null,
-    selection?: string,
+    request: ExportRequest,
     format: ExportFormat = 'pdf'
   ): Promise<{ file: TFile; warnings: string[]; redacted: RedactionCounts | null } | null> {
+    const { file, profile } = request;
     const render = format === 'docx' ? renderWord : renderReport;
-    const { bytes, vars, warnings, redacted } = await render(deps, file, preset, profile, selection);
+    const { bytes, vars, warnings, redacted } = await render(deps, request);
     let target = targetPath(deps, file, vars, profile, format);
     if (target.exists) {
       const mode = await this.resolveConflict(target.path);
@@ -405,7 +404,7 @@ export default class PdfReportPlugin extends Plugin {
       try {
         const notePreset = presetFromFrontmatter(this.app, note, this.data.presets) || preset;
         const profile = profileFromFrontmatter(this.app, note, this.data.profiles);
-        const { bytes, vars, redacted } = await renderReport(deps, note, notePreset, profile);
+        const { bytes, vars, redacted } = await renderReport(deps, { file: note, preset: notePreset, profile });
         // In batch, never prompt: a collision falls back to a numbered name
         // unless the user has explicitly chosen to overwrite.
         const target = targetPath(deps, note, vars, profile);
@@ -452,7 +451,7 @@ export default class PdfReportPlugin extends Plugin {
     try {
       const deps = this.deps();
       const profile = profileFromFrontmatter(this.app, file, this.data.profiles);
-      const { bytes, warnings } = await renderReport(deps, file, preset, profile);
+      const { bytes, warnings } = await renderReport(deps, { file, preset, profile });
       const folder = (this.data.outputFolder || '').trim().replace(/^\/+|\/+$/g, '');
       const name = t('preview.file');
       const path = normalizePath(folder ? `${folder}/${name}` : name);
