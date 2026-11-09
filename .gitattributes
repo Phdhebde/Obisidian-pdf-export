@@ -1,0 +1,2 @@
+# Reference outputs are compared line by line: keep them LF on every platform.
+tests/reference/** text eol=lf

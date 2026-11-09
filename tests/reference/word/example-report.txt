@@ -1,0 +1,3167 @@
+===== _rels/.rels
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>
+</Relationships>
+===== [Content_Types].xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+<Default Extension="xml" ContentType="application/xml"/>
+<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
+<Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>
+<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>
+<Override PartName="/word/header1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"/>
+<Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>
+<Override PartName="/word/header2.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"/>
+<Override PartName="/word/footer2.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>
+<Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>
+<Default Extension="png" ContentType="image/png"/>
+</Types>
+===== docProps/core.xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<dc:title>Website Migration Review</dc:title>
+<dc:creator>Jane Doe</dc:creator>
+</cp:coreProperties>
+===== word/_rels/document.xml.rels
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>
+<Relationship Id="rIdReport1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header1.xml"/>
+<Relationship Id="rIdReport2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>
+<Relationship Id="rIdReport3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header2.xml"/>
+<Relationship Id="rIdReport4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer2.xml"/>
+<Relationship Id="rIdReport5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>
+</Relationships>
+===== word/_rels/header1.xml.rels
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rIdReport1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/report-image1.png"/>
+<Relationship Id="rIdReport2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/report-image2.png"/>
+<Relationship Id="rIdReport3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/report-image3.png"/>
+</Relationships>
+===== word/_rels/header2.xml.rels
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rIdReport1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/report-image1.png"/>
+<Relationship Id="rIdReport2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/report-image4.png"/>
+<Relationship Id="rIdReport3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/report-image3.png"/>
+<Relationship Id="rIdReport4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/report-image5.png"/>
+</Relationships>
+===== word/document.xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<w:body>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Title"/>
+<w:spacing w:before="3760" w:after="0" w:line="864" w:lineRule="exact"/>
+<w:ind w:left="720"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="72"/>
+<w:szCs w:val="72"/>
+</w:rPr>
+<w:t xml:space="preserve">WEBSITE</w:t>
+<w:br/>
+<w:t xml:space="preserve">MIGRATION</w:t>
+<w:br/>
+<w:t xml:space="preserve">REVIEW</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Subtitle"/>
+<w:spacing w:before="348" w:after="0" w:line="432" w:lineRule="exact"/>
+<w:ind w:left="720"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:sz w:val="36"/>
+<w:szCs w:val="36"/>
+</w:rPr>
+<w:t xml:space="preserve">Audit</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Subtitle"/>
+<w:spacing w:before="68" w:after="0" w:line="672" w:lineRule="exact"/>
+<w:ind w:left="720"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial Black" w:hAnsi="Arial Black" w:cs="Arial Black"/>
+<w:color w:val="141414"/>
+<w:sz w:val="56"/>
+<w:szCs w:val="56"/>
+</w:rPr>
+<w:t xml:space="preserve">WMR</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="ReportSectionTitle"/>
+<w:pageBreakBefore/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Document references</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="ReportSectionSubtitle"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Document status</w:t>
+</w:r>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:tblStyle w:val="TableGrid"/>
+<w:tblW w:w="9346" w:type="dxa"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="1400"/>
+<w:gridCol w:w="1800"/>
+<w:gridCol w:w="6146"/>
+</w:tblGrid>
+<w:tr>
+<w:trPr>
+<w:tblHeader/>
+</w:trPr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="1400" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">VERSION</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="1800" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">DATE</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="6146" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">STATUS</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="1400" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">1.0</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="1800" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">2026-10-01</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="6146" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Draft</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="1400" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">1.1</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="1800" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">2026-10-21</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="6146" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Final</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="1400" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="1800" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="6146" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="120"/>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="ReportSectionSubtitle"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Contacts</w:t>
+</w:r>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:tblStyle w:val="TableGrid"/>
+<w:tblW w:w="9345" w:type="dxa"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="3115"/>
+<w:gridCol w:w="3115"/>
+<w:gridCol w:w="3115"/>
+</w:tblGrid>
+<w:tr>
+<w:trPr>
+<w:tblHeader/>
+</w:trPr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">CONTACT</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">ROLE</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">EMAIL</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Jane Doe</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Lead</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:color w:val="1F6FB2"/>
+</w:rPr>
+<w:t xml:space="preserve">jane@example.com</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="120"/>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="ReportSectionSubtitle"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Recipients</w:t>
+</w:r>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:tblStyle w:val="TableGrid"/>
+<w:tblW w:w="9345" w:type="dxa"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="3115"/>
+<w:gridCol w:w="3115"/>
+<w:gridCol w:w="3115"/>
+</w:tblGrid>
+<w:tr>
+<w:trPr>
+<w:tblHeader/>
+</w:trPr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">RECIPIENT</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">COMPANY / ROLE</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">EMAIL</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">John Roe</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">ACME Corp</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:color w:val="1F6FB2"/>
+</w:rPr>
+<w:t xml:space="preserve">john@example.com</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3115" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="120"/>
+</w:pPr>
+</w:p>
+<w:sdt>
+<w:sdtPr>
+<w:docPartObj>
+<w:docPartGallery w:val="Table of Contents"/>
+<w:docPartUnique/>
+</w:docPartObj>
+</w:sdtPr>
+<w:sdtContent>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="TOCHeading"/>
+<w:pageBreakBefore/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Table of contents</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Toc1"/>
+<w:tabs>
+<w:tab w:val="right" w:leader="dot" w:pos="9346"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> TOC \o "1-3" \h \z \u </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:hyperlink w:anchor="_TocReport10000" w:history="1">
+<w:r>
+<w:t xml:space="preserve">Context</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> PAGEREF _TocReport10000 \h </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:hyperlink>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Toc1"/>
+<w:tabs>
+<w:tab w:val="right" w:leader="dot" w:pos="9346"/>
+</w:tabs>
+</w:pPr>
+<w:hyperlink w:anchor="_TocReport10001" w:history="1">
+<w:r>
+<w:t xml:space="preserve">Timeline</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> PAGEREF _TocReport10001 \h </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:hyperlink>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Toc1"/>
+<w:tabs>
+<w:tab w:val="right" w:leader="dot" w:pos="9346"/>
+</w:tabs>
+</w:pPr>
+<w:hyperlink w:anchor="_TocReport10002" w:history="1">
+<w:r>
+<w:t xml:space="preserve">Analysis</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> PAGEREF _TocReport10002 \h </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:hyperlink>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Toc2"/>
+<w:tabs>
+<w:tab w:val="right" w:leader="dot" w:pos="9346"/>
+</w:tabs>
+</w:pPr>
+<w:hyperlink w:anchor="_TocReport10003" w:history="1">
+<w:r>
+<w:t xml:space="preserve">A.  Performance</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> PAGEREF _TocReport10003 \h </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:hyperlink>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Toc2"/>
+<w:tabs>
+<w:tab w:val="right" w:leader="dot" w:pos="9346"/>
+</w:tabs>
+</w:pPr>
+<w:hyperlink w:anchor="_TocReport10004" w:history="1">
+<w:r>
+<w:t xml:space="preserve">B.  Incidents</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> PAGEREF _TocReport10004 \h </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:hyperlink>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Toc3"/>
+<w:tabs>
+<w:tab w:val="right" w:leader="dot" w:pos="9346"/>
+</w:tabs>
+</w:pPr>
+<w:hyperlink w:anchor="_TocReport10005" w:history="1">
+<w:r>
+<w:t xml:space="preserve">1. First DNS switch</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> PAGEREF _TocReport10005 \h </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:hyperlink>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Toc3"/>
+<w:tabs>
+<w:tab w:val="right" w:leader="dot" w:pos="9346"/>
+</w:tabs>
+</w:pPr>
+<w:hyperlink w:anchor="_TocReport10006" w:history="1">
+<w:r>
+<w:t xml:space="preserve">2. Session loss</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> PAGEREF _TocReport10006 \h </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:hyperlink>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Toc2"/>
+<w:tabs>
+<w:tab w:val="right" w:leader="dot" w:pos="9346"/>
+</w:tabs>
+</w:pPr>
+<w:hyperlink w:anchor="_TocReport10007" w:history="1">
+<w:r>
+<w:t xml:space="preserve">C.  Checklist</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> PAGEREF _TocReport10007 \h </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:hyperlink>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Toc1"/>
+<w:tabs>
+<w:tab w:val="right" w:leader="dot" w:pos="9346"/>
+</w:tabs>
+</w:pPr>
+<w:hyperlink w:anchor="_TocReport10008" w:history="1">
+<w:r>
+<w:t xml:space="preserve">Recommendations</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> PAGEREF _TocReport10008 \h </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:hyperlink>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Toc1"/>
+<w:tabs>
+<w:tab w:val="right" w:leader="dot" w:pos="9346"/>
+</w:tabs>
+</w:pPr>
+<w:hyperlink w:anchor="_TocReport10009" w:history="1">
+<w:r>
+<w:t xml:space="preserve">Appendix</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> PAGEREF _TocReport10009 \h </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:hyperlink>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Toc2"/>
+<w:tabs>
+<w:tab w:val="right" w:leader="dot" w:pos="9346"/>
+</w:tabs>
+</w:pPr>
+<w:hyperlink w:anchor="_TocReport10010" w:history="1">
+<w:r>
+<w:t xml:space="preserve">A.  Commands used</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> PAGEREF _TocReport10010 \h </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:hyperlink>
+</w:p>
+<w:p>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:p>
+</w:sdtContent>
+</w:sdt>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading1"/>
+<w:pageBreakBefore/>
+</w:pPr>
+<w:bookmarkStart w:id="10000" w:name="_TocReport10000"/>
+<w:r>
+<w:t xml:space="preserve">Context</w:t>
+</w:r>
+<w:bookmarkEnd w:id="10000"/>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Normal"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">In May 2026, the ACME Corp website was moved from a single virtual machine to a managed</w:t>
+<w:br/>
+<w:t xml:space="preserve">container platform. This report reviews the migration, the incidents met along the way and</w:t>
+<w:br/>
+<w:t xml:space="preserve">the work that remains.</w:t>
+</w:r>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:tblW w:w="9346" w:type="dxa"/>
+<w:tblBorders>
+<w:top w:val="nil"/>
+<w:left w:val="single" w:sz="24" w:space="0" w:color="00B8D4"/>
+<w:bottom w:val="nil"/>
+<w:right w:val="nil"/>
+<w:insideH w:val="nil"/>
+<w:insideV w:val="nil"/>
+</w:tblBorders>
+<w:tblLayout w:type="fixed"/>
+<w:tblCellMar>
+<w:top w:w="120" w:type="dxa"/>
+<w:left w:w="200" w:type="dxa"/>
+<w:bottom w:w="40" w:type="dxa"/>
+<w:right w:w="200" w:type="dxa"/>
+</w:tblCellMar>
+<w:tblLook w:val="0000" w:firstRow="0" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="9346"/>
+</w:tblGrid>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="9346" w:type="dxa"/>
+<w:shd w:val="clear" w:color="auto" w:fill="E8FAFD"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:keepNext/>
+<w:spacing w:before="0" w:after="80"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="00B8D4"/>
+<w:sz w:val="22"/>
+<w:szCs w:val="22"/>
+</w:rPr>
+<w:t xml:space="preserve">Scope</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Normal"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">The review covers the public website and its API. The internal intranet is out of scope.</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="120"/>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading1"/>
+</w:pPr>
+<w:bookmarkStart w:id="10001" w:name="_TocReport10001"/>
+<w:r>
+<w:t xml:space="preserve">Timeline</w:t>
+</w:r>
+<w:bookmarkEnd w:id="10001"/>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:tblStyle w:val="TableGrid"/>
+<w:tblW w:w="9348" w:type="dxa"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="2337"/>
+<w:gridCol w:w="2337"/>
+<w:gridCol w:w="2337"/>
+<w:gridCol w:w="2337"/>
+</w:tblGrid>
+<w:tr>
+<w:trPr>
+<w:tblHeader/>
+</w:trPr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">Date</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">Step</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">Owner</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">Outcome</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">2026-05-04</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Inventory of services</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">J. Smith</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Done</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">2026-05-11</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Staging environment ready</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">J. Smith</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Done</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">2026-05-18</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">DNS switch</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">J. Doe</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Rolled back</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">2026-05-25</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">DNS switch, second attempt</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">J. Doe</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="2337" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Done</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="120"/>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Caption"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Table </w:t>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> SEQ Table \* ARABIC </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:t xml:space="preserve">1</w:t>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+<w:r>
+<w:t xml:space="preserve">: Main migration steps</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading1"/>
+</w:pPr>
+<w:bookmarkStart w:id="10002" w:name="_TocReport10002"/>
+<w:r>
+<w:t xml:space="preserve">Analysis</w:t>
+</w:r>
+<w:bookmarkEnd w:id="10002"/>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading2"/>
+</w:pPr>
+<w:bookmarkStart w:id="10003" w:name="_TocReport10003"/>
+<w:r>
+<w:t xml:space="preserve">A.  </w:t>
+</w:r>
+<w:r>
+<w:t xml:space="preserve">Performance</w:t>
+</w:r>
+<w:bookmarkEnd w:id="10003"/>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Normal"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Median response time dropped from </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+</w:rPr>
+<w:t xml:space="preserve">420 ms</w:t>
+</w:r>
+<w:r>
+<w:t xml:space="preserve"> to </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+</w:rPr>
+<w:t xml:space="preserve">180 ms</w:t>
+</w:r>
+<w:r>
+<w:t xml:space="preserve"> after the move. The gain comes</w:t>
+<w:br/>
+<w:t xml:space="preserve">mostly from the CDN placed in front of the static assets.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="HTMLPreformatted"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">flowchart LR</w:t>
+<w:br/>
+<w:t xml:space="preserve">  User --&gt; CDN --&gt; LB[Load balancer]</w:t>
+<w:br/>
+<w:t xml:space="preserve">  LB --&gt; App1[App pod 1]</w:t>
+<w:br/>
+<w:t xml:space="preserve">  LB --&gt; App2[App pod 2]</w:t>
+<w:br/>
+<w:t xml:space="preserve">  App1 --&gt; DB[(Database)]</w:t>
+<w:br/>
+<w:t xml:space="preserve">  App2 --&gt; DB</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Caption"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Figure </w:t>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:instrText xml:space="preserve"> SEQ Figure \* ARABIC </w:instrText>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:t xml:space="preserve">1</w:t>
+</w:r>
+<w:r>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+<w:r>
+<w:t xml:space="preserve">: Target architecture</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading2"/>
+</w:pPr>
+<w:bookmarkStart w:id="10004" w:name="_TocReport10004"/>
+<w:r>
+<w:t xml:space="preserve">B.  </w:t>
+</w:r>
+<w:r>
+<w:t xml:space="preserve">Incidents</w:t>
+</w:r>
+<w:bookmarkEnd w:id="10004"/>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading3"/>
+</w:pPr>
+<w:bookmarkStart w:id="10005" w:name="_TocReport10005"/>
+<w:r>
+<w:t xml:space="preserve">1. </w:t>
+</w:r>
+<w:r>
+<w:t xml:space="preserve">First DNS switch</w:t>
+</w:r>
+<w:bookmarkEnd w:id="10005"/>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Normal"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">The first switch was rolled back after 20 minutes: the TLS certificate of the new</w:t>
+<w:br/>
+<w:t xml:space="preserve">platform did not cover the </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:rStyle w:val="HTMLCode"/>
+</w:rPr>
+<w:t xml:space="preserve">www</w:t>
+</w:r>
+<w:r>
+<w:t xml:space="preserve"> subdomain.</w:t>
+</w:r>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:tblW w:w="9346" w:type="dxa"/>
+<w:tblBorders>
+<w:top w:val="nil"/>
+<w:left w:val="single" w:sz="24" w:space="0" w:color="F09B00"/>
+<w:bottom w:val="nil"/>
+<w:right w:val="nil"/>
+<w:insideH w:val="nil"/>
+<w:insideV w:val="nil"/>
+</w:tblBorders>
+<w:tblLayout w:type="fixed"/>
+<w:tblCellMar>
+<w:top w:w="120" w:type="dxa"/>
+<w:left w:w="200" w:type="dxa"/>
+<w:bottom w:w="40" w:type="dxa"/>
+<w:right w:w="200" w:type="dxa"/>
+</w:tblCellMar>
+<w:tblLook w:val="0000" w:firstRow="0" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="9346"/>
+</w:tblGrid>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="9346" w:type="dxa"/>
+<w:shd w:val="clear" w:color="auto" w:fill="FEF5E6"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:keepNext/>
+<w:spacing w:before="0" w:after="80"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="F09B00"/>
+<w:sz w:val="22"/>
+<w:szCs w:val="22"/>
+</w:rPr>
+<w:t xml:space="preserve">Lesson learned</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Normal"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Check every hostname against the certificate </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+</w:rPr>
+<w:t xml:space="preserve">before</w:t>
+</w:r>
+<w:r>
+<w:t xml:space="preserve"> lowering the DNS TTL.</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="120"/>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading3"/>
+</w:pPr>
+<w:bookmarkStart w:id="10006" w:name="_TocReport10006"/>
+<w:r>
+<w:t xml:space="preserve">2. </w:t>
+</w:r>
+<w:r>
+<w:t xml:space="preserve">Session loss</w:t>
+</w:r>
+<w:bookmarkEnd w:id="10006"/>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Normal"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Users were logged out once during the switch, because sessions were stored in memory on the</w:t>
+<w:br/>
+<w:t xml:space="preserve">old machine. They now live in a shared cache.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading2"/>
+</w:pPr>
+<w:bookmarkStart w:id="10007" w:name="_TocReport10007"/>
+<w:r>
+<w:t xml:space="preserve">C.  </w:t>
+</w:r>
+<w:r>
+<w:t xml:space="preserve">Checklist</w:t>
+</w:r>
+<w:bookmarkEnd w:id="10007"/>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="ListParagraph"/>
+<w:ind w:left="720"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:color w:val="1F5F8B"/>
+</w:rPr>
+<w:t xml:space="preserve">☑ </w:t>
+</w:r>
+<w:r>
+<w:t xml:space="preserve">Certificates cover every hostname</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="ListParagraph"/>
+<w:ind w:left="720"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:color w:val="1F5F8B"/>
+</w:rPr>
+<w:t xml:space="preserve">☑ </w:t>
+</w:r>
+<w:r>
+<w:t xml:space="preserve">Sessions stored outside the application</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="ListParagraph"/>
+<w:ind w:left="720"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:color w:val="767676"/>
+</w:rPr>
+<w:t xml:space="preserve">☐ </w:t>
+</w:r>
+<w:r>
+<w:t xml:space="preserve">Load test at twice the peak traffic</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="ListParagraph"/>
+<w:ind w:left="720"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:color w:val="767676"/>
+</w:rPr>
+<w:t xml:space="preserve">☐ </w:t>
+</w:r>
+<w:r>
+<w:t xml:space="preserve">Disaster recovery drill</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading1"/>
+</w:pPr>
+<w:bookmarkStart w:id="10008" w:name="_TocReport10008"/>
+<w:r>
+<w:t xml:space="preserve">Recommendations</w:t>
+</w:r>
+<w:bookmarkEnd w:id="10008"/>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="ListParagraph"/>
+<w:numPr>
+<w:ilvl w:val="0"/>
+<w:numId w:val="1"/>
+</w:numPr>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Automate certificate checks in the deployment pipeline.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="ListParagraph"/>
+<w:numPr>
+<w:ilvl w:val="0"/>
+<w:numId w:val="1"/>
+</w:numPr>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Run the load test before the autumn campaign.</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="ListParagraph"/>
+<w:numPr>
+<w:ilvl w:val="0"/>
+<w:numId w:val="1"/>
+</w:numPr>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Document the rollback procedure:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="ListParagraph"/>
+<w:numPr>
+<w:ilvl w:val="1"/>
+<w:numId w:val="1"/>
+</w:numPr>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">DNS records and their previous values</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="ListParagraph"/>
+<w:numPr>
+<w:ilvl w:val="1"/>
+<w:numId w:val="1"/>
+</w:numPr>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Who decides, and how fast</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:r>
+<w:br w:type="page"/>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading1"/>
+</w:pPr>
+<w:bookmarkStart w:id="10009" w:name="_TocReport10009"/>
+<w:r>
+<w:t xml:space="preserve">Appendix</w:t>
+</w:r>
+<w:bookmarkEnd w:id="10009"/>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Heading2"/>
+</w:pPr>
+<w:bookmarkStart w:id="10010" w:name="_TocReport10010"/>
+<w:r>
+<w:t xml:space="preserve">A.  </w:t>
+</w:r>
+<w:r>
+<w:t xml:space="preserve">Commands used</w:t>
+</w:r>
+<w:bookmarkEnd w:id="10010"/>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="HTMLPreformatted"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">kubectl rollout status deployment/website</w:t>
+<w:br/>
+<w:t xml:space="preserve">curl -sI https://www.example.com | head -n 1</w:t>
+</w:r>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:tblW w:w="9346" w:type="dxa"/>
+<w:tblBorders>
+<w:top w:val="nil"/>
+<w:left w:val="nil"/>
+<w:bottom w:val="nil"/>
+<w:right w:val="nil"/>
+<w:insideH w:val="nil"/>
+<w:insideV w:val="nil"/>
+</w:tblBorders>
+<w:tblLayout w:type="fixed"/>
+<w:tblCellMar>
+<w:left w:w="0" w:type="dxa"/>
+<w:right w:w="0" w:type="dxa"/>
+</w:tblCellMar>
+<w:tblLook w:val="0000" w:firstRow="0" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="4673"/>
+<w:gridCol w:w="4673"/>
+</w:tblGrid>
+<w:tr>
+<w:trPr>
+<w:cantSplit/>
+</w:trPr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="4673" w:type="dxa"/>
+<w:tcMar>
+<w:top w:w="0" w:type="dxa"/>
+<w:left w:w="0" w:type="dxa"/>
+<w:bottom w:w="0" w:type="dxa"/>
+<w:right w:w="120" w:type="dxa"/>
+</w:tcMar>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Normal"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+</w:rPr>
+<w:t xml:space="preserve">Before</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Normal"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">One virtual machine, manual deployments.</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="4673" w:type="dxa"/>
+<w:tcMar>
+<w:top w:w="0" w:type="dxa"/>
+<w:left w:w="120" w:type="dxa"/>
+<w:bottom w:w="0" w:type="dxa"/>
+<w:right w:w="0" w:type="dxa"/>
+</w:tcMar>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Normal"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+</w:rPr>
+<w:t xml:space="preserve">After</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:pStyle w:val="Normal"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Two pods behind a load balancer, deployments from CI.</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="120"/>
+</w:pPr>
+</w:p>
+<w:sectPr>
+<w:headerReference w:type="default" r:id="rIdReport1"/>
+<w:footerReference w:type="default" r:id="rIdReport2"/>
+<w:headerReference w:type="first" r:id="rIdReport3"/>
+<w:footerReference w:type="first" r:id="rIdReport4"/>
+<w:pgSz w:w="11906" w:h="16838"/>
+<w:pgMar w:top="2000" w:right="1280" w:bottom="1640" w:left="1280" w:header="300" w:footer="240" w:gutter="0"/>
+<w:titlePg/>
+</w:sectPr>
+</w:body>
+</w:document>
+===== word/footer1.xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0"/>
+<w:ind w:right="-480"/>
+<w:jc w:val="right"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFC000"/>
+<w:sz w:val="22"/>
+<w:szCs w:val="22"/>
+</w:rPr>
+<w:t xml:space="preserve">TLP:AMBER</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="40" w:after="0"/>
+<w:ind w:right="-480"/>
+<w:jc w:val="right"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="20"/>
+</w:rPr>
+<w:t xml:space="preserve">page </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="20"/>
+</w:rPr>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="20"/>
+</w:rPr>
+<w:instrText xml:space="preserve"> PAGE </w:instrText>
+</w:r>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="20"/>
+</w:rPr>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="20"/>
+</w:rPr>
+<w:t xml:space="preserve">1</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="20"/>
+</w:rPr>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="20"/>
+</w:rPr>
+<w:t xml:space="preserve">/</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="20"/>
+</w:rPr>
+<w:fldChar w:fldCharType="begin"/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="20"/>
+</w:rPr>
+<w:instrText xml:space="preserve"> NUMPAGES </w:instrText>
+</w:r>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="20"/>
+</w:rPr>
+<w:fldChar w:fldCharType="separate"/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="20"/>
+</w:rPr>
+<w:t xml:space="preserve">1</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="20"/>
+</w:rPr>
+<w:fldChar w:fldCharType="end"/>
+</w:r>
+</w:p>
+</w:ftr>
+===== word/footer2.xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:p>
+</w:p>
+</w:ftr>
+===== word/header1.xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:hdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0"/>
+<w:ind w:right="-480"/>
+<w:jc w:val="right"/>
+</w:pPr>
+<w:r>
+<w:drawing>
+<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="251668240" behindDoc="1" locked="1" layoutInCell="1" allowOverlap="1" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+<wp:simplePos x="0" y="0"/>
+<wp:positionH relativeFrom="page">
+<wp:posOffset>0</wp:posOffset>
+</wp:positionH>
+<wp:positionV relativeFrom="page">
+<wp:posOffset>0</wp:posOffset>
+</wp:positionV>
+<wp:extent cx="7560056" cy="812800"/>
+<wp:effectExtent l="0" t="0" r="0" b="0"/>
+<wp:wrapNone/>
+<wp:docPr id="10000" name="Picture 10000" descr=""/>
+<wp:cNvGraphicFramePr/>
+<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:nvPicPr>
+<pic:cNvPr id="10000" name="Picture 10000" descr=""/>
+<pic:cNvPicPr/>
+</pic:nvPicPr>
+<pic:blipFill>
+<a:blip r:embed="rIdReport1"/>
+<a:stretch>
+<a:fillRect/>
+</a:stretch>
+</pic:blipFill>
+<pic:spPr>
+<a:xfrm>
+<a:off x="0" y="0"/>
+<a:ext cx="7560056" cy="812800"/>
+</a:xfrm>
+<a:prstGeom prst="rect">
+<a:avLst/>
+</a:prstGeom>
+</pic:spPr>
+</pic:pic>
+</a:graphicData>
+</a:graphic>
+</wp:anchor>
+</w:drawing>
+</w:r>
+<w:r>
+<w:drawing>
+<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="251668241" behindDoc="1" locked="1" layoutInCell="1" allowOverlap="1" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+<wp:simplePos x="0" y="0"/>
+<wp:positionH relativeFrom="page">
+<wp:posOffset>0</wp:posOffset>
+</wp:positionH>
+<wp:positionV relativeFrom="page">
+<wp:posOffset>812800</wp:posOffset>
+</wp:positionV>
+<wp:extent cx="7560056" cy="38100"/>
+<wp:effectExtent l="0" t="0" r="0" b="0"/>
+<wp:wrapNone/>
+<wp:docPr id="10001" name="Picture 10001" descr=""/>
+<wp:cNvGraphicFramePr/>
+<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:nvPicPr>
+<pic:cNvPr id="10001" name="Picture 10001" descr=""/>
+<pic:cNvPicPr/>
+</pic:nvPicPr>
+<pic:blipFill>
+<a:blip r:embed="rIdReport2"/>
+<a:stretch>
+<a:fillRect/>
+</a:stretch>
+</pic:blipFill>
+<pic:spPr>
+<a:xfrm>
+<a:off x="0" y="0"/>
+<a:ext cx="7560056" cy="38100"/>
+</a:xfrm>
+<a:prstGeom prst="rect">
+<a:avLst/>
+</a:prstGeom>
+</pic:spPr>
+</pic:pic>
+</a:graphicData>
+</a:graphic>
+</wp:anchor>
+</w:drawing>
+</w:r>
+<w:r>
+<w:drawing>
+<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="251668242" behindDoc="1" locked="1" layoutInCell="1" allowOverlap="1" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+<wp:simplePos x="0" y="0"/>
+<wp:positionH relativeFrom="page">
+<wp:posOffset>0</wp:posOffset>
+</wp:positionH>
+<wp:positionV relativeFrom="page">
+<wp:posOffset>10082403</wp:posOffset>
+</wp:positionV>
+<wp:extent cx="7560056" cy="609600"/>
+<wp:effectExtent l="0" t="0" r="0" b="0"/>
+<wp:wrapNone/>
+<wp:docPr id="10002" name="Picture 10002" descr=""/>
+<wp:cNvGraphicFramePr/>
+<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:nvPicPr>
+<pic:cNvPr id="10002" name="Picture 10002" descr=""/>
+<pic:cNvPicPr/>
+</pic:nvPicPr>
+<pic:blipFill>
+<a:blip r:embed="rIdReport3"/>
+<a:stretch>
+<a:fillRect/>
+</a:stretch>
+</pic:blipFill>
+<pic:spPr>
+<a:xfrm>
+<a:off x="0" y="0"/>
+<a:ext cx="7560056" cy="609600"/>
+</a:xfrm>
+<a:prstGeom prst="rect">
+<a:avLst/>
+</a:prstGeom>
+</pic:spPr>
+</pic:pic>
+</a:graphicData>
+</a:graphic>
+</wp:anchor>
+</w:drawing>
+</w:r>
+<w:r>
+<w:drawing>
+<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="251668243" behindDoc="1" locked="1" layoutInCell="1" allowOverlap="1" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+<wp:simplePos x="0" y="0"/>
+<wp:positionH relativeFrom="page">
+<wp:posOffset>0</wp:posOffset>
+</wp:positionH>
+<wp:positionV relativeFrom="page">
+<wp:posOffset>10044303</wp:posOffset>
+</wp:positionV>
+<wp:extent cx="3402025" cy="38100"/>
+<wp:effectExtent l="0" t="0" r="0" b="0"/>
+<wp:wrapNone/>
+<wp:docPr id="10003" name="Picture 10003" descr=""/>
+<wp:cNvGraphicFramePr/>
+<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:nvPicPr>
+<pic:cNvPr id="10003" name="Picture 10003" descr=""/>
+<pic:cNvPicPr/>
+</pic:nvPicPr>
+<pic:blipFill>
+<a:blip r:embed="rIdReport1"/>
+<a:stretch>
+<a:fillRect/>
+</a:stretch>
+</pic:blipFill>
+<pic:spPr>
+<a:xfrm>
+<a:off x="0" y="0"/>
+<a:ext cx="3402025" cy="38100"/>
+</a:xfrm>
+<a:prstGeom prst="rect">
+<a:avLst/>
+</a:prstGeom>
+</pic:spPr>
+</pic:pic>
+</a:graphicData>
+</a:graphic>
+</wp:anchor>
+</w:drawing>
+</w:r>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">Website Migration Review</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="80" w:after="0"/>
+<w:ind w:right="-480"/>
+<w:jc w:val="right"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="FFFFFF"/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">ACME Corp</w:t>
+</w:r>
+</w:p>
+</w:hdr>
+===== word/header2.xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:hdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<w:p>
+<w:r>
+<w:drawing>
+<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="251668244" behindDoc="1" locked="1" layoutInCell="1" allowOverlap="1" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+<wp:simplePos x="0" y="0"/>
+<wp:positionH relativeFrom="page">
+<wp:posOffset>0</wp:posOffset>
+</wp:positionH>
+<wp:positionV relativeFrom="page">
+<wp:posOffset>0</wp:posOffset>
+</wp:positionV>
+<wp:extent cx="177800" cy="10692003"/>
+<wp:effectExtent l="0" t="0" r="0" b="0"/>
+<wp:wrapNone/>
+<wp:docPr id="10004" name="Picture 10004" descr=""/>
+<wp:cNvGraphicFramePr/>
+<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:nvPicPr>
+<pic:cNvPr id="10004" name="Picture 10004" descr=""/>
+<pic:cNvPicPr/>
+</pic:nvPicPr>
+<pic:blipFill>
+<a:blip r:embed="rIdReport1"/>
+<a:stretch>
+<a:fillRect/>
+</a:stretch>
+</pic:blipFill>
+<pic:spPr>
+<a:xfrm>
+<a:off x="0" y="0"/>
+<a:ext cx="177800" cy="10692003"/>
+</a:xfrm>
+<a:prstGeom prst="rect">
+<a:avLst/>
+</a:prstGeom>
+</pic:spPr>
+</pic:pic>
+</a:graphicData>
+</a:graphic>
+</wp:anchor>
+</w:drawing>
+</w:r>
+<w:r>
+<w:drawing>
+<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="251668245" behindDoc="1" locked="1" layoutInCell="1" allowOverlap="1" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+<wp:simplePos x="0" y="0"/>
+<wp:positionH relativeFrom="page">
+<wp:posOffset>898525</wp:posOffset>
+</wp:positionH>
+<wp:positionV relativeFrom="page">
+<wp:posOffset>3133725</wp:posOffset>
+</wp:positionV>
+<wp:extent cx="31750" cy="3867150"/>
+<wp:effectExtent l="0" t="0" r="0" b="0"/>
+<wp:wrapNone/>
+<wp:docPr id="10005" name="Picture 10005" descr=""/>
+<wp:cNvGraphicFramePr/>
+<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:nvPicPr>
+<pic:cNvPr id="10005" name="Picture 10005" descr=""/>
+<pic:cNvPicPr/>
+</pic:nvPicPr>
+<pic:blipFill>
+<a:blip r:embed="rIdReport1"/>
+<a:stretch>
+<a:fillRect/>
+</a:stretch>
+</pic:blipFill>
+<pic:spPr>
+<a:xfrm>
+<a:off x="0" y="0"/>
+<a:ext cx="31750" cy="3867150"/>
+</a:xfrm>
+<a:prstGeom prst="rect">
+<a:avLst/>
+</a:prstGeom>
+</pic:spPr>
+</pic:pic>
+</a:graphicData>
+</a:graphic>
+</wp:anchor>
+</w:drawing>
+</w:r>
+<w:r>
+<w:drawing>
+<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="251668246" behindDoc="1" locked="1" layoutInCell="1" allowOverlap="1" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+<wp:simplePos x="0" y="0"/>
+<wp:positionH relativeFrom="page">
+<wp:posOffset>914400</wp:posOffset>
+</wp:positionH>
+<wp:positionV relativeFrom="page">
+<wp:posOffset>3133725</wp:posOffset>
+</wp:positionV>
+<wp:extent cx="1143000" cy="31750"/>
+<wp:effectExtent l="0" t="0" r="0" b="0"/>
+<wp:wrapNone/>
+<wp:docPr id="10006" name="Picture 10006" descr=""/>
+<wp:cNvGraphicFramePr/>
+<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:nvPicPr>
+<pic:cNvPr id="10006" name="Picture 10006" descr=""/>
+<pic:cNvPicPr/>
+</pic:nvPicPr>
+<pic:blipFill>
+<a:blip r:embed="rIdReport1"/>
+<a:stretch>
+<a:fillRect/>
+</a:stretch>
+</pic:blipFill>
+<pic:spPr>
+<a:xfrm>
+<a:off x="0" y="0"/>
+<a:ext cx="1143000" cy="31750"/>
+</a:xfrm>
+<a:prstGeom prst="rect">
+<a:avLst/>
+</a:prstGeom>
+</pic:spPr>
+</pic:pic>
+</a:graphicData>
+</a:graphic>
+</wp:anchor>
+</w:drawing>
+</w:r>
+<w:r>
+<w:drawing>
+<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="251668247" behindDoc="1" locked="1" layoutInCell="1" allowOverlap="1" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+<wp:simplePos x="0" y="0"/>
+<wp:positionH relativeFrom="page">
+<wp:posOffset>914400</wp:posOffset>
+</wp:positionH>
+<wp:positionV relativeFrom="page">
+<wp:posOffset>6969125</wp:posOffset>
+</wp:positionV>
+<wp:extent cx="1143000" cy="31750"/>
+<wp:effectExtent l="0" t="0" r="0" b="0"/>
+<wp:wrapNone/>
+<wp:docPr id="10007" name="Picture 10007" descr=""/>
+<wp:cNvGraphicFramePr/>
+<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:nvPicPr>
+<pic:cNvPr id="10007" name="Picture 10007" descr=""/>
+<pic:cNvPicPr/>
+</pic:nvPicPr>
+<pic:blipFill>
+<a:blip r:embed="rIdReport2"/>
+<a:stretch>
+<a:fillRect/>
+</a:stretch>
+</pic:blipFill>
+<pic:spPr>
+<a:xfrm>
+<a:off x="0" y="0"/>
+<a:ext cx="1143000" cy="31750"/>
+</a:xfrm>
+<a:prstGeom prst="rect">
+<a:avLst/>
+</a:prstGeom>
+</pic:spPr>
+</pic:pic>
+</a:graphicData>
+</a:graphic>
+</wp:anchor>
+</w:drawing>
+</w:r>
+<w:r>
+<w:drawing>
+<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="251668248" behindDoc="1" locked="1" layoutInCell="1" allowOverlap="1" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+<wp:simplePos x="0" y="0"/>
+<wp:positionH relativeFrom="page">
+<wp:posOffset>0</wp:posOffset>
+</wp:positionH>
+<wp:positionV relativeFrom="page">
+<wp:posOffset>9472803</wp:posOffset>
+</wp:positionV>
+<wp:extent cx="7560056" cy="1219200"/>
+<wp:effectExtent l="0" t="0" r="0" b="0"/>
+<wp:wrapNone/>
+<wp:docPr id="10008" name="Picture 10008" descr=""/>
+<wp:cNvGraphicFramePr/>
+<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:nvPicPr>
+<pic:cNvPr id="10008" name="Picture 10008" descr=""/>
+<pic:cNvPicPr/>
+</pic:nvPicPr>
+<pic:blipFill>
+<a:blip r:embed="rIdReport3"/>
+<a:stretch>
+<a:fillRect/>
+</a:stretch>
+</pic:blipFill>
+<pic:spPr>
+<a:xfrm>
+<a:off x="0" y="0"/>
+<a:ext cx="7560056" cy="1219200"/>
+</a:xfrm>
+<a:prstGeom prst="rect">
+<a:avLst/>
+</a:prstGeom>
+</pic:spPr>
+</pic:pic>
+</a:graphicData>
+</a:graphic>
+</wp:anchor>
+</w:drawing>
+</w:r>
+<w:r>
+<w:drawing>
+<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="251668249" behindDoc="1" locked="1" layoutInCell="1" allowOverlap="1" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+<wp:simplePos x="0" y="0"/>
+<wp:positionH relativeFrom="page">
+<wp:posOffset>0</wp:posOffset>
+</wp:positionH>
+<wp:positionV relativeFrom="page">
+<wp:posOffset>9409303</wp:posOffset>
+</wp:positionV>
+<wp:extent cx="3402025" cy="63500"/>
+<wp:effectExtent l="0" t="0" r="0" b="0"/>
+<wp:wrapNone/>
+<wp:docPr id="10009" name="Picture 10009" descr=""/>
+<wp:cNvGraphicFramePr/>
+<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:nvPicPr>
+<pic:cNvPr id="10009" name="Picture 10009" descr=""/>
+<pic:cNvPicPr/>
+</pic:nvPicPr>
+<pic:blipFill>
+<a:blip r:embed="rIdReport1"/>
+<a:stretch>
+<a:fillRect/>
+</a:stretch>
+</pic:blipFill>
+<pic:spPr>
+<a:xfrm>
+<a:off x="0" y="0"/>
+<a:ext cx="3402025" cy="63500"/>
+</a:xfrm>
+<a:prstGeom prst="rect">
+<a:avLst/>
+</a:prstGeom>
+</pic:spPr>
+</pic:pic>
+</a:graphicData>
+</a:graphic>
+</wp:anchor>
+</w:drawing>
+</w:r>
+<w:r>
+<w:drawing>
+<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="251668250" behindDoc="1" locked="1" layoutInCell="1" allowOverlap="1" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+<wp:simplePos x="0" y="0"/>
+<wp:positionH relativeFrom="page">
+<wp:posOffset>1270000</wp:posOffset>
+</wp:positionH>
+<wp:positionV relativeFrom="page">
+<wp:posOffset>5359400</wp:posOffset>
+</wp:positionV>
+<wp:extent cx="1219200" cy="38100"/>
+<wp:effectExtent l="0" t="0" r="0" b="0"/>
+<wp:wrapNone/>
+<wp:docPr id="10010" name="Picture 10010" descr=""/>
+<wp:cNvGraphicFramePr/>
+<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<pic:nvPicPr>
+<pic:cNvPr id="10010" name="Picture 10010" descr=""/>
+<pic:cNvPicPr/>
+</pic:nvPicPr>
+<pic:blipFill>
+<a:blip r:embed="rIdReport4"/>
+<a:stretch>
+<a:fillRect/>
+</a:stretch>
+</pic:blipFill>
+<pic:spPr>
+<a:xfrm>
+<a:off x="0" y="0"/>
+<a:ext cx="1219200" cy="38100"/>
+</a:xfrm>
+<a:prstGeom prst="rect">
+<a:avLst/>
+</a:prstGeom>
+</pic:spPr>
+</pic:pic>
+</a:graphicData>
+</a:graphic>
+</wp:anchor>
+</w:drawing>
+</w:r>
+</w:p>
+</w:hdr>
+===== word/media/report-image1.png
+sha256 ca83ae82595f1bccdd14d79a6ba4ffaa1cde60d5a0ac48df075c0321ec846fa0
+===== word/media/report-image2.png
+sha256 00a4f049580478fe66a68d73e39f03bd9f96436e618b3e09bcf86d7b7610254f
+===== word/media/report-image3.png
+sha256 fa554e9ea3238132bf2723e236a12fd03230ae1abe874336e5ad3493021326c5
+===== word/media/report-image4.png
+sha256 82846e53f76dbc86f17e128c4ed2a3b4777411270f61c5a68da13c7f254f316b
+===== word/media/report-image5.png
+sha256 5a675f528d5347423e63365c7d3c26c27e151bfef0b9c7eaa7873b92f82f66f6
+===== word/numbering.xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:abstractNum w:abstractNumId="0">
+<w:multiLevelType w:val="hybridMultilevel"/>
+<w:lvl w:ilvl="0">
+<w:start w:val="1"/>
+<w:numFmt w:val="bullet"/>
+<w:lvlText w:val="•"/>
+<w:lvlJc w:val="left"/>
+<w:pPr>
+<w:ind w:left="720" w:hanging="360"/>
+</w:pPr>
+</w:lvl>
+<w:lvl w:ilvl="1">
+<w:start w:val="1"/>
+<w:numFmt w:val="bullet"/>
+<w:lvlText w:val="◦"/>
+<w:lvlJc w:val="left"/>
+<w:pPr>
+<w:ind w:left="1440" w:hanging="360"/>
+</w:pPr>
+</w:lvl>
+<w:lvl w:ilvl="2">
+<w:start w:val="1"/>
+<w:numFmt w:val="bullet"/>
+<w:lvlText w:val="▪"/>
+<w:lvlJc w:val="left"/>
+<w:pPr>
+<w:ind w:left="2160" w:hanging="360"/>
+</w:pPr>
+</w:lvl>
+<w:lvl w:ilvl="3">
+<w:start w:val="1"/>
+<w:numFmt w:val="bullet"/>
+<w:lvlText w:val="•"/>
+<w:lvlJc w:val="left"/>
+<w:pPr>
+<w:ind w:left="2880" w:hanging="360"/>
+</w:pPr>
+</w:lvl>
+<w:lvl w:ilvl="4">
+<w:start w:val="1"/>
+<w:numFmt w:val="bullet"/>
+<w:lvlText w:val="◦"/>
+<w:lvlJc w:val="left"/>
+<w:pPr>
+<w:ind w:left="3600" w:hanging="360"/>
+</w:pPr>
+</w:lvl>
+<w:lvl w:ilvl="5">
+<w:start w:val="1"/>
+<w:numFmt w:val="bullet"/>
+<w:lvlText w:val="▪"/>
+<w:lvlJc w:val="left"/>
+<w:pPr>
+<w:ind w:left="4320" w:hanging="360"/>
+</w:pPr>
+</w:lvl>
+<w:lvl w:ilvl="6">
+<w:start w:val="1"/>
+<w:numFmt w:val="bullet"/>
+<w:lvlText w:val="•"/>
+<w:lvlJc w:val="left"/>
+<w:pPr>
+<w:ind w:left="5040" w:hanging="360"/>
+</w:pPr>
+</w:lvl>
+<w:lvl w:ilvl="7">
+<w:start w:val="1"/>
+<w:numFmt w:val="bullet"/>
+<w:lvlText w:val="◦"/>
+<w:lvlJc w:val="left"/>
+<w:pPr>
+<w:ind w:left="5760" w:hanging="360"/>
+</w:pPr>
+</w:lvl>
+<w:lvl w:ilvl="8">
+<w:start w:val="1"/>
+<w:numFmt w:val="bullet"/>
+<w:lvlText w:val="▪"/>
+<w:lvlJc w:val="left"/>
+<w:pPr>
+<w:ind w:left="6480" w:hanging="360"/>
+</w:pPr>
+</w:lvl>
+</w:abstractNum>
+<w:num w:numId="1">
+<w:abstractNumId w:val="0"/>
+<w:lvlOverride w:ilvl="0">
+<w:startOverride w:val="1"/>
+</w:lvlOverride>
+<w:lvlOverride w:ilvl="1">
+<w:startOverride w:val="1"/>
+</w:lvlOverride>
+<w:lvlOverride w:ilvl="2">
+<w:startOverride w:val="1"/>
+</w:lvlOverride>
+<w:lvlOverride w:ilvl="3">
+<w:startOverride w:val="1"/>
+</w:lvlOverride>
+<w:lvlOverride w:ilvl="4">
+<w:startOverride w:val="1"/>
+</w:lvlOverride>
+<w:lvlOverride w:ilvl="5">
+<w:startOverride w:val="1"/>
+</w:lvlOverride>
+<w:lvlOverride w:ilvl="6">
+<w:startOverride w:val="1"/>
+</w:lvlOverride>
+<w:lvlOverride w:ilvl="7">
+<w:startOverride w:val="1"/>
+</w:lvlOverride>
+<w:lvlOverride w:ilvl="8">
+<w:startOverride w:val="1"/>
+</w:lvlOverride>
+</w:num>
+</w:numbering>
+===== word/settings.xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:defaultTabStop w:val="708"/>
+<w:characterSpacingControl w:val="doNotCompress"/>
+<w:updateFields w:val="true"/>
+<w:compat>
+<w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/>
+</w:compat>
+</w:settings>
+===== word/styles.xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:docDefaults>
+<w:rPrDefault>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>
+<w:sz w:val="22"/>
+<w:szCs w:val="22"/>
+<w:lang w:val="en-US"/>
+</w:rPr>
+</w:rPrDefault>
+<w:pPrDefault>
+<w:pPr>
+<w:spacing w:after="160" w:line="264" w:lineRule="auto"/>
+</w:pPr>
+</w:pPrDefault>
+</w:docDefaults>
+<w:style w:type="paragraph" w:default="1" w:styleId="Normal">
+<w:name w:val="Normal"/>
+<w:qFormat/>
+<w:pPr>
+<w:spacing w:after="160" w:line="293" w:lineRule="auto"/>
+<w:jc w:val="both"/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+<w:color w:val="1A1A1A"/>
+<w:sz w:val="22"/>
+<w:szCs w:val="22"/>
+</w:rPr>
+</w:style>
+<w:style w:type="paragraph" w:styleId="Heading1">
+<w:name w:val="heading 1"/>
+<w:basedOn w:val="Normal"/>
+<w:next w:val="Normal"/>
+<w:qFormat/>
+<w:pPr>
+<w:keepNext/>
+<w:keepLines/>
+<w:spacing w:before="320" w:after="160"/>
+<w:jc w:val="left"/>
+<w:outlineLvl w:val="0"/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Arial Black" w:hAnsi="Arial Black" w:cs="Arial Black"/>
+<w:color w:val="1F5F8B"/>
+<w:sz w:val="44"/>
+<w:szCs w:val="44"/>
+</w:rPr>
+</w:style>
+<w:style w:type="table" w:styleId="TableGrid">
+<w:name w:val="Table Grid"/>
+<w:qFormat/>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:rPr>
+<w:color w:val="333333"/>
+<w:sz w:val="20"/>
+<w:szCs w:val="20"/>
+</w:rPr>
+<w:tblPr>
+<w:tblBorders>
+<w:top w:val="single" w:sz="6" w:space="0" w:color="C5D3DF"/>
+<w:left w:val="single" w:sz="6" w:space="0" w:color="C5D3DF"/>
+<w:bottom w:val="single" w:sz="6" w:space="0" w:color="C5D3DF"/>
+<w:right w:val="single" w:sz="6" w:space="0" w:color="C5D3DF"/>
+<w:insideH w:val="single" w:sz="6" w:space="0" w:color="C5D3DF"/>
+<w:insideV w:val="single" w:sz="6" w:space="0" w:color="C5D3DF"/>
+</w:tblBorders>
+<w:tblCellMar>
+<w:top w:w="60" w:type="dxa"/>
+<w:left w:w="100" w:type="dxa"/>
+<w:bottom w:w="60" w:type="dxa"/>
+<w:right w:w="100" w:type="dxa"/>
+</w:tblCellMar>
+</w:tblPr>
+<w:tcPr>
+<w:shd w:val="clear" w:color="auto" w:fill="EEF3F7"/>
+</w:tcPr>
+<w:tblStylePr w:type="firstRow">
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:tcPr>
+<w:shd w:val="clear" w:color="auto" w:fill="1F5F8B"/>
+</w:tcPr>
+</w:tblStylePr>
+</w:style>
+<w:style w:type="paragraph" w:styleId="Caption">
+<w:name w:val="caption"/>
+<w:basedOn w:val="Normal"/>
+<w:qFormat/>
+<w:pPr>
+<w:spacing w:before="80" w:after="240"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:rPr>
+<w:i/>
+<w:iCs/>
+<w:color w:val="555555"/>
+<w:sz w:val="18"/>
+<w:szCs w:val="18"/>
+</w:rPr>
+</w:style>
+<w:style w:type="paragraph" w:styleId="Heading2">
+<w:name w:val="heading 2"/>
+<w:basedOn w:val="Normal"/>
+<w:next w:val="Normal"/>
+<w:qFormat/>
+<w:pPr>
+<w:keepNext/>
+<w:keepLines/>
+<w:spacing w:before="240" w:after="100"/>
+<w:jc w:val="left"/>
+<w:outlineLvl w:val="1"/>
+</w:pPr>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="000000"/>
+<w:sz w:val="28"/>
+<w:szCs w:val="28"/>
+</w:rPr>
+</w:style>
+<w:style w:type="paragraph" w:styleId="HTMLPreformatted">
+<w:name w:val="HTML Preformatted"/>
+<w:basedOn w:val="Normal"/>
+<w:qFormat/>
+<w:pPr>
+<w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/>
+<w:spacing w:before="80" w:after="200" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Consolas" w:hAnsi="Consolas" w:cs="Consolas"/>
+<w:color w:val="2A2A2A"/>
+<w:sz w:val="19"/>
+<w:szCs w:val="19"/>
+</w:rPr>
+</w:style>
+<w:style w:type="paragraph" w:styleId="Heading3">
+<w:name w:val="heading 3"/>
+<w:basedOn w:val="Normal"/>
+<w:next w:val="Normal"/>
+<w:qFormat/>
+<w:pPr>
+<w:keepNext/>
+<w:keepLines/>
+<w:spacing w:before="160" w:after="80"/>
+<w:jc w:val="left"/>
+<w:outlineLvl w:val="2"/>
+</w:pPr>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="000000"/>
+</w:rPr>
+</w:style>
+<w:style w:type="character" w:styleId="HTMLCode">
+<w:name w:val="HTML Code"/>
+<w:qFormat/>
+<w:rPr>
+<w:rFonts w:ascii="Consolas" w:hAnsi="Consolas" w:cs="Consolas"/>
+<w:sz w:val="19"/>
+<w:szCs w:val="19"/>
+<w:shd w:val="clear" w:color="auto" w:fill="F0F0F0"/>
+</w:rPr>
+</w:style>
+<w:style w:type="paragraph" w:styleId="ListParagraph">
+<w:name w:val="List Paragraph"/>
+<w:basedOn w:val="Normal"/>
+<w:qFormat/>
+<w:pPr>
+<w:spacing w:after="60"/>
+<w:ind w:left="720"/>
+<w:contextualSpacing/>
+<w:jc w:val="left"/>
+</w:pPr>
+</w:style>
+<w:style w:type="paragraph" w:styleId="Title">
+<w:name w:val="Title"/>
+<w:basedOn w:val="Normal"/>
+<w:next w:val="Normal"/>
+<w:qFormat/>
+<w:pPr>
+<w:spacing w:before="0" w:after="0"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Arial Black" w:hAnsi="Arial Black" w:cs="Arial Black"/>
+<w:color w:val="141414"/>
+</w:rPr>
+</w:style>
+<w:style w:type="paragraph" w:styleId="Subtitle">
+<w:name w:val="Subtitle"/>
+<w:basedOn w:val="Normal"/>
+<w:next w:val="Normal"/>
+<w:qFormat/>
+<w:pPr>
+<w:spacing w:before="0" w:after="0"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:rPr>
+<w:color w:val="222222"/>
+</w:rPr>
+</w:style>
+<w:style w:type="paragraph" w:styleId="ReportSectionTitle">
+<w:name w:val="Report Section Title"/>
+<w:basedOn w:val="Normal"/>
+<w:next w:val="Normal"/>
+<w:qFormat/>
+<w:pPr>
+<w:keepNext/>
+<w:keepLines/>
+<w:spacing w:before="0" w:after="160"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Arial Black" w:hAnsi="Arial Black" w:cs="Arial Black"/>
+<w:color w:val="1F5F8B"/>
+<w:sz w:val="44"/>
+<w:szCs w:val="44"/>
+</w:rPr>
+</w:style>
+<w:style w:type="paragraph" w:styleId="ReportSectionSubtitle">
+<w:name w:val="Report Section Subtitle"/>
+<w:basedOn w:val="Normal"/>
+<w:next w:val="Normal"/>
+<w:qFormat/>
+<w:pPr>
+<w:keepNext/>
+<w:keepLines/>
+<w:spacing w:before="240" w:after="120"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:rPr>
+<w:rFonts w:ascii="Arial Black" w:hAnsi="Arial Black" w:cs="Arial Black"/>
+<w:color w:val="000000"/>
+<w:sz w:val="32"/>
+<w:szCs w:val="32"/>
+</w:rPr>
+</w:style>
+<w:style w:type="paragraph" w:styleId="Toc1">
+<w:name w:val="toc 1"/>
+<w:basedOn w:val="Normal"/>
+<w:uiPriority w:val="39"/>
+<w:unhideWhenUsed/>
+<w:qFormat/>
+<w:pPr>
+<w:spacing w:before="120" w:after="40"/>
+<w:ind w:left="0"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="1F5F8B"/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+</w:style>
+<w:style w:type="paragraph" w:styleId="Toc2">
+<w:name w:val="toc 2"/>
+<w:basedOn w:val="Normal"/>
+<w:uiPriority w:val="39"/>
+<w:unhideWhenUsed/>
+<w:qFormat/>
+<w:pPr>
+<w:spacing w:before="20" w:after="40"/>
+<w:ind w:left="320"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:rPr>
+<w:color w:val="000000"/>
+</w:rPr>
+</w:style>
+<w:style w:type="paragraph" w:styleId="Toc3">
+<w:name w:val="toc 3"/>
+<w:basedOn w:val="Normal"/>
+<w:uiPriority w:val="39"/>
+<w:unhideWhenUsed/>
+<w:qFormat/>
+<w:pPr>
+<w:spacing w:before="20" w:after="40"/>
+<w:ind w:left="600"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:rPr>
+<w:color w:val="000000"/>
+</w:rPr>
+</w:style>
+<w:style w:type="paragraph" w:styleId="TOCHeading">
+<w:name w:val="TOC Heading"/>
+<w:basedOn w:val="Normal"/>
+<w:next w:val="Normal"/>
+<w:qFormat/>
+<w:pPr>
+<w:keepNext/>
+<w:keepLines/>
+<w:spacing w:before="0" w:after="240"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="163F5C"/>
+<w:sz w:val="32"/>
+<w:szCs w:val="32"/>
+</w:rPr>
+</w:style>
+</w:styles>
