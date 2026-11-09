@@ -1810,11 +1810,44 @@ function pageFooter(plan: DocumentPlan, currentPage: number, pageCount: number):
  * the TLP marking and page number in the bottom one.
  */
 
-/** Height of the header band, then of the accent rule under it, in points. */
-const HEADER_BAND = 64;
-const ACCENT_RULE = 3;
-/** Height of the footer band. */
-const FOOTER_BAND = 48;
+/**
+ * Sizes of the built-in decoration in points, shared by the PDF and the Word
+ * engine so that both draw the same bands.
+ */
+export const DECOR = {
+  /** The header band, then the accent rule under it. */
+  headerBand: 64,
+  accentRule: 3,
+  footerBand: 48,
+  /** How far across the page the rule above a bottom band reaches. */
+  ruleSpan: 0.45,
+  /** The cover: the bar down its left edge, the band at its foot and the rule above it. */
+  coverBar: 14,
+  coverFootBand: 96,
+  coverFootRule: 5,
+  /** The bracket framing the cover's title block: line width and arm length. */
+  bracketStroke: 2.5,
+  bracketArm: 90
+} as const;
+
+/** The decoration's two derived colours: the rule under the header band, the bracket's lower arm. */
+export function decorAccents(preset: Preset): { bannerRule: string; bracketEnd: string } {
+  return { bannerRule: tint(preset.colors.banner, 0.55), bracketEnd: tint(preset.colors.brand, 0.35) };
+}
+
+/**
+ * Where the cover's bracket goes: its vertical stroke at `x`, from `top` to
+ * `bottom`. It frames the title block, so moving the title in the settings, or
+ * a long title pushing the subtitles down by `shift`, moves it too.
+ */
+export function coverBracket(preset: Preset, shift: number, pageHeight = PAGE_H): { x: number; top: number; bottom: number } {
+  const cv = preset.layout.cover;
+  return {
+    x: Math.max(0, cv.x - 28),
+    top: Math.max(0, cv.titleY - 40),
+    bottom: Math.min(pageHeight - 160, Math.max(cv.acronymY, cv.subtitleY) + shift + 90)
+  };
+}
 
 function frameDecor(preset: Preset, page: { width: number; height: number }): PdfNode {
   const C = preset.colors;
@@ -1822,10 +1855,10 @@ function frameDecor(preset: Preset, page: { width: number; height: number }): Pd
   const h = page.height || PAGE_H;
   return {
     canvas: [
-      { type: 'rect', x: 0, y: 0, w, h: HEADER_BAND, color: C.banner },
-      { type: 'rect', x: 0, y: HEADER_BAND, w, h: ACCENT_RULE, color: tint(C.banner, 0.55) },
-      { type: 'rect', x: 0, y: h - FOOTER_BAND, w, h: FOOTER_BAND, color: C.dark },
-      { type: 'rect', x: 0, y: h - FOOTER_BAND - ACCENT_RULE, w: w * 0.45, h: ACCENT_RULE, color: C.brand }
+      { type: 'rect', x: 0, y: 0, w, h: DECOR.headerBand, color: C.banner },
+      { type: 'rect', x: 0, y: DECOR.headerBand, w, h: DECOR.accentRule, color: decorAccents(preset).bannerRule },
+      { type: 'rect', x: 0, y: h - DECOR.footerBand, w, h: DECOR.footerBand, color: C.dark },
+      { type: 'rect', x: 0, y: h - DECOR.footerBand - DECOR.accentRule, w: w * DECOR.ruleSpan, h: DECOR.accentRule, color: C.brand }
     ]
   };
 }
@@ -1837,21 +1870,19 @@ function frameDecor(preset: Preset, page: { width: number; height: number }): Pd
  */
 function coverDecor(preset: Preset, page: { width: number; height: number }, shift: number): PdfNode {
   const C = preset.colors;
-  const cv = preset.layout.cover;
   const w = page.width || PAGE_W;
   const h = page.height || PAGE_H;
-  const bx = Math.max(0, cv.x - 28);
-  const top = Math.max(0, cv.titleY - 40);
-  const bottom = Math.min(h - 160, Math.max(cv.acronymY, cv.subtitleY) + shift + 90);
-  const accent = tint(C.brand, 0.35);
+  const { x, top, bottom } = coverBracket(preset, shift, h);
+  const arm = x + DECOR.bracketArm;
+  const stroke = DECOR.bracketStroke;
   return {
     canvas: [
-      { type: 'rect', x: 0, y: 0, w: 14, h, color: C.brand },
-      { type: 'line', x1: bx, y1: top, x2: bx, y2: bottom, lineWidth: 2.5, lineColor: C.brand },
-      { type: 'line', x1: bx, y1: top, x2: bx + 90, y2: top, lineWidth: 2.5, lineColor: C.brand },
-      { type: 'line', x1: bx, y1: bottom, x2: bx + 90, y2: bottom, lineWidth: 2.5, lineColor: accent },
-      { type: 'rect', x: 0, y: h - 96, w, h: 96, color: C.dark },
-      { type: 'rect', x: 0, y: h - 96 - 5, w: w * 0.45, h: 5, color: C.brand }
+      { type: 'rect', x: 0, y: 0, w: DECOR.coverBar, h, color: C.brand },
+      { type: 'line', x1: x, y1: top, x2: x, y2: bottom, lineWidth: stroke, lineColor: C.brand },
+      { type: 'line', x1: x, y1: top, x2: arm, y2: top, lineWidth: stroke, lineColor: C.brand },
+      { type: 'line', x1: x, y1: bottom, x2: arm, y2: bottom, lineWidth: stroke, lineColor: decorAccents(preset).bracketEnd },
+      { type: 'rect', x: 0, y: h - DECOR.coverFootBand, w, h: DECOR.coverFootBand, color: C.dark },
+      { type: 'rect', x: 0, y: h - DECOR.coverFootBand - DECOR.coverFootRule, w: w * DECOR.ruleSpan, h: DECOR.coverFootRule, color: C.brand }
     ]
   };
 }

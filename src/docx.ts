@@ -23,11 +23,14 @@ import { marked } from 'marked';
 import {
   CALLOUT_STYLES,
   CAPTION_RE,
+  DECOR,
   DEFAULT_PAGE_MARGINS,
   PAGE_H,
   PAGE_W,
   IMAGE_REF_RE,
   bodySize,
+  coverBracket,
+  decorAccents,
   decodeEntities,
   defaultLabels,
   defaultToc,
@@ -1361,17 +1364,18 @@ function coverHeader(ctx: WordContext, rels: Relationships, ruleY: number, logo:
   // The artwork, when Word can show it; otherwise the decoration, as in the PDF.
   let art = p.assets.coverBg ? draw.image(p.assets.coverBg, 'coverBg', 0, 0, PAGE_W, PAGE_H) : '';
   if (!art && p.layout.decor !== false) {
-    const bx = Math.max(0, cv.x - 28);
-    const top = Math.max(0, cv.titleY - 40);
-    const bottom = Math.min(PAGE_H - 160, Math.max(cv.acronymY, cv.subtitleY) + (ruleY - cv.ruleY) + 90);
-    const accent = tint(C.brand, 0.35);
+    // Word has no lines to anchor: the bracket's strokes are thin rectangles,
+    // the vertical one capped by half a stroke at each end to close the corners.
+    const { x, top, bottom } = coverBracket(p, ruleY - cv.ruleY);
+    const stroke = DECOR.bracketStroke;
+    const half = stroke / 2;
     art +=
-      draw.rect(C.brand, 0, 0, 14, PAGE_H) +
-      draw.rect(C.brand, bx - 1.25, top - 1.25, 2.5, bottom - top + 2.5) +
-      draw.rect(C.brand, bx, top - 1.25, 90, 2.5) +
-      draw.rect(accent, bx, bottom - 1.25, 90, 2.5) +
-      draw.rect(C.dark, 0, PAGE_H - 96, PAGE_W, 96) +
-      draw.rect(C.brand, 0, PAGE_H - 101, PAGE_W * 0.45, 5);
+      draw.rect(C.brand, 0, 0, DECOR.coverBar, PAGE_H) +
+      draw.rect(C.brand, x - half, top - half, stroke, bottom - top + stroke) +
+      draw.rect(C.brand, x, top - half, DECOR.bracketArm, stroke) +
+      draw.rect(decorAccents(p).bracketEnd, x, bottom - half, DECOR.bracketArm, stroke) +
+      draw.rect(C.dark, 0, PAGE_H - DECOR.coverFootBand, PAGE_W, DECOR.coverFootBand) +
+      draw.rect(C.brand, 0, PAGE_H - DECOR.coverFootBand - DECOR.coverFootRule, PAGE_W * DECOR.ruleSpan, DECOR.coverFootRule);
   }
   if (cv.showRule !== false) art += draw.rect('#141414', cv.x, ruleY, cv.ruleW, 3);
   if (logo) art += draw.image(logo, 'coverLogo', cv.logoX, cv.logoY, cv.logoW);
@@ -1386,10 +1390,10 @@ function frameHeader(vars: ReportVars, ctx: WordContext, rels: Relationships, ri
   let art = p.assets.frame ? draw.image(p.assets.frame, 'frame', 0, 0, PAGE_W, PAGE_H) : '';
   if (!art && p.layout.decor !== false) {
     art +=
-      draw.rect(C.banner, 0, 0, PAGE_W, 64) +
-      draw.rect(tint(C.banner, 0.55), 0, 64, PAGE_W, 3) +
-      draw.rect(C.dark, 0, PAGE_H - 48, PAGE_W, 48) +
-      draw.rect(C.brand, 0, PAGE_H - 51, PAGE_W * 0.45, 3);
+      draw.rect(C.banner, 0, 0, PAGE_W, DECOR.headerBand) +
+      draw.rect(decorAccents(p).bannerRule, 0, DECOR.headerBand, PAGE_W, DECOR.accentRule) +
+      draw.rect(C.dark, 0, PAGE_H - DECOR.footerBand, PAGE_W, DECOR.footerBand) +
+      draw.rect(C.brand, 0, PAGE_H - DECOR.footerBand - DECOR.accentRule, PAGE_W * DECOR.ruleSpan, DECOR.accentRule);
   }
   // The text ends where the PDF's does, `headerRight` from the edge of the page.
   const ind = `<w:ind w:right="${tw(p.layout.headerRight - right)}"/>`;
