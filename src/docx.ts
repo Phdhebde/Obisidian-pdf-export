@@ -38,10 +38,10 @@ import {
   isPageBreakToken,
   lex,
   listColumns,
-  reportTlp,
-  resolveSections,
+  planDocument,
   tint,
   tlpColor,
+  type DocumentPlan,
   type MdToken
 } from './generator.ts';
 import { columnsLang, parseColBlock, parseColMd, type ColSettings, type ColumnSpec } from './columns.ts';
@@ -76,7 +76,7 @@ import {
   type StyleInfo,
   type StyleType
 } from './ooxml.ts';
-import { HEADING_LEVELS, type DocContact, type Preset, type ReportVars, type TlpKey, type WordRole } from './types.ts';
+import { HEADING_LEVELS, type DocContact, type Preset, type ReportVars, type SectionKey, type TlpKey, type WordRole } from './types.ts';
 
 /** A drawing the host rasterised: the PNG every Word shows, the SVG recent ones prefer. */
 export interface RasterImage {
@@ -1650,160 +1650,240 @@ function addPart(parts: DocumentParts, part: HeaderFooterPart): string {
 }
 
 export function buildDocx(md: string, vars: ReportVars, preset: Preset, options: DocxOptions = {}): DocxResult {
-  const generated = !options.template;
-  const pkg = options.template ? openTemplate(options.template) : skeleton();
-  const main = mainPart(pkg);
-  const rels = new Relationships(pkg.text(relsPath(main)));
-  const contentTypes = new ContentTypes(pkg.text('[Content_Types].xml') || '');
-  const parts: DocumentParts = { pkg, main, rels, contentTypes };
-  const doc = ensureRootNs(pkg.text(main) || '', 'r', NS.r);
+  const parts = openParts(options.template ? openTemplate(options.template) : skeleton());
+  const extracted = extractFootnotes(md);
+  const ctx = createContext(parts, preset, options, extracted.notes);
+  // The body first: the table of contents lists its headings.
+  const report = renderBlocks(extracted.md, ctx);
+  const main = options.template
+    ? fillWordTemplate(parts, ctx, markerValues(vars, preset, options.date || ''), report)
+    : layOutGenerated(parts, ctx, planDocument(vars, preset, options.clientLogo), report);
+  parts.pkg.setText(parts.main, main.xml);
+  writeSupportParts(parts, ctx, main.usesToc);
+  setCoreProperties(parts.pkg, vars);
 
-  const stylesPath = partOf(parts, 'styles');
+  const warnings = [...ctx.warnings];
+  if (ctx.styles.unknown.length) warnings.push(tr('word.stylesUnknown', { names: ctx.styles.unknown.join(', ') }));
+  return { bytes: parts.pkg.toBytes(), warnings };
+}
+
+/** The main part's new XML, and whether it holds a table of contents. */
+interface MainXml {
+  xml: string;
+  usesToc: boolean;
+}
+
+function openParts(pkg: Package): DocumentParts {
+  const main = mainPart(pkg);
+  return {
+    pkg,
+    main,
+    rels: new Relationships(pkg.text(relsPath(main))),
+    contentTypes: new ContentTypes(pkg.text('[Content_Types].xml') || '')
+  };
+}
+
+/** The main part as the package holds it, with the relationships namespace declared. */
+function mainXml(parts: DocumentParts): string {
+  return ensureRootNs(parts.pkg.text(parts.main) || '', 'r', NS.r);
+}
+
+/** A generated document's margins: the PDF template's, in points. */
+function generatedMargins(preset: Preset): { left: number; top: number; right: number; bottom: number } {
+  const [left, top, right, bottom] = DEFAULT_PAGE_MARGINS.map((fallback, i) => preset.layout.pageMargins[i] ?? fallback);
+  return { left, top, right, bottom };
+}
+
+/** The rendering context, building on the template's own styles, numbering and footnotes. */
+function createContext(parts: DocumentParts, preset: Preset, options: DocxOptions, notes: Footnote[]): WordContext {
+  const { pkg, main } = parts;
+  const generated = !options.template;
   const styles = new StyleBook(
-    pkg.text(stylesPath) || `${XML_DECL}<w:styles xmlns:w="${NS.w}"></w:styles>`,
+    pkg.text(partOf(parts, 'styles')) || `${XML_DECL}<w:styles xmlns:w="${NS.w}"></w:styles>`,
     preset,
     generated ? {} : preset.word?.styles || {}
   );
   const numberingPath = existingPart(parts, 'numbering');
   const footnotesPath = existingPart(parts, 'footnotes');
-  const extracted = extractFootnotes(md);
-
-  // A generated page has the PDF template's margins.
-  const [left, top, right, bottom] = DEFAULT_PAGE_MARGINS.map((fallback, i) => preset.layout.pageMargins[i] ?? fallback);
-
-  const diagrams = new Map<string, RasterImage>();
-  for (const [source, d] of Object.entries(options.diagrams || {})) {
-    if (d && d.png && d.width > 0 && d.height > 0) diagrams.set(diagramKey(source), d);
-  }
-  const ctx: WordContext = {
+  const margins = generatedMargins(preset);
+  return {
     preset,
     styles,
-    rels,
+    rels: parts.rels,
     numbering: new NumberingBook(numberingPath ? pkg.text(numberingPath) : null),
     media: new MediaBook(pkg, main.slice(0, main.lastIndexOf('/') + 1)),
     images: options.images || {},
-    diagrams,
+    diagrams: renderedRasters(options.diagrams),
     icons: options.icons || {},
-    width: generated ? PAGE_W_TW - tw(left) - tw(right) : textWidth(doc),
+    width: generated ? PAGE_W_TW - tw(margins.left) - tw(margins.right) : textWidth(mainXml(parts)),
     counters: new Array<number>(HEADING_LEVELS).fill(0),
     ids: { drawing: 10000, bookmark: 10000 },
     toc: [],
     notes: new FootnoteBook(
       footnotesPath ? pkg.text(footnotesPath) : null,
       footnotesPath ? pkg.text(relsPath(footnotesPath)) : null,
-      extracted.notes
+      notes
     ),
     warnings: new Set(),
     top: true,
     breakable: false
   };
+}
 
-  const values = markerValues(vars, preset, options.date || '');
-  const fill = (name: string) => values[name] ?? null;
-  // The body first: the table of contents lists its headings.
-  const report = renderBlocks(extracted.md, ctx);
-  let usesToc = false;
-  let out: string;
-
-  if (generated) {
-    const sections = resolveSections(vars, preset);
-    const tlp = reportTlp(vars.tlp, sections);
-    const hasCover = sections[0] === 'cover';
-    let cover: { xml: string; ruleY: number } | null = null;
-    const pages: string[] = [];
-    for (const sec of sections) {
-      if (sec === 'cover') pages.push((cover = coverText(vars, ctx, top, left)).xml);
-      else if (sec === 'references') pages.push(references(vars, ctx));
-      else if (sec === 'tlp') pages.push(tlpReminder(ctx));
-      else if (sec === 'toc') {
-        const toc = tocField(ctx, vars.tocTitle || preset.labels.toc);
-        if (toc) { pages.push(toc); usesToc = true; }
-      } else if (sec === 'body') pages.push(report);
-    }
-    const body = pages.filter(Boolean).map((xml, i) => (i === 0 ? xml : onNewPage(xml))).join('');
-
-    // Headers and footers: the cover page has its own, every other page the frame.
-    const headerRels = new Relationships(null);
-    const header = addPart(parts, { kind: 'header', name: 'header1.xml', xml: frameHeader(vars, ctx, headerRels, right), rels: headerRels });
-    const footer = addPart(parts, { kind: 'footer', name: 'footer1.xml', xml: footerXml(ctx, tlp, right), rels: new Relationships(null) });
-    let first = '';
-    if (hasCover && cover) {
-      const coverRels = new Relationships(null);
-      const logo = options.clientLogo || preset.assets.clientLogo || null;
-      const id = addPart(parts, { kind: 'header', name: 'header2.xml', xml: coverHeader(ctx, coverRels, cover.ruleY, logo), rels: coverRels });
-      const blank = addPart(parts, {
-        kind: 'footer',
-        name: 'footer2.xml',
-        xml: `${XML_DECL}<w:ftr xmlns:w="${NS.w}">${para({}, '')}</w:ftr>`,
-        rels: new Relationships(null)
-      });
-      first = `<w:headerReference w:type="first" r:id="${id}"/><w:footerReference w:type="first" r:id="${blank}"/>`;
-    }
-    const sectPr =
-      `<w:sectPr><w:headerReference w:type="default" r:id="${header}"/><w:footerReference w:type="default" r:id="${footer}"/>${first}` +
-      `<w:pgSz w:w="${PAGE_W_TW}" w:h="${PAGE_H_TW}"/>` +
-      `<w:pgMar w:top="${tw(top)}" w:right="${tw(right)}" w:bottom="${tw(bottom)}" w:left="${tw(left)}" ` +
-      `w:header="${tw(preset.layout.headerY)}" w:footer="${tw(footerDistance(ctx, !!tlp))}" w:gutter="0"/>` +
-      `${hasCover ? '<w:titlePg/>' : ''}</w:sectPr>`;
-    out = doc.replace(/<w:body>[\s\S]*<\/w:body>/, `<w:body>${body}${sectPr}</w:body>`);
-  } else {
-    // Markers are filled around the report, never inside it: a note that
-    // writes "{{title}}" in its text keeps it.
-    const split = splitAtMarker(doc, 'content');
-    const withToc = (xml: string) => {
-      const at = splitAtMarker(xml, 'toc');
-      if (!at) return xml;
-      usesToc = true;
-      return at.before + tocField(ctx, null) + at.after;
-    };
-    if (split) {
-      out = withToc(fillMarkers(split.before, fill)) + report + withToc(fillMarkers(split.after, fill));
-    } else {
-      ctx.warnings.add(tr('word.noContentMarker'));
-      const filled = withToc(fillMarkers(doc, fill));
-      const at = filled.lastIndexOf('<w:sectPr');
-      const end = filled.lastIndexOf('</w:body>');
-      const cut = at > filled.lastIndexOf('</w:p>') ? at : end;
-      out = filled.slice(0, cut) + report + filled.slice(cut);
-    }
-    // Headers and footers carry markers too: the TLP marking, the title.
-    for (const rel of [...rels.ofType(REL_TYPES.header), ...rels.ofType(REL_TYPES.footer)]) {
-      const path = resolveTarget(main, rel.target);
-      const xml = pkg.text(path);
-      if (xml) pkg.setText(path, fillMarkers(xml, fill));
-    }
+/** The diagrams that were actually rendered, keyed by `diagramKey(source)`. */
+function renderedRasters(diagrams: Record<string, RasterImage> = {}): Map<string, RasterImage> {
+  const rendered = new Map<string, RasterImage>();
+  for (const [source, d] of Object.entries(diagrams)) {
+    if (d && d.png && d.width > 0 && d.height > 0) rendered.set(diagramKey(source), d);
   }
-  pkg.setText(main, out);
+  return rendered;
+}
 
+/* Generated document ------------------------------------------------- */
+
+/** A document without a Word template, laid out like the PDF: its pages, bands and margins. */
+function layOutGenerated(parts: DocumentParts, ctx: WordContext, plan: DocumentPlan, report: string): MainXml {
+  const pages = generatedPages(plan, ctx, report);
+  const sectPr = generatedSection(parts, ctx, plan, pages.coverRuleY);
+  return {
+    xml: mainXml(parts).replace(/<w:body>[\s\S]*<\/w:body>/, `<w:body>${pages.body}${sectPr}</w:body>`),
+    usesToc: pages.usesToc
+  };
+}
+
+/** Each section the plan lists, on a new page; where the cover's rule ended up, for its header. */
+function generatedPages(plan: DocumentPlan, ctx: WordContext, report: string): { body: string; coverRuleY: number | null; usesToc: boolean } {
+  const { vars, preset } = plan;
+  const { top, left } = generatedMargins(preset);
+  let coverRuleY: number | null = null;
+  let usesToc = false;
+  const page = (sec: SectionKey): string => {
+    switch (sec) {
+      case 'cover': {
+        const cover = coverText(vars, ctx, top, left);
+        coverRuleY = cover.ruleY;
+        return cover.xml;
+      }
+      case 'references': return references(vars, ctx);
+      case 'tlp': return tlpReminder(ctx);
+      case 'toc': {
+        const toc = tocField(ctx, vars.tocTitle || preset.labels.toc);
+        if (toc) usesToc = true;
+        return toc;
+      }
+      case 'body': return report;
+      default: return '';
+    }
+  };
+  const pages = plan.sections.map(page).filter(Boolean);
+  return { body: pages.map((xml, i) => (i === 0 ? xml : onNewPage(xml))).join(''), coverRuleY, usesToc };
+}
+
+/** The section properties: headers and footers, an A4 page and the PDF template's margins. */
+function generatedSection(parts: DocumentParts, ctx: WordContext, plan: DocumentPlan, coverRuleY: number | null): string {
+  const { vars, preset, tlp } = plan;
+  const { left, top, right, bottom } = generatedMargins(preset);
+  // Headers and footers: the cover page has its own, every other page the frame.
+  const headerRels = new Relationships(null);
+  const header = addPart(parts, { kind: 'header', name: 'header1.xml', xml: frameHeader(vars, ctx, headerRels, right), rels: headerRels });
+  const footer = addPart(parts, { kind: 'footer', name: 'footer1.xml', xml: footerXml(ctx, tlp, right), rels: new Relationships(null) });
+  const first = plan.hasCover && coverRuleY !== null ? coverHeaderFooter(parts, ctx, coverRuleY, plan.coverLogo) : '';
+  return (
+    `<w:sectPr><w:headerReference w:type="default" r:id="${header}"/><w:footerReference w:type="default" r:id="${footer}"/>${first}` +
+    `<w:pgSz w:w="${PAGE_W_TW}" w:h="${PAGE_H_TW}"/>` +
+    `<w:pgMar w:top="${tw(top)}" w:right="${tw(right)}" w:bottom="${tw(bottom)}" w:left="${tw(left)}" ` +
+    `w:header="${tw(preset.layout.headerY)}" w:footer="${tw(footerDistance(ctx, !!tlp))}" w:gutter="0"/>` +
+    `${plan.hasCover ? '<w:titlePg/>' : ''}</w:sectPr>`
+  );
+}
+
+/** The cover page's own header (its artwork, logo and rule) and an empty footer; their references. */
+function coverHeaderFooter(parts: DocumentParts, ctx: WordContext, ruleY: number, logo: string | null): string {
+  const coverRels = new Relationships(null);
+  const header = addPart(parts, { kind: 'header', name: 'header2.xml', xml: coverHeader(ctx, coverRels, ruleY, logo), rels: coverRels });
+  const footer = addPart(parts, {
+    kind: 'footer',
+    name: 'footer2.xml',
+    xml: `${XML_DECL}<w:ftr xmlns:w="${NS.w}">${para({}, '')}</w:ftr>`,
+    rels: new Relationships(null)
+  });
+  return `<w:headerReference w:type="first" r:id="${header}"/><w:footerReference w:type="first" r:id="${footer}"/>`;
+}
+
+/* Word template ------------------------------------------------------ */
+
+/**
+ * The user's Word template with its markers filled: the report at `{{content}}`,
+ * the table of contents at `{{toc}}`, the note's values everywhere else.
+ */
+function fillWordTemplate(parts: DocumentParts, ctx: WordContext, values: Record<string, MarkerValue>, report: string): MainXml {
+  const fill = (name: string) => values[name] ?? null;
+  let usesToc = false;
+  const withToc = (xml: string) => {
+    const at = splitAtMarker(xml, 'toc');
+    if (!at) return xml;
+    usesToc = true;
+    return at.before + tocField(ctx, null) + at.after;
+  };
+  // Markers are filled around the report, never inside it: a note that
+  // writes "{{title}}" in its text keeps it.
+  const doc = mainXml(parts);
+  const split = splitAtMarker(doc, 'content');
+  let xml: string;
+  if (split) {
+    xml = withToc(fillMarkers(split.before, fill)) + report + withToc(fillMarkers(split.after, fill));
+  } else {
+    ctx.warnings.add(tr('word.noContentMarker'));
+    xml = beforeLastSection(withToc(fillMarkers(doc, fill)), report);
+  }
+  // Headers and footers carry markers too: the TLP marking, the title.
+  const { pkg, main, rels } = parts;
+  for (const rel of [...rels.ofType(REL_TYPES.header), ...rels.ofType(REL_TYPES.footer)]) {
+    const path = resolveTarget(main, rel.target);
+    const part = pkg.text(path);
+    if (part) pkg.setText(path, fillMarkers(part, fill));
+  }
+  return { xml, usesToc };
+}
+
+/** `content` at the end of the body: before its closing section properties, if they come last. */
+function beforeLastSection(doc: string, content: string): string {
+  const sectPr = doc.lastIndexOf('<w:sectPr');
+  const cut = sectPr > doc.lastIndexOf('</w:p>') ? sectPr : doc.lastIndexOf('</w:body>');
+  return doc.slice(0, cut) + content + doc.slice(cut);
+}
+
+/* Package ------------------------------------------------------------ */
+
+/** The parts the report filled in or used: settings, numbering, footnotes, styles, relationships, content types. */
+function writeSupportParts(parts: DocumentParts, ctx: WordContext, usesToc: boolean): void {
+  const { pkg, main, rels, contentTypes } = parts;
   if (usesToc) {
     const path = partOf(parts, 'settings');
     pkg.setText(path, withUpdateFields(pkg.text(path) || `${XML_DECL}<w:settings xmlns:w="${NS.w}"></w:settings>`));
   }
-  if (ctx.numbering.used) {
-    const path = partOf(parts, 'numbering');
-    pkg.setText(path, ctx.numbering.toXml());
-  }
+  if (ctx.numbering.used) pkg.setText(partOf(parts, 'numbering'), ctx.numbering.toXml());
   if (ctx.notes.used) {
     const path = partOf(parts, 'footnotes');
     pkg.setText(path, ctx.notes.toXml());
     if (ctx.notes.rels.list.length) pkg.setText(relsPath(path), ctx.notes.rels.toXml());
   }
-  pkg.setText(stylesPath, styles.toXml());
+  pkg.setText(partOf(parts, 'styles'), ctx.styles.toXml());
   pkg.setText(relsPath(main), rels.toXml());
 
   // A .dotx opened in Word starts a new document; saved as is, it must
   // declare itself a document or Word refuses it.
   contentTypes.setOverride(main, CONTENT_TYPES.document);
-  const mime: Record<string, string> = { png: 'image/png', jpeg: 'image/jpeg', gif: 'image/gif', svg: 'image/svg+xml' };
-  for (const ext of ctx.media.types) contentTypes.ensureDefault(ext, mime[ext]);
+  for (const ext of ctx.media.types) contentTypes.ensureDefault(ext, MEDIA_MIME[ext]);
   pkg.setText('[Content_Types].xml', contentTypes.toXml());
+}
 
+const MEDIA_MIME: Record<string, string> = { png: 'image/png', jpeg: 'image/jpeg', gif: 'image/gif', svg: 'image/svg+xml' };
+
+/** The note's title and author in the file's properties, when the package has a core part. */
+function setCoreProperties(pkg: Package, vars: ReportVars): void {
   const coreRel = new Relationships(pkg.text('_rels/.rels')).ofType(REL_TYPES.core)[0];
   const corePath = coreRel ? resolveTarget('', coreRel.target) : null;
   const core = corePath ? pkg.text(corePath) : null;
   if (corePath && core) pkg.setText(corePath, setCoreTitle(core, vars));
-
-  const warnings = [...ctx.warnings];
-  if (styles.unknown.length) warnings.push(tr('word.stylesUnknown', { names: styles.unknown.join(', ') }));
-  return { bytes: pkg.toBytes(), warnings };
 }

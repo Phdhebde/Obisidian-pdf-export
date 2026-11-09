@@ -1629,114 +1629,173 @@ export function resolveSections(vars: ReportVars, preset: Preset): SectionKey[] 
   return list.includes('cover') ? (['cover', ...rest] as SectionKey[]) : rest;
 }
 
+/** What a report is made of, decided once for the PDF and the Word engine. */
+export interface DocumentPlan {
+  vars: ReportVars;
+  preset: Preset;
+  sections: SectionKey[];
+  /** The cover is emitted: page 1 has its own artwork and no header or footer. */
+  hasCover: boolean;
+  /** The marking printed in the footer, or null. */
+  tlp: TlpKey | null;
+  /** The cover logo: the note's own wins over the template's default. */
+  coverLogo: string | null;
+}
+
+export function planDocument(vars: ReportVars, preset: Preset, clientLogo?: string | null): DocumentPlan {
+  const sections = resolveSections(vars, preset);
+  return {
+    vars,
+    preset,
+    sections,
+    hasCover: sections[0] === 'cover',
+    tlp: reportTlp(vars.tlp, sections),
+    coverLogo: clientLogo || preset.assets.clientLogo || null
+  };
+}
+
 export function buildDocDefinition(
   md: string,
   vars: Partial<ReportVars>,
   preset?: Preset,
   options?: BuildOptions
 ): PdfNode {
-  const p: Preset = preset || defaultPreset({});
-  const v = vars as ReportVars;
-  const C = p.colors;
-  const L = p.layout;
-  const sections = resolveSections(v, p);
-  const hasCover = sections[0] === 'cover';
-  // The note's own logo wins over the template's default.
-  const coverLogo = options?.clientLogo || p.assets.clientLogo || null;
-
-  const images: Record<string, string> = { ...(options?.images || {}) };
-  const rendered = new Map<string, DiagramSvg>();
-  for (const [source, d] of Object.entries(options?.diagrams || {})) {
-    if (d && d.svg && d.width > 0 && d.height > 0) rendered.set(diagramKey(source), d);
-  }
-
-  const content: PdfNode[] = [];
-  let started = false;
-  for (const sec of sections) {
-    let nodes: PdfNode[] = [];
-    if (sec === 'cover') nodes = buildCover(v, p, Boolean(coverLogo));
-    else if (sec === 'references') nodes = buildReferences(v, p);
-    else if (sec === 'tlp') nodes = buildTlpReminder(p);
-    else if (sec === 'toc') nodes = [buildToc(v, p)];
-    else if (sec === 'body') {
-      const fn = extractFootnotes(md);
-      nodes = [...markdownToPdf(fn.md, p, newCtx(p, rendered)), ...footnoteNodes(fn.notes, p)];
-    }
-    if (!nodes.length) continue;
-    if (started) content.push({ text: '', pageBreak: 'before' });
-    content.push(...nodes);
-    started = true;
-  }
-
-  if (p.assets.coverBg) images.coverBg = p.assets.coverBg;
-  if (p.assets.frame) images.frame = p.assets.frame;
-  if (coverLogo) images[COVER_LOGO_KEY] = coverLogo;
-
-  const tlp = reportTlp(v.tlp, sections);
-  const decor = p.layout.decor !== false;
-
+  const plan = planDocument(vars as ReportVars, preset || defaultPreset({}), options?.clientLogo);
+  const p = plan.preset;
+  const images = imageDictionary(plan, options?.images);
   return {
     pageSize: 'A4',
-    pageMargins: L.pageMargins,
-    info: {
-      title: v.docTitle || '',
-      author: v.author || '',
-      subject: v.coverSubtitle || '',
-      keywords: [tlp ? 'TLP:' + tlp : '', v.client || ''].filter(Boolean).join(', '),
-      creator: 'Report Exporter'
-    },
-    background: (currentPage: number, pageSize: { width: number; height: number }) => {
-      // Keyed on whether a cover was actually emitted, not on the page number:
-      // with the cover section off, page 1 is ordinary content and must get the
-      // frame, not the full-page cover artwork.
-      const key = hasCover && currentPage === 1 ? 'coverBg' : 'frame';
-      if (images[key]) {
-        return { image: key, width: pageSize.width, height: pageSize.height, absolutePosition: { x: 0, y: 0 } };
-      }
-      if (!decor) return null;
-      return key === 'coverBg' ? coverDecor(p, pageSize, coverShift(v, p)) : frameDecor(p, pageSize);
-    },
-    header: (currentPage: number) => {
-      if (hasCover && currentPage === 1) return null;
-      return {
-        columns: [
-          { text: '', width: '*' },
-          {
-            width: 'auto', alignment: 'right', stack: [
-              { text: v.docTitle || '', color: C.headerText, fontSize: 12, font: p.fonts.bodyFont },
-              { text: v.client || '', color: C.headerText, fontSize: 12, font: p.fonts.bodyFont, margin: [0, 4, 0, 0] }
-            ]
-          }
-        ],
-        margin: [0, L.headerY, L.headerRight, 0]
-      };
-    },
-    // The header and footer sit on top of the frame artwork, so their sizes
-    // stay fixed: unlike the body, they have a band of a given height to fit
-    // into and nothing to gain from following the text size.
-    footer: (currentPage: number, pageCount: number) => {
-      if (hasCover && currentPage === 1) return null;
-      const stack: PdfNode[] = [];
-      if (tlp) {
-        stack.push({ text: 'TLP:' + tlp, color: tlpColor(p, tlp).bg, bold: true, fontSize: 11, font: p.fonts.bodyFont, alignment: 'right' });
-      }
-      const paging = renderPagination(L.pagination, currentPage, pageCount);
-      if (paging) {
-        stack.push({ text: paging, color: C.footerText, fontSize: 10, font: p.fonts.bodyFont, alignment: 'right', margin: [0, tlp ? 2 : 7, 0, 0] });
-      }
-      if (!stack.length) return null;
-      return {
-        columns: [{ text: '', width: '*' }, { width: 'auto', alignment: 'right', stack }],
-        margin: [0, L.footerY, L.footerRight, 0]
-      };
-    },
-    content,
+    pageMargins: p.layout.pageMargins,
+    info: documentInfo(plan),
+    background: (currentPage: number, pageSize: PageSize) => pageBackground(plan, images, currentPage, pageSize),
+    header: (currentPage: number) => pageHeader(plan, currentPage),
+    footer: (currentPage: number, pageCount: number) => pageFooter(plan, currentPage, pageCount),
+    content: sectionContent(md, plan, renderedDiagrams(options?.diagrams)),
     images,
     styles: buildStyles(p),
     defaultStyle: {
-      font: p.fonts.bodyFont, fontSize: 11, color: C.text, lineHeight: 1.22,
+      font: p.fonts.bodyFont, fontSize: 11, color: p.colors.text, lineHeight: 1.22,
       alignment: p.justify === false ? 'left' : 'justify'
     }
+  };
+}
+
+type PageSize = { width: number; height: number };
+
+/** The diagrams that were actually rendered, keyed by `diagramKey(source)`. */
+function renderedDiagrams(diagrams: Record<string, DiagramSvg> = {}): Map<string, DiagramSvg> {
+  const rendered = new Map<string, DiagramSvg>();
+  for (const [source, d] of Object.entries(diagrams)) {
+    if (d && d.svg && d.width > 0 && d.height > 0) rendered.set(diagramKey(source), d);
+  }
+  return rendered;
+}
+
+/** Each section the plan lists, on a new page, skipping those with nothing to show. */
+function sectionContent(md: string, plan: DocumentPlan, rendered: Map<string, DiagramSvg>): PdfNode[] {
+  const { vars, preset } = plan;
+  const build = (sec: SectionKey): PdfNode[] => {
+    switch (sec) {
+      case 'cover': return buildCover(vars, preset, Boolean(plan.coverLogo));
+      case 'references': return buildReferences(vars, preset);
+      case 'tlp': return buildTlpReminder(preset);
+      case 'toc': return [buildToc(vars, preset)];
+      case 'body': {
+        const extracted = extractFootnotes(md);
+        return [...markdownToPdf(extracted.md, preset, newCtx(preset, rendered)), ...footnoteNodes(extracted.notes, preset)];
+      }
+      default: return [];
+    }
+  };
+  const content: PdfNode[] = [];
+  for (const sec of plan.sections) {
+    const nodes = build(sec);
+    if (!nodes.length) continue;
+    if (content.length) content.push({ text: '', pageBreak: 'before' });
+    content.push(...nodes);
+  }
+  return content;
+}
+
+/** The note's images, then the template's artwork and the cover logo. */
+function imageDictionary(plan: DocumentPlan, noteImages: Record<string, string> = {}): Record<string, string> {
+  const { assets } = plan.preset;
+  const images: Record<string, string> = { ...noteImages };
+  if (assets.coverBg) images.coverBg = assets.coverBg;
+  if (assets.frame) images.frame = assets.frame;
+  if (plan.coverLogo) images[COVER_LOGO_KEY] = plan.coverLogo;
+  return images;
+}
+
+/** The PDF's properties: what a file manager or a search engine shows. */
+function documentInfo({ vars, tlp }: DocumentPlan): PdfNode {
+  return {
+    title: vars.docTitle || '',
+    author: vars.author || '',
+    subject: vars.coverSubtitle || '',
+    keywords: [tlp ? 'TLP:' + tlp : '', vars.client || ''].filter(Boolean).join(', '),
+    creator: 'Report Exporter'
+  };
+}
+
+/** Page 1 of a document with a cover: no header, no footer, its own artwork. */
+function isCoverPage(plan: DocumentPlan, currentPage: number): boolean {
+  return plan.hasCover && currentPage === 1;
+}
+
+function pageBackground(plan: DocumentPlan, images: Record<string, string>, currentPage: number, pageSize: PageSize): PdfNode | null {
+  // Keyed on whether a cover was actually emitted, not on the page number:
+  // with the cover section off, page 1 is ordinary content and must get the
+  // frame, not the full-page cover artwork.
+  const key = isCoverPage(plan, currentPage) ? 'coverBg' : 'frame';
+  if (images[key]) {
+    return { image: key, width: pageSize.width, height: pageSize.height, absolutePosition: { x: 0, y: 0 } };
+  }
+  if (plan.preset.layout.decor === false) return null;
+  return key === 'coverBg' ? coverDecor(plan.preset, pageSize, coverShift(plan.vars, plan.preset)) : frameDecor(plan.preset, pageSize);
+}
+
+/*
+ * The header and footer sit on top of the frame artwork, so their sizes stay
+ * fixed: unlike the body, they have a band of a given height to fit into and
+ * nothing to gain from following the text size.
+ */
+
+/** The title and the client, right-aligned in the header band. */
+function pageHeader(plan: DocumentPlan, currentPage: number): PdfNode | null {
+  if (isCoverPage(plan, currentPage)) return null;
+  const { vars, preset } = plan;
+  return {
+    columns: [
+      { text: '', width: '*' },
+      {
+        width: 'auto', alignment: 'right', stack: [
+          { text: vars.docTitle || '', color: preset.colors.headerText, fontSize: 12, font: preset.fonts.bodyFont },
+          { text: vars.client || '', color: preset.colors.headerText, fontSize: 12, font: preset.fonts.bodyFont, margin: [0, 4, 0, 0] }
+        ]
+      }
+    ],
+    margin: [0, preset.layout.headerY, preset.layout.headerRight, 0]
+  };
+}
+
+/** The TLP marking and the page number, right-aligned in the footer band. */
+function pageFooter(plan: DocumentPlan, currentPage: number, pageCount: number): PdfNode | null {
+  if (isCoverPage(plan, currentPage)) return null;
+  const { preset, tlp } = plan;
+  const L = preset.layout;
+  const stack: PdfNode[] = [];
+  if (tlp) {
+    stack.push({ text: 'TLP:' + tlp, color: tlpColor(preset, tlp).bg, bold: true, fontSize: 11, font: preset.fonts.bodyFont, alignment: 'right' });
+  }
+  const paging = renderPagination(L.pagination, currentPage, pageCount);
+  if (paging) {
+    stack.push({ text: paging, color: preset.colors.footerText, fontSize: 10, font: preset.fonts.bodyFont, alignment: 'right', margin: [0, tlp ? 2 : 7, 0, 0] });
+  }
+  if (!stack.length) return null;
+  return {
+    columns: [{ text: '', width: '*' }, { width: 'auto', alignment: 'right', stack }],
+    margin: [0, L.footerY, L.footerRight, 0]
   };
 }
 
