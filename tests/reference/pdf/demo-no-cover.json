@@ -1,0 +1,2021 @@
+{
+ "pageSize": "A4",
+ "pageMargins": [
+  64,
+  100,
+  64,
+  82
+ ],
+ "info": {
+  "title": "Website Migration Review",
+  "author": "Jane Doe",
+  "subject": "Audit",
+  "keywords": "TLP:AMBER, ACME Corp",
+  "creator": "Report Exporter"
+ },
+ "content": [
+  {
+   "text": "Document references",
+   "style": "h1"
+  },
+  {
+   "text": "Document status",
+   "style": "h2heavy"
+  },
+  {
+   "table": {
+    "headerRows": 1,
+    "widths": [
+     70,
+     90,
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "text": "VERSION",
+       "style": "tableHeader"
+      },
+      {
+       "text": "DATE",
+       "style": "tableHeader"
+      },
+      {
+       "text": "STATUS",
+       "style": "tableHeader"
+      }
+     ],
+     [
+      {
+       "text": "1.0",
+       "style": "tableCell"
+      },
+      {
+       "text": "2026-10-01",
+       "style": "tableCell"
+      },
+      {
+       "text": "Draft",
+       "style": "tableCell"
+      }
+     ],
+     [
+      {
+       "text": "1.1",
+       "style": "tableCell"
+      },
+      {
+       "text": "2026-10-21",
+       "style": "tableCell"
+      },
+      {
+       "text": "Final",
+       "style": "tableCell"
+      }
+     ],
+     [
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    18
+   ]
+  },
+  {
+   "text": "Contacts",
+   "style": "h2heavy"
+  },
+  {
+   "table": {
+    "headerRows": 1,
+    "widths": [
+     "*",
+     "*",
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "text": "CONTACT",
+       "style": "tableHeader"
+      },
+      {
+       "text": "ROLE",
+       "style": "tableHeader"
+      },
+      {
+       "text": "EMAIL",
+       "style": "tableHeader"
+      }
+     ],
+     [
+      {
+       "text": "Jane Doe",
+       "style": "tableCell"
+      },
+      {
+       "text": "Lead",
+       "style": "tableCell"
+      },
+      {
+       "text": "jane@example.com",
+       "style": "tableCell",
+       "color": "#1F6FB2"
+      }
+     ],
+     [
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      }
+     ],
+     [
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "text": "Recipients",
+   "style": "h2heavy",
+   "margin": [
+    0,
+    14,
+    0,
+    6
+   ]
+  },
+  {
+   "table": {
+    "headerRows": 1,
+    "widths": [
+     "*",
+     "*",
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "text": "RECIPIENT",
+       "style": "tableHeader"
+      },
+      {
+       "text": "COMPANY / ROLE",
+       "style": "tableHeader"
+      },
+      {
+       "text": "EMAIL",
+       "style": "tableHeader"
+      }
+     ],
+     [
+      {
+       "text": "John Roe",
+       "style": "tableCell"
+      },
+      {
+       "text": "ACME Corp",
+       "style": "tableCell"
+      },
+      {
+       "text": "john@example.com",
+       "style": "tableCell",
+       "color": "#1F6FB2"
+      }
+     ],
+     [
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      }
+     ],
+     [
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "text": "",
+   "pageBreak": "before"
+  },
+  {
+   "toc": {
+    "title": {
+     "text": "Table of contents",
+     "style": "tocTitle"
+    }
+   }
+  },
+  {
+   "text": "",
+   "pageBreak": "before"
+  },
+  {
+   "text": "Introduction",
+   "style": "h1",
+   "tocItem": true,
+   "tocStyle": "tocH1",
+   "tocNumberStyle": "tocNumH1",
+   "tocMargin": [
+    0,
+    6,
+    0,
+    2
+   ]
+  },
+  {
+   "text": [
+    {
+     "text": "Some "
+    },
+    {
+     "text": "bold",
+     "bold": true
+    },
+    {
+     "text": ", "
+    },
+    {
+     "text": "italic",
+     "italics": true
+    },
+    {
+     "text": ", "
+    },
+    {
+     "text": "struck",
+     "decoration": "lineThrough"
+    },
+    {
+     "text": " and "
+    },
+    {
+     "text": "inline code",
+     "font": "LiberationMono",
+     "fontSize": 9.5,
+     "background": "#F0F0F0"
+    },
+    {
+     "text": " text, with "
+    },
+    {
+     "text": "a link",
+     "color": "#1F6FB2",
+     "decoration": "underline",
+     "link": "https://example.com/?a=1&b=2"
+    },
+    {
+     "text": "."
+    },
+    {
+     "text": "\n"
+    },
+    {
+     "text": "Second line."
+    }
+   ],
+   "style": "body"
+  },
+  {
+   "text": "A.  Findings",
+   "style": "h2",
+   "tocItem": true,
+   "tocStyle": "tocH2",
+   "tocNumberStyle": "tocNumSub",
+   "tocMargin": [
+    16,
+    1,
+    0,
+    1
+   ]
+  },
+  {
+   "stack": [
+    {
+     "stack": [
+      {
+       "text": [
+        {
+         "text": "first"
+        }
+       ],
+       "style": "listItem"
+      },
+      {
+       "ol": [
+        {
+         "stack": [
+          {
+           "text": [
+            {
+             "text": "nested one"
+            }
+           ],
+           "style": "listItem"
+          },
+          {
+           "ul": [
+            {
+             "text": [
+              {
+               "text": "deeper"
+              }
+             ],
+             "style": "listItem"
+            }
+           ],
+           "type": "square",
+           "markerColor": "#000000",
+           "margin": [
+            0,
+            2,
+            0,
+            8
+           ]
+          }
+         ]
+        }
+       ],
+       "markerColor": "#000000",
+       "margin": [
+        0,
+        2,
+        0,
+        8
+       ]
+      }
+     ]
+    },
+    {
+     "columns": [
+      {
+       "width": 14,
+       "canvas": [
+        {
+         "type": "rect",
+         "x": 0.5,
+         "y": 0.5,
+         "w": 8,
+         "h": 8,
+         "r": 1,
+         "lineWidth": 0.8,
+         "lineColor": "#767676"
+        }
+       ],
+       "margin": [
+        0,
+        3.2,
+        0,
+        0
+       ]
+      },
+      {
+       "width": "*",
+       "stack": [
+        {
+         "text": [
+          {
+           "text": "open task"
+          }
+         ],
+         "style": "listItem"
+        }
+       ]
+      }
+     ],
+     "columnGap": 2,
+     "margin": [
+      0,
+      1,
+      0,
+      3
+     ]
+    },
+    {
+     "columns": [
+      {
+       "width": 14,
+       "canvas": [
+        {
+         "type": "rect",
+         "x": 0.5,
+         "y": 0.5,
+         "w": 8,
+         "h": 8,
+         "r": 1,
+         "lineWidth": 0.8,
+         "lineColor": "#767676"
+        },
+        {
+         "type": "polyline",
+         "lineWidth": 1.4,
+         "lineColor": "#1F5F8B",
+         "points": [
+          {
+           "x": 2,
+           "y": 4.6
+          },
+          {
+           "x": 3.8,
+           "y": 6.6
+          },
+          {
+           "x": 7,
+           "y": 2.2
+          }
+         ]
+        }
+       ],
+       "margin": [
+        0,
+        3.2,
+        0,
+        0
+       ]
+      },
+      {
+       "width": "*",
+       "stack": [
+        {
+         "text": [
+          {
+           "text": "done task"
+          }
+         ],
+         "style": "listItem"
+        }
+       ]
+      }
+     ],
+     "columnGap": 2,
+     "margin": [
+      0,
+      1,
+      0,
+      3
+     ]
+    }
+   ],
+   "margin": [
+    0,
+    2,
+    0,
+    8
+   ]
+  },
+  {
+   "table": {
+    "headerRows": 1,
+    "widths": [
+     "*",
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "text": [
+        {
+         "text": "Item"
+        }
+       ],
+       "style": "tableHeader",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "Cost"
+        }
+       ],
+       "style": "tableHeader",
+       "alignment": "right"
+      }
+     ],
+     [
+      {
+       "text": [
+        {
+         "text": "Hosting"
+        },
+        {
+         "text": "\n"
+        },
+        {
+         "text": "and backups"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "12 €"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "right"
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "table": {
+    "widths": [
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "text": "git clone https://example.org/repo.git && cd repo",
+       "style": "code",
+       "preserveLeadingSpaces": true
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "table": {
+    "widths": [
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "stack": [
+        {
+         "columns": [
+          {
+           "width": 13,
+           "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#448AFF\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\" /><path d=\"m15 5 4 4\" /></svg>",
+           "fit": [
+            12,
+            12
+           ],
+           "margin": [
+            0,
+            1,
+            0,
+            0
+           ]
+          },
+          {
+           "width": "*",
+           "text": [
+            {
+             "color": "#448AFF",
+             "text": "A note"
+            }
+           ],
+           "style": "calloutTitle",
+           "color": "#448AFF"
+          }
+         ],
+         "columnGap": 5,
+         "margin": [
+          0,
+          0,
+          0,
+          4
+         ]
+        },
+        {
+         "text": [
+          {
+           "text": "Callout body."
+          }
+         ],
+         "style": "body"
+        }
+       ]
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "table": {
+    "widths": [
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "stack": [
+        {
+         "columns": [
+          {
+           "width": 13,
+           "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#F09B00\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\" /><path d=\"M12 9v4\" /><path d=\"M12 17h.01\" /></svg>",
+           "fit": [
+            12,
+            12
+           ],
+           "margin": [
+            0,
+            1,
+            0,
+            0
+           ]
+          },
+          {
+           "width": "*",
+           "text": [
+            {
+             "color": "#F09B00",
+             "text": "A warning"
+            }
+           ],
+           "style": "calloutTitle",
+           "color": "#F09B00"
+          }
+         ],
+         "columnGap": 5,
+         "margin": [
+          0,
+          0,
+          0,
+          4
+         ]
+        },
+        {
+         "text": [
+          {
+           "text": "Callout body."
+          }
+         ],
+         "style": "body"
+        }
+       ]
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "table": {
+    "widths": [
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "stack": [
+        {
+         "columns": [
+          {
+           "width": 13,
+           "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#E93147\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z\" /></svg>",
+           "fit": [
+            12,
+            12
+           ],
+           "margin": [
+            0,
+            1,
+            0,
+            0
+           ]
+          },
+          {
+           "width": "*",
+           "text": [
+            {
+             "color": "#E93147",
+             "text": "A danger"
+            }
+           ],
+           "style": "calloutTitle",
+           "color": "#E93147"
+          }
+         ],
+         "columnGap": 5,
+         "margin": [
+          0,
+          0,
+          0,
+          4
+         ]
+        },
+        {
+         "text": [
+          {
+           "text": "Callout body."
+          }
+         ],
+         "style": "body"
+        }
+       ]
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "table": {
+    "widths": [
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "stack": [
+        {
+         "columns": [
+          {
+           "width": 13,
+           "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#00BFA5\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4\" /></svg>",
+           "fit": [
+            12,
+            12
+           ],
+           "margin": [
+            0,
+            1,
+            0,
+            0
+           ]
+          },
+          {
+           "width": "*",
+           "text": [
+            {
+             "color": "#00BFA5",
+             "text": "A tip"
+            }
+           ],
+           "style": "calloutTitle",
+           "color": "#00BFA5"
+          }
+         ],
+         "columnGap": 5,
+         "margin": [
+          0,
+          0,
+          0,
+          4
+         ]
+        },
+        {
+         "text": [
+          {
+           "text": "Callout body."
+          }
+         ],
+         "style": "body"
+        }
+       ]
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "table": {
+    "widths": [
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "stack": [
+        {
+         "columns": [
+          {
+           "width": 13,
+           "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#9E9E9E\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z\" /><path d=\"M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z\" /></svg>",
+           "fit": [
+            12,
+            12
+           ],
+           "margin": [
+            0,
+            1,
+            0,
+            0
+           ]
+          },
+          {
+           "width": "*",
+           "text": [
+            {
+             "color": "#9E9E9E",
+             "text": "A quote"
+            }
+           ],
+           "style": "calloutTitle",
+           "color": "#9E9E9E"
+          }
+         ],
+         "columnGap": 5,
+         "margin": [
+          0,
+          0,
+          0,
+          4
+         ]
+        },
+        {
+         "text": [
+          {
+           "text": "Callout body."
+          }
+         ],
+         "style": "body"
+        }
+       ]
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"100\"><rect width=\"200\" height=\"100\" fill=\"#ccc\"/></svg>",
+   "fit": [
+    150,
+    580
+   ],
+   "alignment": "center",
+   "margin": [
+    0,
+    6,
+    0,
+    10
+   ]
+  },
+  {
+   "image": "img0",
+   "alignment": "center",
+   "margin": [
+    0,
+    6,
+    0,
+    8
+   ],
+   "width": 90
+  },
+  {
+   "text": "Figure 1: a pixel",
+   "style": "caption"
+  },
+  {
+   "__mark": true,
+   "stack": [
+    {
+     "text": [
+      {
+       "text": " INTERNAL ",
+       "bold": true,
+       "color": "#000000",
+       "background": "#FFC000"
+      },
+      {
+       "text": "  Restricted passage: left out of the versions for other audiences",
+       "italics": true,
+       "color": "#6B6B6B"
+      }
+     ],
+     "fontSize": 7.5
+    },
+    {
+     "canvas": [
+      {
+       "type": "line",
+       "x1": 0,
+       "y1": 3,
+       "x2": 467.28,
+       "y2": 3,
+       "lineWidth": 0.8,
+       "lineColor": "#FFC000"
+      }
+     ]
+    }
+   ],
+   "margin": [
+    0,
+    0,
+    0,
+    8
+   ],
+   "unbreakable": true
+  },
+  {
+   "text": [
+    {
+     "text": "Kept for the team."
+    }
+   ],
+   "style": "body"
+  },
+  {
+   "__mark": true,
+   "canvas": [
+    {
+     "type": "line",
+     "x1": 0,
+     "y1": 0,
+     "x2": 467.28,
+     "y2": 0,
+     "lineWidth": 0.8,
+     "lineColor": "#FFC000",
+     "dash": {
+      "length": 3,
+      "space": 2
+     }
+    }
+   ],
+   "margin": [
+    0,
+    2,
+    0,
+    10
+   ]
+  },
+  {
+   "text": [
+    {
+     "text": "Ships in May"
+    },
+    {
+     "text": ", unless it slips",
+     "background": "#ffefbf"
+    },
+    {
+     "text": "."
+    }
+   ],
+   "style": "body"
+  },
+  {
+   "text": [
+    {
+     "text": "A claim worth a source."
+    },
+    {
+     "text": "1",
+     "sup": true,
+     "linkToDestination": "report-fn-1"
+    },
+    {
+     "text": " Cited again"
+    },
+    {
+     "text": "1",
+     "sup": true,
+     "linkToDestination": "report-fn-1"
+    },
+    {
+     "text": ", and an inline note."
+    },
+    {
+     "text": "2",
+     "sup": true,
+     "linkToDestination": "report-fn-2"
+    }
+   ],
+   "style": "body"
+  },
+  {
+   "table": {
+    "headerRows": 1,
+    "widths": [
+     "*",
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "text": [
+        {
+         "text": "Item"
+        }
+       ],
+       "style": "tableHeader",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "Cost"
+        }
+       ],
+       "style": "tableHeader",
+       "alignment": "right"
+      }
+     ],
+     [
+      {
+       "text": [
+        {
+         "text": "Hosting"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "12 €"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "right"
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "text": "Table 1: yearly costs",
+   "style": "caption"
+  },
+  {
+   "columns": [
+    {
+     "width": 303.52,
+     "stack": [
+      {
+       "table": {
+        "widths": [
+         "*"
+        ],
+        "body": [
+         [
+          {
+           "stack": [
+            {
+             "text": [
+              {
+               "text": "Left",
+               "bold": true
+              },
+              {
+               "text": ", twice as wide, with a list:"
+              }
+             ],
+             "style": "body",
+             "alignment": "center"
+            },
+            {
+             "ul": [
+              {
+               "text": [
+                {
+                 "text": "one"
+                }
+               ],
+               "style": "listItem",
+               "alignment": "center"
+              },
+              {
+               "text": [
+                {
+                 "text": "two"
+                }
+               ],
+               "style": "listItem",
+               "alignment": "center"
+              }
+             ],
+             "type": "disc",
+             "markerColor": "#000000",
+             "margin": [
+              0,
+              2,
+              0,
+              8
+             ]
+            }
+           ]
+          }
+         ]
+        ]
+       },
+       "layout": {}
+      }
+     ]
+    },
+    {
+     "width": 151.76,
+     "stack": [
+      {
+       "table": {
+        "widths": [
+         "*"
+        ],
+        "body": [
+         [
+          {
+           "stack": [
+            {
+             "columns": [
+              {
+               "width": 13,
+               "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#00BFA5\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4\" /></svg>",
+               "fit": [
+                12,
+                12
+               ],
+               "margin": [
+                0,
+                1,
+                0,
+                0
+               ]
+              },
+              {
+               "width": "*",
+               "text": [
+                {
+                 "color": "#00BFA5",
+                 "text": "Right"
+                }
+               ],
+               "style": "calloutTitle",
+               "color": "#00BFA5"
+              }
+             ],
+             "columnGap": 5,
+             "margin": [
+              0,
+              0,
+              0,
+              4
+             ]
+            },
+            {
+             "text": [
+              {
+               "text": "A callout in a column."
+              }
+             ],
+             "style": "body"
+            }
+           ]
+          }
+         ]
+        ]
+       },
+       "layout": {},
+       "margin": [
+        0,
+        4,
+        0,
+        10
+       ]
+      }
+     ]
+    }
+   ],
+   "columnGap": 12,
+   "margin": [
+    0,
+    4,
+    0,
+    6
+   ]
+  },
+  {
+   "columns": [
+    {
+     "width": 227.64,
+     "stack": [
+      {
+       "text": [
+        {
+         "text": "First column of a callout group."
+        }
+       ],
+       "style": "body"
+      }
+     ]
+    },
+    {
+     "width": 227.64,
+     "stack": [
+      {
+       "text": [
+        {
+         "text": "Second column."
+        }
+       ],
+       "style": "body"
+      }
+     ]
+    }
+   ],
+   "columnGap": 12,
+   "margin": [
+    0,
+    4,
+    0,
+    6
+   ]
+  },
+  {
+   "text": "1. Last <words> & \"quotes\"",
+   "style": "h3",
+   "tocItem": true,
+   "tocStyle": "tocH3",
+   "tocNumberStyle": "tocNumSub",
+   "tocMargin": [
+    30,
+    1,
+    0,
+    1
+   ],
+   "pageBreak": "before"
+  },
+  {
+   "canvas": [
+    {
+     "type": "line",
+     "x1": 0,
+     "y1": 0,
+     "x2": 120,
+     "y2": 0,
+     "lineWidth": 0.6,
+     "lineColor": "#C5D3DF"
+    }
+   ],
+   "margin": [
+    0,
+    14,
+    0,
+    6
+   ]
+  },
+  {
+   "text": "Notes",
+   "bold": true,
+   "fontSize": 10.5,
+   "color": "#1F5F8B",
+   "margin": [
+    0,
+    0,
+    0,
+    4
+   ]
+  },
+  {
+   "id": "report-fn-1",
+   "text": [
+    {
+     "text": "1. ",
+     "bold": true
+    },
+    {
+     "text": "The source, with "
+    },
+    {
+     "text": "bold",
+     "bold": true
+    },
+    {
+     "text": " text\nand a second line."
+    }
+   ],
+   "fontSize": 9.5,
+   "color": "#1A1A1A",
+   "margin": [
+    0,
+    0,
+    0,
+    3
+   ]
+  },
+  {
+   "id": "report-fn-2",
+   "text": [
+    {
+     "text": "2. ",
+     "bold": true
+    },
+    {
+     "text": "With "
+    },
+    {
+     "text": "code",
+     "font": "LiberationMono",
+     "fontSize": 9.5,
+     "background": "#F0F0F0"
+    },
+    {
+     "text": " and "
+    },
+    {
+     "text": "a link",
+     "color": "#1F6FB2",
+     "decoration": "underline",
+     "link": "https://example.com"
+    },
+    {
+     "text": "."
+    }
+   ],
+   "fontSize": 9.5,
+   "color": "#1A1A1A",
+   "margin": [
+    0,
+    0,
+    0,
+    3
+   ]
+  }
+ ],
+ "images": {
+  "img0": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+ },
+ "styles": {
+  "h1": {
+   "font": "Archivo",
+   "fontSize": 22,
+   "color": "#1F5F8B",
+   "margin": [
+    0,
+    16,
+    0,
+    8
+   ],
+   "alignment": "left"
+  },
+  "h2": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 14,
+   "color": "#000000",
+   "margin": [
+    0,
+    12,
+    0,
+    5
+   ],
+   "alignment": "left"
+  },
+  "h2heavy": {
+   "font": "Archivo",
+   "fontSize": 16,
+   "color": "#000000",
+   "margin": [
+    0,
+    12,
+    0,
+    6
+   ],
+   "alignment": "left"
+  },
+  "h3": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 11,
+   "color": "#000000",
+   "margin": [
+    0,
+    8,
+    0,
+    4
+   ],
+   "alignment": "left"
+  },
+  "h4": {
+   "font": "Liberation",
+   "bold": true,
+   "italics": true,
+   "fontSize": 11,
+   "color": "#000000",
+   "margin": [
+    0,
+    6,
+    0,
+    3
+   ],
+   "alignment": "left"
+  },
+  "h5": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 10,
+   "color": "#333333",
+   "margin": [
+    0,
+    6,
+    0,
+    3
+   ],
+   "alignment": "left"
+  },
+  "h6": {
+   "font": "Liberation",
+   "italics": true,
+   "fontSize": 10,
+   "color": "#555555",
+   "margin": [
+    0,
+    5,
+    0,
+    3
+   ],
+   "alignment": "left"
+  },
+  "subBold": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 11,
+   "color": "#000000",
+   "alignment": "left"
+  },
+  "body": {
+   "font": "Liberation",
+   "fontSize": 11,
+   "color": "#1A1A1A",
+   "alignment": "justify",
+   "lineHeight": 1.22,
+   "margin": [
+    0,
+    0,
+    0,
+    8
+   ]
+  },
+  "bodyTight": {
+   "font": "Liberation",
+   "fontSize": 10,
+   "color": "#1A1A1A",
+   "alignment": "justify",
+   "lineHeight": 1.18
+  },
+  "listItem": {
+   "font": "Liberation",
+   "fontSize": 11,
+   "color": "#1A1A1A",
+   "alignment": "left",
+   "lineHeight": 1.2
+  },
+  "caption": {
+   "font": "Liberation",
+   "italics": true,
+   "fontSize": 9,
+   "color": "#555555",
+   "alignment": "center",
+   "margin": [
+    0,
+    4,
+    0,
+    12
+   ]
+  },
+  "calloutTitle": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 11,
+   "alignment": "left"
+  },
+  "tableHeader": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 10,
+   "color": "#FFFFFF"
+  },
+  "tableCell": {
+   "font": "Liberation",
+   "fontSize": 10,
+   "color": "#333333"
+  },
+  "tocTitle": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 16,
+   "color": "#163F5C",
+   "margin": [
+    0,
+    0,
+    0,
+    12
+   ]
+  },
+  "tocH1": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 12,
+   "color": "#1F5F8B"
+  },
+  "tocH2": {
+   "font": "Liberation",
+   "fontSize": 11,
+   "color": "#000000"
+  },
+  "tocH3": {
+   "font": "Liberation",
+   "fontSize": 11,
+   "color": "#000000"
+  },
+  "tocNumH1": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 12,
+   "color": "#1F5F8B"
+  },
+  "tocNumSub": {
+   "font": "Liberation",
+   "fontSize": 11,
+   "color": "#000000"
+  },
+  "code": {
+   "font": "LiberationMono",
+   "fontSize": 9.5,
+   "color": "#2A2A2A",
+   "alignment": "left"
+  }
+ },
+ "defaultStyle": {
+  "font": "Liberation",
+  "fontSize": 11,
+  "color": "#1A1A1A",
+  "lineHeight": 1.22,
+  "alignment": "justify"
+ },
+ "pages": [
+  {
+   "page": 1,
+   "background": {
+    "canvas": [
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 0,
+      "w": 595.28,
+      "h": 64,
+      "color": "#1F5F8B"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 64,
+      "w": 595.28,
+      "h": 3,
+      "color": "#9ab7cb"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 793.89,
+      "w": 595.28,
+      "h": 48,
+      "color": "#22303C"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 790.89,
+      "w": 267.876,
+      "h": 3,
+      "color": "#1F5F8B"
+     }
+    ]
+   },
+   "header": {
+    "columns": [
+     {
+      "text": "",
+      "width": "*"
+     },
+     {
+      "width": "auto",
+      "alignment": "right",
+      "stack": [
+       {
+        "text": "Website Migration Review",
+        "color": "#FFFFFF",
+        "fontSize": 12,
+        "font": "Liberation"
+       },
+       {
+        "text": "ACME Corp",
+        "color": "#FFFFFF",
+        "fontSize": 12,
+        "font": "Liberation",
+        "margin": [
+         0,
+         4,
+         0,
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "margin": [
+     0,
+     15,
+     40,
+     0
+    ]
+   },
+   "footer": {
+    "columns": [
+     {
+      "text": "",
+      "width": "*"
+     },
+     {
+      "width": "auto",
+      "alignment": "right",
+      "stack": [
+       {
+        "text": "TLP:AMBER",
+        "color": "#FFC000",
+        "bold": true,
+        "fontSize": 11,
+        "font": "Liberation",
+        "alignment": "right"
+       },
+       {
+        "text": "page 1/3",
+        "color": "#FFFFFF",
+        "fontSize": 10,
+        "font": "Liberation",
+        "alignment": "right",
+        "margin": [
+         0,
+         2,
+         0,
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "margin": [
+     0,
+     43,
+     40,
+     0
+    ]
+   }
+  },
+  {
+   "page": 2,
+   "background": {
+    "canvas": [
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 0,
+      "w": 595.28,
+      "h": 64,
+      "color": "#1F5F8B"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 64,
+      "w": 595.28,
+      "h": 3,
+      "color": "#9ab7cb"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 793.89,
+      "w": 595.28,
+      "h": 48,
+      "color": "#22303C"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 790.89,
+      "w": 267.876,
+      "h": 3,
+      "color": "#1F5F8B"
+     }
+    ]
+   },
+   "header": {
+    "columns": [
+     {
+      "text": "",
+      "width": "*"
+     },
+     {
+      "width": "auto",
+      "alignment": "right",
+      "stack": [
+       {
+        "text": "Website Migration Review",
+        "color": "#FFFFFF",
+        "fontSize": 12,
+        "font": "Liberation"
+       },
+       {
+        "text": "ACME Corp",
+        "color": "#FFFFFF",
+        "fontSize": 12,
+        "font": "Liberation",
+        "margin": [
+         0,
+         4,
+         0,
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "margin": [
+     0,
+     15,
+     40,
+     0
+    ]
+   },
+   "footer": {
+    "columns": [
+     {
+      "text": "",
+      "width": "*"
+     },
+     {
+      "width": "auto",
+      "alignment": "right",
+      "stack": [
+       {
+        "text": "TLP:AMBER",
+        "color": "#FFC000",
+        "bold": true,
+        "fontSize": 11,
+        "font": "Liberation",
+        "alignment": "right"
+       },
+       {
+        "text": "page 2/3",
+        "color": "#FFFFFF",
+        "fontSize": 10,
+        "font": "Liberation",
+        "alignment": "right",
+        "margin": [
+         0,
+         2,
+         0,
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "margin": [
+     0,
+     43,
+     40,
+     0
+    ]
+   }
+  },
+  {
+   "page": 3,
+   "background": {
+    "canvas": [
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 0,
+      "w": 595.28,
+      "h": 64,
+      "color": "#1F5F8B"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 64,
+      "w": 595.28,
+      "h": 3,
+      "color": "#9ab7cb"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 793.89,
+      "w": 595.28,
+      "h": 48,
+      "color": "#22303C"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 790.89,
+      "w": 267.876,
+      "h": 3,
+      "color": "#1F5F8B"
+     }
+    ]
+   },
+   "header": {
+    "columns": [
+     {
+      "text": "",
+      "width": "*"
+     },
+     {
+      "width": "auto",
+      "alignment": "right",
+      "stack": [
+       {
+        "text": "Website Migration Review",
+        "color": "#FFFFFF",
+        "fontSize": 12,
+        "font": "Liberation"
+       },
+       {
+        "text": "ACME Corp",
+        "color": "#FFFFFF",
+        "fontSize": 12,
+        "font": "Liberation",
+        "margin": [
+         0,
+         4,
+         0,
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "margin": [
+     0,
+     15,
+     40,
+     0
+    ]
+   },
+   "footer": {
+    "columns": [
+     {
+      "text": "",
+      "width": "*"
+     },
+     {
+      "width": "auto",
+      "alignment": "right",
+      "stack": [
+       {
+        "text": "TLP:AMBER",
+        "color": "#FFC000",
+        "bold": true,
+        "fontSize": 11,
+        "font": "Liberation",
+        "alignment": "right"
+       },
+       {
+        "text": "page 3/3",
+        "color": "#FFFFFF",
+        "fontSize": 10,
+        "font": "Liberation",
+        "alignment": "right",
+        "margin": [
+         0,
+         2,
+         0,
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "margin": [
+     0,
+     43,
+     40,
+     0
+    ]
+   }
+  }
+ ]
+}

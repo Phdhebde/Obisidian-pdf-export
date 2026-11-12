@@ -42,6 +42,16 @@ export type ExportFormat = 'pdf' | 'docx';
 /** How deep `![[note]]` transclusions are followed before we stop. */
 const MAX_TRANSCLUSION_DEPTH = 3;
 
+/** One version of one note to export. */
+export interface ExportRequest {
+  file: TFile;
+  preset: Preset;
+  /** The audience the version is for; null for the full version. */
+  profile: ExportProfile | null;
+  /** Text exported instead of the note's body: the selection, for *Export selection*. */
+  selection?: string;
+}
+
 export interface ExportDeps {
   app: App;
   data: PluginData;
@@ -152,6 +162,15 @@ interface Audience {
   counts: RedactionCounts;
 }
 
+/** What stays the same while embedded notes are inlined, at every depth. */
+interface Transclusion {
+  app: App;
+  mode: Preset['transclusions'];
+  audience: Audience;
+  /** The notes being inlined, from the exported note down: a note met again is circular. */
+  seen: Set<string>;
+}
+
 function frontmatterOf(app: App, file: TFile): Record<string, unknown> {
   return app.metadataCache.getFileCache(file)?.frontmatter || {};
 }
@@ -168,15 +187,8 @@ function markOf(app: App, file: TFile, filter: AudienceFilter, embedded: boolean
  * Inline `![[note]]` transclusions, so a report can be assembled from section
  * notes instead of coming out full of link syntax.
  */
-async function expandTransclusions(
-  app: App,
-  md: string,
-  sourcePath: string,
-  mode: Preset['transclusions'],
-  audience: Audience,
-  seen: Set<string>,
-  depth: number
-): Promise<string> {
+async function expandTransclusions(run: Transclusion, md: string, sourcePath: string, depth = 0): Promise<string> {
+  const { app, mode, audience, seen } = run;
   return replaceOutsideCodeAsync(md, /!\[\[\s*([^\][\n|]+?)\s*(?:\|[^\][\n]*)?\]\]/g, async (m) => {
     const target = m[1].trim();
     const file = app.metadataCache.getFirstLinkpathDest(target.replace(/[#^].*$/, ''), sourcePath);
@@ -197,7 +209,7 @@ async function expandTransclusions(
     seen.add(file.path);
     try {
       const body = stripFrontmatter(await app.vault.cachedRead(file));
-      const inlined = await expandTransclusions(app, body, file.path, mode, audience, seen, depth + 1);
+      const inlined = await expandTransclusions(run, body, file.path, depth + 1);
       const marked = mark.levels.length > 0 || mark.tlp !== null;
       return audience.filter.mark && marked ? framed(inlined, mark) : inlined;
     } finally {
@@ -215,20 +227,17 @@ async function expandTransclusions(
  */
 export async function prepareBody(
   app: App,
-  file: TFile,
-  preset: Preset,
-  profile: ExportProfile | null,
-  filter: AudienceFilter,
-  override?: string
+  request: ExportRequest,
+  filter: AudienceFilter
 ): Promise<{ markdown: string; images: Record<string, string>; missing: string[]; counts: RedactionCounts }> {
+  const { file, preset, profile, selection } = request;
   if (!kept(filter, markOf(app, file, filter, false))) {
     throw new AudienceError(t('audience.noteExcluded', { note: file.basename, profile: profile?.name ?? '' }));
   }
   const counts = emptyCounts();
-  const raw = override ?? stripFrontmatter(await app.vault.cachedRead(file));
-  const withNotes = await expandTransclusions(
-    app, raw, file.path, preset.transclusions, { filter, counts }, new Set([file.path]), 0
-  );
+  const raw = selection ?? stripFrontmatter(await app.vault.cachedRead(file));
+  const transclusion: Transclusion = { app, mode: preset.transclusions, audience: { filter, counts }, seen: new Set([file.path]) };
+  const withNotes = await expandTransclusions(transclusion, raw, file.path);
   const flattened = flattenWikilinks(redact(withNotes, filter, counts));
   const resolver = new ImageResolver(app);
   const { markdown, images, missing } = await resolver.resolve(flattened, file.path);
@@ -286,16 +295,11 @@ function toPdfBytes(pdfMake: PdfMake, dd: PdfNode): Promise<ArrayBuffer> {
  *
  * `profile` restricts the export to one audience; null is the full version.
  */
-export async function renderReport(
-  deps: ExportDeps,
-  file: TFile,
-  preset: Preset,
-  profile: ExportProfile | null,
-  override?: string
-): Promise<RenderResult> {
+export async function renderReport(deps: ExportDeps, request: ExportRequest): Promise<RenderResult> {
+  const { file, preset, profile } = request;
   const parsed = parseVars(deps.app, file);
   const filter = audienceFilter(deps.data, profile, parsed.vars.tlp);
-  const { markdown, images, missing, counts } = await prepareBody(deps.app, file, preset, profile, filter, override);
+  const { markdown, images, missing, counts } = await prepareBody(deps.app, request, filter);
 
   const pdfMake = await deps.getPdfMake();
   deps.assets.ensureFonts(pdfMake);
@@ -372,16 +376,11 @@ export async function readWordTemplate(app: App, path: string): Promise<Uint8Arr
  * confidentiality filter, images — so a profile removes exactly the same
  * passages from both formats.
  */
-export async function renderWord(
-  deps: ExportDeps,
-  file: TFile,
-  preset: Preset,
-  profile: ExportProfile | null,
-  override?: string
-): Promise<RenderResult> {
+export async function renderWord(deps: ExportDeps, request: ExportRequest): Promise<RenderResult> {
+  const { file, preset, profile } = request;
   const parsed = parseVars(deps.app, file);
   const filter = audienceFilter(deps.data, profile, parsed.vars.tlp);
-  const { markdown, images, missing, counts } = await prepareBody(deps.app, file, preset, profile, filter, override);
+  const { markdown, images, missing, counts } = await prepareBody(deps.app, request, filter);
 
   const vars: ReportVars = profile?.tlp ? { ...parsed.vars, tlp: profile.tlp } : parsed.vars;
   const tlpWarning = profile?.tlp ? null : parsed.tlpWarning;

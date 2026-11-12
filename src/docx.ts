@@ -23,8 +23,14 @@ import { marked } from 'marked';
 import {
   CALLOUT_STYLES,
   CAPTION_RE,
+  DECOR,
+  DEFAULT_PAGE_MARGINS,
+  PAGE_H,
+  PAGE_W,
   IMAGE_REF_RE,
   bodySize,
+  coverBracket,
+  decorAccents,
   decodeEntities,
   defaultLabels,
   defaultToc,
@@ -35,10 +41,10 @@ import {
   isPageBreakToken,
   lex,
   listColumns,
-  reportTlp,
-  resolveSections,
+  planDocument,
   tint,
   tlpColor,
+  type DocumentPlan,
   type MdToken
 } from './generator.ts';
 import { columnsLang, parseColBlock, parseColMd, type ColSettings, type ColumnSpec } from './columns.ts';
@@ -73,7 +79,7 @@ import {
   type StyleInfo,
   type StyleType
 } from './ooxml.ts';
-import { HEADING_LEVELS, type DocContact, type Preset, type ReportVars, type TlpKey, type WordRole } from './types.ts';
+import { HEADING_LEVELS, type DocContact, type Preset, type ReportVars, type SectionKey, type TlpKey, type WordRole } from './types.ts';
 
 /** A drawing the host rasterised: the PNG every Word shows, the SVG recent ones prefer. */
 export interface RasterImage {
@@ -118,11 +124,10 @@ export class WordTemplateError extends Error {
 /* Units                                                               */
 /* ------------------------------------------------------------------ */
 
-/** A4 in points, then in twips. */
-const PAGE_W = 595.28;
-const PAGE_H = 841.89;
+/** A4 in twips (PAGE_W and PAGE_H, in points, come from the PDF engine). */
 const PAGE_W_TW = 11906;
 const PAGE_H_TW = 16838;
+const ONE_INCH_TW = 1440;
 
 const tw = (pt: number) => Math.round(pt * 20);
 const EMU_PER_PT = 12700;
@@ -467,17 +472,17 @@ class FootnoteBook {
   }
 
   /** The reference mark; the note itself is written the first time only. */
-  ref(n: number, w: W): string {
-    const refStyle = xmlEscape(w.styles.id('footnoteReference'));
+  ref(n: number, ctx: WordContext): string {
+    const refStyle = xmlEscape(ctx.styles.id('footnoteReference'));
     const known = this.shown.get(n);
     // Cited again: the same number, as Obsidian shows it.
     if (known !== undefined) return `<w:r><w:rPr><w:rStyle w:val="${refStyle}"/></w:rPr><w:t>${known}</w:t></w:r>`;
     const md = this.notes.get(n);
     if (md === undefined) return '';
     const id = this.next++;
-    const text = inline(marked.Lexer.lexInline(md), { ...w, rels: this.rels });
+    const text = renderInline(marked.Lexer.lexInline(md), { ...ctx, rels: this.rels });
     this.written.push(
-      `<w:footnote w:id="${id}"><w:p>${pPr({ style: w.styles.id('footnoteText') })}` +
+      `<w:footnote w:id="${id}"><w:p>${pPr({ style: ctx.styles.id('footnoteText') })}` +
         `<w:r><w:rPr><w:rStyle w:val="${refStyle}"/></w:rPr><w:footnoteRef/></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r>${text}</w:p></w:footnote>`
     );
     this.shown.set(n, this.before + this.written.length);
@@ -548,8 +553,8 @@ interface Picture {
 const SVG_BLIP_EXT = '{96DAC541-7B7A-43D3-8B79-37D633B846F1}';
 const SVG_NS = 'http://schemas.microsoft.com/office/drawing/2016/SVG/main';
 
-function pictureRun(p: Picture, w: W): string {
-  const n = w.ids.drawing++;
+function pictureRun(p: Picture, ctx: WordContext): string {
+  const n = ctx.ids.drawing++;
   const cx = Math.max(1, Math.round(p.cx));
   const cy = Math.max(1, Math.round(p.cy));
   const alt = xmlEscape(p.alt || '');
@@ -576,29 +581,42 @@ function pictureRun(p: Picture, w: W): string {
 }
 
 /** A host-rasterised drawing as a picture: PNG for every Word, SVG for those that can. */
-function rasterPicture(img: RasterImage, key: string, rels: Relationships, w: W): Omit<Picture, 'cx' | 'cy'> | null {
+function rasterPicture(img: RasterImage, key: string, rels: Relationships, ctx: WordContext): Omit<Picture, 'cx' | 'cy'> | null {
   const png = parseDataUrl(img.png);
   if (!png) return null;
-  const id = w.media.add(rels, key + ':png', png.bytes, png.ext);
-  const svg = img.svg ? w.media.add(rels, key + ':svg', new TextEncoder().encode(img.svg), 'svg') : undefined;
+  const id = ctx.media.add(rels, key + ':png', png.bytes, png.ext);
+  const svg = img.svg ? ctx.media.add(rels, key + ':svg', new TextEncoder().encode(img.svg), 'svg') : undefined;
   return { id, svg };
 }
 
-/** A solid rectangle on the page, behind the text, in points from the top-left corner. */
-function rect(color: string, x: number, y: number, width: number, height: number, rels: Relationships, w: W): string {
-  const rgb = hex(color);
-  const id = w.media.add(rels, 'solid:' + rgb, solidPng(rgb), 'png');
-  return pictureRun({ id, cx: width * EMU_PER_PT, cy: height * EMU_PER_PT, anchor: { x: x * EMU_PER_PT, y: y * EMU_PER_PT } }, w);
+/**
+ * Draws behind the text of a header part, in points from the top-left corner
+ * of the page, with the argument order of a canvas (`x, y, width, height`).
+ */
+interface PageArt {
+  /** A solid rectangle. */
+  rect(color: string, x: number, y: number, width: number, height: number): string;
+  /** A data-URL picture, `width` points wide; without `height`, its height follows its proportions. */
+  image(url: string, key: string, x: number, y: number, width: number, height?: number): string;
 }
 
-/** A data-URL image placed on the page, `width` points wide, its height from its proportions. */
-function placedImage(url: string, key: string, x: number, y: number, width: number, height: number | null, rels: Relationships, w: W): string {
-  const img = parseDataUrl(url);
-  if (!img || img.ext === 'svg') return '';
-  const size = imageSize(img.bytes);
-  const h = height ?? (size && size.w ? (width * size.h) / size.w : width);
-  const id = w.media.add(rels, key, img.bytes, img.ext);
-  return pictureRun({ id, cx: width * EMU_PER_PT, cy: h * EMU_PER_PT, anchor: { x: x * EMU_PER_PT, y: y * EMU_PER_PT } }, w);
+/** A `PageArt` whose pictures belong to the header part that `rels` describes. */
+function pageArt(rels: Relationships, ctx: WordContext): PageArt {
+  const anchored = (id: string, x: number, y: number, width: number, height: number) =>
+    pictureRun({ id, cx: width * EMU_PER_PT, cy: height * EMU_PER_PT, anchor: { x: x * EMU_PER_PT, y: y * EMU_PER_PT } }, ctx);
+  return {
+    rect(color, x, y, width, height) {
+      const rgb = hex(color);
+      return anchored(ctx.media.add(rels, 'solid:' + rgb, solidPng(rgb), 'png'), x, y, width, height);
+    },
+    image(url, key, x, y, width, height) {
+      const img = parseDataUrl(url);
+      if (!img || img.ext === 'svg') return '';
+      const size = imageSize(img.bytes);
+      const proportional = size && size.w ? (width * size.h) / size.w : width;
+      return anchored(ctx.media.add(rels, key, img.bytes, img.ext), x, y, width, height ?? proportional);
+    }
+  };
 }
 
 /* ------------------------------------------------------------------ */
@@ -611,7 +629,7 @@ interface TocEntry {
   bookmark: string;
 }
 
-interface W {
+interface WordContext {
   preset: Preset;
   styles: StyleBook;
   /** Relationships of the main part. */
@@ -686,66 +704,66 @@ interface Fmt {
   font?: string;
 }
 
-function rPr(f: Fmt, w: W): string {
+function rPr(format: Fmt, ctx: WordContext): string {
   const parts = [
-    f.code ? `<w:rStyle w:val="${xmlEscape(w.styles.id('inlineCode'))}"/>` : f.link ? `<w:rStyle w:val="${xmlEscape(w.styles.id('hyperlink'))}"/>` : '',
-    f.font ? fontEl(f.font) : '',
-    f.bold ? '<w:b/><w:bCs/>' : '',
-    f.italic ? '<w:i/><w:iCs/>' : '',
-    f.strike ? '<w:strike/>' : '',
-    f.color ? `<w:color w:val="${f.color}"/>` : '',
-    f.size ? sizeEl(f.size) : '',
-    f.mark ? `<w:shd w:val="clear" w:color="auto" w:fill="${f.mark}"/>` : ''
+    format.code ? `<w:rStyle w:val="${xmlEscape(ctx.styles.id('inlineCode'))}"/>` : format.link ? `<w:rStyle w:val="${xmlEscape(ctx.styles.id('hyperlink'))}"/>` : '',
+    format.font ? fontEl(format.font) : '',
+    format.bold ? '<w:b/><w:bCs/>' : '',
+    format.italic ? '<w:i/><w:iCs/>' : '',
+    format.strike ? '<w:strike/>' : '',
+    format.color ? `<w:color w:val="${format.color}"/>` : '',
+    format.size ? sizeEl(format.size) : '',
+    format.mark ? `<w:shd w:val="clear" w:color="auto" w:fill="${format.mark}"/>` : ''
   ].join('');
   return parts ? `<w:rPr>${parts}</w:rPr>` : '';
 }
 
 /** A run of text; line breaks and tabs become Word's own. */
-function run(text: string, f: Fmt, w: W): string {
+function run(text: string, format: Fmt, ctx: WordContext): string {
   const body = text
     .split('\n')
     .map((line) => line.split('\t').map((s) => (s ? `<w:t xml:space="preserve">${xmlEscape(s)}</w:t>` : '')).join('<w:tab/>'))
     .join('<w:br/>');
-  return body ? `<w:r>${rPr(f, w)}${body}</w:r>` : '';
+  return body ? `<w:r>${rPr(format, ctx)}${body}</w:r>` : '';
 }
 
 /** A Word field: PAGE, NUMPAGES, PAGEREF… with the text shown until Word updates it. */
-function field(instr: string, shown: string, f: Fmt, w: W): string {
-  const props = rPr(f, w);
+function field(instr: string, shown: string, format: Fmt, ctx: WordContext): string {
+  const props = rPr(format, ctx);
   return `<w:r>${props}<w:fldChar w:fldCharType="begin"/></w:r><w:r>${props}<w:instrText xml:space="preserve"> ${xmlEscape(instr)} </w:instrText></w:r>` +
-    `<w:r>${props}<w:fldChar w:fldCharType="separate"/></w:r>${run(shown, f, w)}<w:r>${props}<w:fldChar w:fldCharType="end"/></w:r>`;
+    `<w:r>${props}<w:fldChar w:fldCharType="separate"/></w:r>${run(shown, format, ctx)}<w:r>${props}<w:fldChar w:fldCharType="end"/></w:r>`;
 }
 
 function markFill(preset: Preset): string {
   return hex(tint(tlpColor(preset, 'AMBER').bg, 0.75));
 }
 
-function inline(tokens: MdToken[] | undefined, w: W, f: Fmt = {}): string {
+function renderInline(tokens: MdToken[] | undefined, ctx: WordContext, inherited: Fmt = {}): string {
   if (!tokens) return '';
   let out = '';
   // As in the PDF: spans are not printed, only their text, highlighted while
   // one that marks a restricted phrase is open.
   const spans: boolean[] = [];
-  for (const tk of tokens) {
-    const html = tk.type === 'html' ? String(tk.text ?? '') : '';
+  for (const token of tokens) {
+    const html = token.type === 'html' ? String(token.text ?? '') : '';
     if (/^<span\b/i.test(html)) { spans.push(html.includes(PHRASE_MARK_ATTR)); continue; }
     if (/^<\/span\s*>$/i.test(html)) { spans.pop(); continue; }
-    const g: Fmt = spans.includes(true) ? { ...f, mark: markFill(w.preset) } : f;
-    switch (tk.type) {
+    const format: Fmt = spans.includes(true) ? { ...inherited, mark: markFill(ctx.preset) } : inherited;
+    switch (token.type) {
       case 'text':
-        out += tk.tokens && tk.tokens.length ? inline(tk.tokens, w, g) : run(decodeEntities(tk.text), g, w);
+        out += token.tokens && token.tokens.length ? renderInline(token.tokens, ctx, format) : run(decodeEntities(token.text), format, ctx);
         break;
-      case 'strong': out += inline(tk.tokens, w, { ...g, bold: true }); break;
-      case 'em': out += inline(tk.tokens, w, { ...g, italic: true }); break;
-      case 'del': out += inline(tk.tokens, w, { ...g, strike: true }); break;
-      case 'codespan': out += run(decodeEntities(tk.text), { ...g, code: true }, w); break;
+      case 'strong': out += renderInline(token.tokens, ctx, { ...format, bold: true }); break;
+      case 'em': out += renderInline(token.tokens, ctx, { ...format, italic: true }); break;
+      case 'del': out += renderInline(token.tokens, ctx, { ...format, strike: true }); break;
+      case 'codespan': out += run(decodeEntities(token.text), { ...format, code: true }, ctx); break;
       case 'br': out += '<w:r><w:br/></w:r>'; break;
-      case 'escape': out += run(String(tk.text ?? ''), g, w); break;
+      case 'escape': out += run(String(token.text ?? ''), format, ctx); break;
       case 'link': {
-        const href = String(tk.href || '');
-        const runs = inline(tk.tokens, w, { ...g, link: true });
+        const href = String(token.href || '');
+        const runs = renderInline(token.tokens, ctx, { ...format, link: true });
         if (/^https?:|^mailto:/i.test(href)) {
-          const id = w.rels.add(REL_TYPES.hyperlink, href, true);
+          const id = ctx.rels.add(REL_TYPES.hyperlink, href, true);
           out += `<w:hyperlink r:id="${id}" w:history="1">${runs}</w:hyperlink>`;
         } else {
           out += runs;
@@ -756,17 +774,17 @@ function inline(tokens: MdToken[] | undefined, w: W, f: Fmt = {}): string {
       case 'html':
         // A footnote reference; as in the PDF, a line break breaks, any other
         // tag is printed as written.
-        if (FOOTNOTE_TAG_RE.test(html.trim())) out += w.notes.ref(Number(FOOTNOTE_TAG_RE.exec(html.trim())?.[1]), w);
-        else out += /^<br\s*\/?>$/i.test(html.trim()) ? '<w:r><w:br/></w:r>' : run(html, g, w);
+        if (FOOTNOTE_TAG_RE.test(html.trim())) out += ctx.notes.ref(Number(FOOTNOTE_TAG_RE.exec(html.trim())?.[1]), ctx);
+        else out += /^<br\s*\/?>$/i.test(html.trim()) ? '<w:r><w:br/></w:r>' : run(html, format, ctx);
         break;
       default:
-        if (tk.text) out += run(decodeEntities(tk.text), g, w);
+        if (token.text) out += run(decodeEntities(token.text), format, ctx);
     }
   }
   return out;
 }
 
-/** A tag `inline` prints as written, as the plain text shows it too. */
+/** A tag `renderInline` prints as written, as the plain text shows it too. */
 function printedTag(html: string): string {
   const tag = html.trim();
   if (/^<\/?span\b/i.test(tag) || FOOTNOTE_TAG_RE.test(tag)) return '';
@@ -776,54 +794,54 @@ function printedTag(html: string): string {
 /** The text of inline tokens as the reader sees it: the table of contents shows it before Word updates it. */
 function plainText(tokens: MdToken[] | undefined): string {
   return (tokens || [])
-    .map((tk) => (tk.tokens ? plainText(tk.tokens) : tk.type === 'html' ? printedTag(String(tk.text ?? '')) : decodeEntities(tk.text ?? '')))
+    .map((token) => (token.tokens ? plainText(token.tokens) : token.type === 'html' ? printedTag(String(token.text ?? '')) : decodeEntities(token.text ?? '')))
     .join('');
 }
 
 /* Images ------------------------------------------------------------ */
 
-function imageBlock(tk: MdToken, w: W): string {
-  const href = String(tk.href || '');
+function imageBlock(token: MdToken, ctx: WordContext): string {
+  const href = String(token.href || '');
   const ref = IMAGE_REF_RE.exec(href);
-  const url = ref ? w.images[ref[1]] : /^data:image\//i.test(href) ? href : null;
+  const url = ref ? ctx.images[ref[1]] : /^data:image\//i.test(href) ? href : null;
   const img = parseDataUrl(url);
   if (!img || img.ext === 'svg') {
-    const label = tk.text || tk.href || '';
-    return label ? para({ style: w.styles.id('caption') }, run('[' + tr('inline.image', { label }) + ']', {}, w)) : '';
+    const label = token.text || token.href || '';
+    return label ? para({ style: ctx.styles.id('caption') }, run('[' + tr('inline.image', { label }) + ']', {}, ctx)) : '';
   }
-  const id = w.media.add(w.rels, ref ? ref[1] : href, img.bytes, img.ext);
+  const id = ctx.media.add(ctx.rels, ref ? ref[1] : href, img.bytes, img.ext);
   const size = imageSize(img.bytes);
-  const hint = parseInt(String(tk.title), 10);
+  const hint = parseInt(String(token.title), 10);
   const px = !isNaN(hint) && hint > 0 ? hint : size?.w || 600;
-  const cx = Math.min(px * EMU_PER_PX, w.width * EMU_PER_TWIP);
+  const cx = Math.min(px * EMU_PER_PX, ctx.width * EMU_PER_TWIP);
   const cy = size && size.w ? (cx * size.h) / size.w : cx * 0.75;
   return para(
     { jc: 'center', spacing: `<w:spacing w:before="${tw(6)}" w:after="${tw(8)}"/>` },
-    pictureRun({ id, cx, cy, alt: String(tk.text || '') }, w)
+    pictureRun({ id, cx, cy, alt: String(token.text || '') }, ctx)
   );
 }
 
 /* Blocks ------------------------------------------------------------ */
 
-function paragraph(t: MdToken, w: W): string {
+function paragraph(t: MdToken, ctx: WordContext): string {
   const toks = t.tokens || [];
   if (toks.some((x) => x.type === 'image')) {
     let out = '';
     let buf: MdToken[] = [];
     const flush = () => {
-      if (buf.length && plainText(buf).trim()) out += para({ style: w.styles.id('body') }, inline(buf, w));
+      if (buf.length && plainText(buf).trim()) out += para({ style: ctx.styles.id('body') }, renderInline(buf, ctx));
       buf = [];
     };
-    for (const tk of toks) {
-      if (tk.type === 'image') { flush(); out += imageBlock(tk, w); }
-      else buf.push(tk);
+    for (const token of toks) {
+      if (token.type === 'image') { flush(); out += imageBlock(token, ctx); }
+      else buf.push(token);
     }
     flush();
     return out;
   }
   const plain = plainText(toks).trim();
-  if (CAPTION_RE.test(plain)) return caption(plain, w);
-  return para({ style: w.styles.id('body') }, inline(toks, w));
+  if (CAPTION_RE.test(plain)) return caption(plain, ctx);
+  return para({ style: ctx.styles.id('body') }, renderInline(toks, ctx));
 }
 
 /**
@@ -831,70 +849,70 @@ function paragraph(t: MdToken, w: W): string {
  * Insert Caption does, so Word's table of figures lists it and numbers it
  * again when a figure is added; the number written stays shown until then.
  */
-function caption(text: string, w: W): string {
-  const style = w.styles.id('caption');
+function caption(text: string, ctx: WordContext): string {
+  const style = ctx.styles.id('caption');
   const m = /^(\S+?)(\s+)(\d+)(?![\d.,]\d)([\s\S]*)$/.exec(text);
-  if (!m || !CAPTION_RE.test(m[1])) return para({ style }, run(text, {}, w));
+  if (!m || !CAPTION_RE.test(m[1])) return para({ style }, run(text, {}, ctx));
   // "Fig." counts with the figures; any other label keeps a list of its own.
   const label = /^fig\.?$/i.test(m[1]) ? 'Figure' : m[1].replace(/[^\p{L}\p{N}_]/gu, '');
   const seq = label.charAt(0).toUpperCase() + label.slice(1);
-  return para({ style }, run(m[1] + m[2], {}, w) + field(`SEQ ${seq} \\* ARABIC`, m[3], {}, w) + run(m[4], {}, w));
+  return para({ style }, run(m[1] + m[2], {}, ctx) + field(`SEQ ${seq} \\* ARABIC`, m[3], {}, ctx) + run(m[4], {}, ctx));
 }
 
-function heading(t: MdToken, w: W, breakBefore: boolean): string {
+function heading(t: MdToken, ctx: WordContext, breakBefore: boolean): string {
   const depth = Math.min(Math.max(Number(t.depth) || 1, 1), HEADING_LEVELS);
   const i = depth - 1;
-  w.counters[i] = (w.counters[i] || 0) + 1;
-  for (let k = depth; k < HEADING_LEVELS; k++) w.counters[k] = 0;
+  ctx.counters[i] = (ctx.counters[i] || 0) + 1;
+  for (let k = depth; k < HEADING_LEVELS; k++) ctx.counters[k] = 0;
 
-  const toc = w.preset.toc || defaultToc();
-  const style = w.styles.get(`heading${depth}` as WordRole);
+  const toc = ctx.preset.toc || defaultToc();
+  const style = ctx.styles.get(`heading${depth}` as WordRole);
   // A template whose heading styles number themselves keeps its numbering;
   // otherwise the PDF template's numbering is written as text.
-  const label = style.numbered ? '' : headingLabel(toc, w.counters, i);
+  const label = style.numbered ? '' : headingLabel(toc, ctx.counters, i);
   // A bookmark per heading: the table of contents links to it.
-  const n = w.ids.bookmark++;
+  const n = ctx.ids.bookmark++;
   const name = `_TocReport${n}`;
-  if (toc.levels[i]) w.toc.push({ level: depth, text: label + plainText(t.tokens).trim(), bookmark: name });
+  if (toc.levels[i]) ctx.toc.push({ level: depth, text: label + plainText(t.tokens).trim(), bookmark: name });
   return para(
     { style: style.id, pageBreakBefore: breakBefore },
-    `<w:bookmarkStart w:id="${n}" w:name="${name}"/>` + (label ? run(label, {}, w) : '') + inline(t.tokens, w) + `<w:bookmarkEnd w:id="${n}"/>`
+    `<w:bookmarkStart w:id="${n}" w:name="${name}"/>` + (label ? run(label, {}, ctx) : '') + renderInline(t.tokens, ctx) + `<w:bookmarkEnd w:id="${n}"/>`
   );
 }
 
-function list(t: MdToken, w: W, depth: number, numId: number | null): string {
+function list(t: MdToken, ctx: WordContext, depth: number, numId: number | null): string {
   const asColumns = listColumns(t);
-  if (asColumns) return columns(asColumns, {}, w);
+  if (asColumns) return columns(asColumns, {}, ctx);
 
   const items = t.items || [];
   const tasks = items.some((it) => it.task);
-  const id = tasks ? null : numId ?? w.numbering.list(!!t.ordered, Number(t.start) || 1);
+  const id = tasks ? null : numId ?? ctx.numbering.list(!!t.ordered, Number(t.start) || 1);
   const level = Math.min(depth, 8);
   const indent = `<w:ind w:left="${720 * (level + 1)}"/>`;
-  const style = w.styles.id('listParagraph');
+  const style = ctx.styles.id('listParagraph');
   let out = '';
   for (const item of items) {
     let first = true;
-    for (const tk of item.tokens || []) {
-      if (tk.type === 'list') {
+    for (const token of item.tokens || []) {
+      if (token.type === 'list') {
         // A nested list of the same kind continues the instance one level
         // down; another kind needs an instance of its own.
-        const same = !!tk.ordered === !!t.ordered && !tasks && !(tk.items || []).some((x) => x.task);
-        out += list(tk, w, depth + 1, same ? id : null);
+        const same = !!token.ordered === !!t.ordered && !tasks && !(token.items || []).some((x) => x.task);
+        out += list(token, ctx, depth + 1, same ? id : null);
         continue;
       }
-      if (tk.type === 'text' || tk.type === 'paragraph') {
+      if (token.type === 'text' || token.type === 'paragraph') {
         // A task list has no Word numbering: its boxes are text, and so is the
         // bullet of an item in it that is not a task.
         const box = !first || !tasks ? ''
-          : item.task ? run(item.checked ? '☑ ' : '☐ ', { color: item.checked ? hex(w.preset.colors.brand) : '767676' }, w)
-          : run('• ', {}, w);
-        const runs = inline(tk.tokens || [{ type: 'text', text: tk.text }], w);
+          : item.task ? run(item.checked ? '☑ ' : '☐ ', { color: item.checked ? hex(ctx.preset.colors.brand) : '767676' }, ctx)
+          : run('• ', {}, ctx);
+        const runs = renderInline(token.tokens || [{ type: 'text', text: token.text }], ctx);
         out += para(first && id !== null ? { style, num: { id, level } } : { style, ind: indent }, box + runs);
         first = false;
         continue;
       }
-      out += block(tk, { ...w, top: false });
+      out += renderBlock(token, { ...ctx, top: false });
       first = false;
     }
   }
@@ -905,8 +923,8 @@ function list(t: MdToken, w: W, depth: number, numId: number | null): string {
 function grid(
   header: string[],
   rows: string[][],
-  w: W,
-  o: { widths?: number[]; align?: string[]; cell?: (text: string, row: number, col: number, f: Fmt) => string } = {}
+  ctx: WordContext,
+  o: { widths?: number[]; align?: string[]; cell?: (text: string, row: number, col: number, format: Fmt) => string } = {}
 ): string {
   const cols = Math.max(header.length, ...rows.map((r) => r.length));
   if (!cols) return '';
@@ -914,28 +932,28 @@ function grid(
   if (!pts) {
     const cells: TableCell[][] = [header, ...rows].map((r, i) => r.map((text) => ({ runs: [{ text }], bold: i === 0 })));
     const fit = fitTable(cells, {
-      width: w.width / 20, font: w.preset.fonts.bodyFont, fontSize: bodySize(w.preset) - 1, padding: 10, rule: 0.75
+      width: ctx.width / 20, font: ctx.preset.fonts.bodyFont, fontSize: bodySize(ctx.preset) - 1, padding: 10, rule: 0.75
     });
     pts = fit ? fit.widths : new Array<number>(cols).fill(1);
   }
   const total = pts.reduce((a, b) => a + b, 0) || 1;
-  const twips = pts.map((p) => Math.max(200, Math.round((p / total) * w.width)));
+  const twips = pts.map((p) => Math.max(200, Math.round((p / total) * ctx.width)));
   // A table style of our own is the PDF's: its header text and tight rows are
   // written on the cells too, as the body style's colour and spacing would
   // otherwise win over the table style's. A template's own style is left alone.
-  const own = w.styles.isOwn('table');
-  const head: Fmt = own ? { bold: true, color: hex(w.preset.colors.tableHeaderText, 'FFFFFF') } : { bold: true };
+  const own = ctx.styles.isOwn('table');
+  const head: Fmt = own ? { bold: true, color: hex(ctx.preset.colors.tableHeaderText, 'FFFFFF') } : { bold: true };
   const tight = own ? '<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>' : undefined;
   const cell = (text: string, i: number, j: number) =>
     `<w:tc><w:tcPr><w:tcW w:w="${twips[j]}" w:type="dxa"/></w:tcPr>` +
-    para({ jc: o.align?.[j] || 'left', spacing: tight }, o.cell ? o.cell(text, i, j, i === 0 ? head : {}) : run(text, i === 0 ? head : {}, w)) +
+    para({ jc: o.align?.[j] || 'left', spacing: tight }, o.cell ? o.cell(text, i, j, i === 0 ? head : {}) : run(text, i === 0 ? head : {}, ctx)) +
     '</w:tc>';
   const row = (r: string[], i: number) =>
     `<w:tr>${i === 0 ? '<w:trPr><w:tblHeader/></w:trPr>' : ''}` +
     Array.from({ length: cols }, (_, j) => cell(r[j] ?? '', i, j)).join('') +
     '</w:tr>';
   return (
-    `<w:tbl><w:tblPr><w:tblStyle w:val="${xmlEscape(w.styles.id('table'))}"/><w:tblW w:w="${twips.reduce((a, b) => a + b, 0)}" w:type="dxa"/>` +
+    `<w:tbl><w:tblPr><w:tblStyle w:val="${xmlEscape(ctx.styles.id('table'))}"/><w:tblW w:w="${twips.reduce((a, b) => a + b, 0)}" w:type="dxa"/>` +
     '<w:tblLayout w:type="fixed"/><w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/></w:tblPr>' +
     `<w:tblGrid>${twips.map((x) => `<w:gridCol w:w="${x}"/>`).join('')}</w:tblGrid>` +
     [header, ...rows].map(row).join('') +
@@ -945,7 +963,7 @@ function grid(
   );
 }
 
-function table(t: MdToken, w: W): string {
+function table(t: MdToken, ctx: WordContext): string {
   const header = t.header || [];
   const rows = t.rows || [];
   // Cells keep their inline formatting; the text alone sizes the columns.
@@ -953,62 +971,62 @@ function table(t: MdToken, w: W): string {
   return grid(
     header.map((c) => plainText(c.tokens)),
     rows.map((r) => r.map((c) => plainText(c.tokens))),
-    w,
+    ctx,
     {
       align: (t.align || []).map((a) => (a === 'center' ? 'center' : a === 'right' ? 'right' : 'left')),
-      cell: (_text, i, j, f) => inline(tokens[i]?.[j] || [], w, f)
+      cell: (_text, i, j, format) => renderInline(tokens[i]?.[j] || [], ctx, format)
     }
   );
 }
 
-function code(text: string, w: W): string {
-  return para({ style: w.styles.id('code') }, run(text.replace(/\n$/, ''), {}, w));
+function code(text: string, ctx: WordContext): string {
+  return para({ style: ctx.styles.id('code') }, run(text.replace(/\n$/, ''), {}, ctx));
 }
 
 /** A Mermaid diagram as the host drew it, or its source when there is no drawing. */
-function diagram(t: MdToken, w: W): string {
+function diagram(t: MdToken, ctx: WordContext): string {
   const key = diagramKey(t.text ?? '');
-  const img = w.diagrams.get(key);
-  const pic = img ? rasterPicture(img, 'diagram:' + key, w.rels, w) : null;
+  const img = ctx.diagrams.get(key);
+  const pic = img ? rasterPicture(img, 'diagram:' + key, ctx.rels, ctx) : null;
   if (!img || !pic) {
-    w.warnings.add(tr('word.diagramsAsCode'));
-    return code(String(t.text ?? ''), w);
+    ctx.warnings.add(tr('word.diagramsAsCode'));
+    return code(String(t.text ?? ''), ctx);
   }
   // Never wider than drawn on screen (px -> pt), never wider than the column.
-  const cx = Math.min(img.width * EMU_PER_PX, w.width * EMU_PER_TWIP);
+  const cx = Math.min(img.width * EMU_PER_PX, ctx.width * EMU_PER_TWIP);
   const cy = (cx * img.height) / img.width;
   return para(
     { jc: 'center', spacing: `<w:spacing w:before="${tw(6)}" w:after="${tw(10)}"/>` },
-    pictureRun({ ...pic, cx, cy, alt: 'Diagram' }, w)
+    pictureRun({ ...pic, cx, cy, alt: 'Diagram' }, ctx)
   );
 }
 
-function fence(t: MdToken, w: W): string {
+function fence(t: MdToken, ctx: WordContext): string {
   const kind = columnsLang(t.lang);
   if (kind === 'col') {
     const group = parseColBlock(String(t.text ?? ''));
-    return group.rows.filter((r) => r.length).map((r) => columns(r, group.settings, w)).join('');
+    return group.rows.filter((r) => r.length).map((r) => columns(r, group.settings, ctx)).join('');
   }
   // A col-md on its own spans the width, as in the plugin.
-  if (kind === 'col-md') return columns([parseColMd(String(t.text ?? ''))], {}, w);
-  if (isMermaidLang(t.lang)) return diagram(t, w);
-  return code(String(t.text ?? ''), w);
+  if (kind === 'col-md') return columns([parseColMd(String(t.text ?? ''))], {}, ctx);
+  if (isMermaidLang(t.lang)) return diagram(t, ctx);
+  return code(String(t.text ?? ''), ctx);
 }
 
 /** Border (3pt) plus left and right padding (10pt each), as in the PDF's boxes. */
 const BOX_INSET = tw(23);
 
 /** A one-cell table: a bar of colour on the left, a tinted fill, the content inside. */
-function box(inner: string, accent: string, fill: string, w: W): string {
+function box(inner: string, accent: string, fill: string, ctx: WordContext): string {
   const nil = (side: string) => `<w:${side} w:val="nil"/>`;
   const content = /<\/w:p>$/.test(inner) ? inner : inner + '<w:p/>';
   return (
-    `<w:tbl><w:tblPr><w:tblW w:w="${w.width}" w:type="dxa"/>` +
+    `<w:tbl><w:tblPr><w:tblW w:w="${ctx.width}" w:type="dxa"/>` +
     `<w:tblBorders>${nil('top')}<w:left w:val="single" w:sz="24" w:space="0" w:color="${accent}"/>${nil('bottom')}${nil('right')}${nil('insideH')}${nil('insideV')}</w:tblBorders>` +
     `<w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="${tw(6)}" w:type="dxa"/><w:left w:w="${tw(10)}" w:type="dxa"/>` +
     `<w:bottom w:w="${tw(2)}" w:type="dxa"/><w:right w:w="${tw(10)}" w:type="dxa"/></w:tblCellMar>` +
     '<w:tblLook w:val="0000" w:firstRow="0" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/></w:tblPr>' +
-    `<w:tblGrid><w:gridCol w:w="${w.width}"/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w="${w.width}" w:type="dxa"/>` +
+    `<w:tblGrid><w:gridCol w:w="${ctx.width}"/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w="${ctx.width}" w:type="dxa"/>` +
     `<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/></w:tcPr>${content}</w:tc></w:tr></w:tbl>` +
     para({ spacing: `<w:spacing w:before="0" w:after="${tw(6)}"/>` }, '')
   );
@@ -1027,29 +1045,29 @@ export function calloutIcons(preset: Preset): { key: string; svg: string }[] {
   return [...seen].map(([key, svg]) => ({ key, svg }));
 }
 
-function blockquote(t: MdToken, w: W): string {
+function blockquote(t: MdToken, ctx: WordContext): string {
   const call = parseCallout(String(t.raw || ''));
-  const inner: W = { ...w, top: false, width: Math.max(tw(40), w.width - BOX_INSET) };
-  if (call && call.type === 'col') return calloutColumns(call.body, w);
-  if (call && columnsLang(call.type) === 'col-md') return columns([{ settings: {}, content: call.body }], {}, w);
-  const brand = w.preset.colors.brand;
+  const inner: WordContext = { ...ctx, top: false, width: Math.max(tw(40), ctx.width - BOX_INSET) };
+  if (call && call.type === 'col') return calloutColumns(call.body, ctx);
+  if (call && columnsLang(call.type) === 'col-md') return columns([{ settings: {}, content: call.body }], {}, ctx);
+  const brand = ctx.preset.colors.brand;
   if (!call) {
-    const body = (t.tokens || []).map((x) => block(x, inner)).join('');
-    return box(body, hex(brand), hex(tint(brand, 0.93)), w);
+    const body = (t.tokens || []).map((x) => renderBlock(x, inner)).join('');
+    return box(body, hex(brand), hex(tint(brand, 0.93)), ctx);
   }
 
   const style = CALLOUT_STYLES[call.type] || { accent: brand, tint: tint(brand, 0.93), icon: 'info' };
   const accent = hex(style.accent);
   const label = call.type.charAt(0).toUpperCase() + call.type.slice(1);
-  const iconImg = w.preset.calloutIcons !== false ? w.icons[calloutIconKey(style.icon, style.accent)] : undefined;
-  const icon = iconImg ? rasterPicture(iconImg, 'icon:' + calloutIconKey(style.icon, style.accent), w.rels, w) : null;
-  const size = bodySize(w.preset);
+  const iconImg = ctx.preset.calloutIcons !== false ? ctx.icons[calloutIconKey(style.icon, style.accent)] : undefined;
+  const icon = iconImg ? rasterPicture(iconImg, 'icon:' + calloutIconKey(style.icon, style.accent), ctx.rels, ctx) : null;
+  const size = bodySize(ctx.preset);
   const title = para(
     { keepNext: !!call.body.trim(), spacing: `<w:spacing w:before="0" w:after="${tw(call.body.trim() ? 4 : 0)}"/>`, jc: 'left' },
-    (icon ? pictureRun({ ...icon, cx: 12 * EMU_PER_PT, cy: 12 * EMU_PER_PT, alt: label }, w) + run(' ', {}, w) : '') +
-      inline(marked.Lexer.lexInline(call.title || label), w, { bold: true, color: accent, size })
+    (icon ? pictureRun({ ...icon, cx: 12 * EMU_PER_PT, cy: 12 * EMU_PER_PT, alt: label }, ctx) + run(' ', {}, ctx) : '') +
+      renderInline(marked.Lexer.lexInline(call.title || label), ctx, { bold: true, color: accent, size })
   );
-  return box(title + (call.body.trim() ? blocks(call.body, inner) : ''), accent, hex(style.tint), w);
+  return box(title + (call.body.trim() ? renderBlocks(call.body, inner) : ''), accent, hex(style.tint), ctx);
 }
 
 /* Columns ----------------------------------------------------------- */
@@ -1078,14 +1096,14 @@ function cssTwips(value: string | undefined): number | null {
 }
 
 /** The border a column asks for, on every side of its cell; null for none. */
-function colBorder(s: ColSettings, w: W): { xml: string; pad: number } | null {
+function colBorder(s: ColSettings, ctx: WordContext): { xml: string; pad: number } | null {
   if (!['bordercolor', 'borderstyle', 'borderwidth', 'borderradius', 'borderpadding'].some((k) => k in s)) return null;
   const style = String(s.borderstyle ?? '').trim().toLowerCase();
   if (style === 'none' || style === 'hidden') return null;
   const width = cssTwips(s.borderwidth) ?? tw(0.75);
   const val = style === 'dashed' ? 'dashed' : style === 'dotted' ? 'dotted' : 'single';
   // `w:sz` is in eighths of a point; the plugin's white default is invisible on paper.
-  const color = hex(s.bordercolor, hex(w.preset.colors.tableBorder));
+  const color = hex(s.bordercolor, hex(ctx.preset.colors.tableBorder));
   const sz = Math.min(96, Math.max(2, Math.round((width / 20) * 8)));
   const side = (k: string) => `<w:${k} w:val="${val}" w:sz="${sz}" w:space="0" w:color="${color}"/>`;
   return { xml: `<w:tcBorders>${['top', 'left', 'bottom', 'right'].map(side).join('')}</w:tcBorders>`, pad: cssTwips(s.borderpadding) ?? 0 };
@@ -1097,25 +1115,25 @@ function colBorder(s: ColSettings, w: W): { xml: string; pad: number } | null {
  * than Word's own section columns, which flow text from one column into the
  * next instead of keeping each column's content apart.
  */
-function columns(cols: ColumnSpec[], group: ColSettings, w: W): string {
+function columns(cols: ColumnSpec[], group: ColSettings, ctx: WordContext): string {
   if (!cols.length) return '';
   const grows = cols.map((c) => {
     const g = parseFloat(String(c.settings.flexgrow ?? ''));
     return isFinite(g) && g > 0 ? g : 1;
   });
   const total = grows.reduce((a, b) => a + b, 0);
-  const avail = Math.max(tw(40) * cols.length, w.width - COL_GAP * (cols.length - 1));
+  const avail = Math.max(tw(40) * cols.length, ctx.width - COL_GAP * (cols.length - 1));
   const half = Math.round(COL_GAP / 2);
   const widths = grows.map((g, i) => Math.max(tw(40), Math.round((avail * g) / total)) + (i > 0 ? half : 0) + (i < cols.length - 1 ? half : 0));
   const nil = (side: string) => `<w:${side} w:val="nil"/>`;
   const groupAlign = COL_ALIGN[String(group.textalign ?? '').trim().toLowerCase()];
   const cells = cols.map((c, i) => {
-    const border = colBorder(c.settings, w);
+    const border = colBorder(c.settings, ctx);
     const left = i > 0 ? half : 0;
     const right = i < cols.length - 1 ? half : 0;
     const pad = border ? border.pad : 0;
     const inner = widths[i] - left - right - 2 * pad;
-    let xml = blocks(c.content, { ...w, top: false, width: Math.max(tw(40), inner) });
+    let xml = renderBlocks(c.content, { ...ctx, top: false, width: Math.max(tw(40), inner) });
     const align = COL_ALIGN[String(c.settings.textalign ?? '').trim().toLowerCase()] || groupAlign;
     if (align) xml = alignAll(xml, align);
     // A cell must end with a paragraph.
@@ -1137,19 +1155,19 @@ function columns(cols: ColumnSpec[], group: ColSettings, w: W): string {
 }
 
 /** `> [!col]`: each item a column; a nested `> [!col-md-2]` one column 2 units wide. */
-function calloutColumns(body: string, w: W): string {
+function calloutColumns(body: string, ctx: WordContext): string {
   const cols: ColumnSpec[] = [];
-  for (const tk of lex(body)) {
-    if (tk.type === 'space') continue;
-    const inner = tk.type === 'blockquote' ? parseCallout(String(tk.raw || '')) : null;
+  for (const token of lex(body)) {
+    if (token.type === 'space') continue;
+    const inner = token.type === 'blockquote' ? parseCallout(String(token.raw || '')) : null;
     if (inner && columnsLang(inner.type) === 'col-md') {
       const span = calloutSpan(inner.type);
       cols.push({ settings: span ? { flexgrow: String(span) } : {}, content: inner.body });
       continue;
     }
-    cols.push({ settings: {}, content: String(tk.raw || '') });
+    cols.push({ settings: {}, content: String(token.raw || '') });
   }
-  return columns(cols, {}, w);
+  return columns(cols, {}, ctx);
 }
 
 function hr(): string {
@@ -1157,31 +1175,31 @@ function hr(): string {
 }
 
 /** Where a restricted passage this version keeps begins: its label on amber. */
-function markStart(label: string, w: W): string {
-  const amber = tlpColor(w.preset, 'AMBER');
+function markStart(label: string, ctx: WordContext): string {
+  const amber = tlpColor(ctx.preset, 'AMBER');
   return para(
     { keepNext: true, border: `<w:bottom w:val="single" w:sz="6" w:space="1" w:color="${hex(amber.bg)}"/>` },
-    run(` ${label} `, { bold: true, color: hex(amber.fg), mark: hex(amber.bg), size: 7.5 }, w) +
-      run('  ' + tr('audience.bannerNote'), { italic: true, color: '6B6B6B', size: 7.5 }, w)
+    run(` ${label} `, { bold: true, color: hex(amber.fg), mark: hex(amber.bg), size: 7.5 }, ctx) +
+      run('  ' + tr('audience.bannerNote'), { italic: true, color: '6B6B6B', size: 7.5 }, ctx)
   );
 }
 
 /** Where it ends: a dashed rule in the same colour. */
-function markEnd(w: W): string {
+function markEnd(ctx: WordContext): string {
   return para(
-    { border: `<w:bottom w:val="dashed" w:sz="6" w:space="1" w:color="${hex(tlpColor(w.preset, 'AMBER').bg)}"/>`, spacing: `<w:spacing w:after="${tw(10)}"/>` },
+    { border: `<w:bottom w:val="dashed" w:sz="6" w:space="1" w:color="${hex(tlpColor(ctx.preset, 'AMBER').bg)}"/>`, spacing: `<w:spacing w:after="${tw(10)}"/>` },
     ''
   );
 }
 
-function block(t: MdToken, w: W): string {
+function renderBlock(t: MdToken, ctx: WordContext): string {
   switch (t.type) {
-    case 'heading': return heading(t, w, false);
-    case 'paragraph': return paragraph(t, w);
-    case 'list': return list(t, w, 0, null);
-    case 'table': return table(t, w);
-    case 'code': return fence(t, w);
-    case 'blockquote': return blockquote(t, w);
+    case 'heading': return heading(t, ctx, false);
+    case 'paragraph': return paragraph(t, ctx);
+    case 'list': return list(t, ctx, 0, null);
+    case 'table': return table(t, ctx);
+    case 'code': return fence(t, ctx);
+    case 'blockquote': return blockquote(t, ctx);
     case 'hr': return hr();
     default: return '';
   }
@@ -1190,8 +1208,8 @@ function block(t: MdToken, w: W): string {
 const PAGE_BREAK = '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
 
 /** A Markdown string as body XML, with page breaks and confidentiality marks. */
-function blocks(md: string, w: W): string {
-  const breaks = (w.preset.toc || defaultToc()).pageBreak;
+function renderBlocks(md: string, ctx: WordContext): string {
+  const breaks = (ctx.preset.toc || defaultToc()).pageBreak;
   let out = '';
   let pending = false;
   for (const t of lex(md)) {
@@ -1199,21 +1217,21 @@ function blocks(md: string, w: W): string {
     if (t.type === 'html') {
       const raw = String(t.raw || t.text || '').trim();
       const start = MARK_START_RE.exec(raw);
-      if (start) { out += markStart(start[1], w); continue; }
-      if (MARK_END_RE.test(raw)) { out += markEnd(w); continue; }
+      if (start) { out += markStart(start[1], ctx); continue; }
+      if (MARK_END_RE.test(raw)) { out += markEnd(ctx); continue; }
     }
     if (t.type === 'space') continue;
     if (pending) { out += PAGE_BREAK; pending = false; }
 
     if (t.type === 'heading') {
       // As in the PDF: not at the very start, and a chain of headings moves together.
-      const breakBefore = w.top && breaks[(t.depth ?? 1) - 1] === true && w.breakable;
-      out += heading(t, w, breakBefore);
-      w.breakable = false;
+      const breakBefore = ctx.top && breaks[(t.depth ?? 1) - 1] === true && ctx.breakable;
+      out += heading(t, ctx, breakBefore);
+      ctx.breakable = false;
       continue;
     }
-    const xml = block(t, w);
-    if (xml) { out += xml; w.breakable = true; }
+    const xml = renderBlock(t, ctx);
+    if (xml) { out += xml; ctx.breakable = true; }
   }
   return out;
 }
@@ -1227,28 +1245,28 @@ function blocks(md: string, w: W): string {
  * heading, so it reads and clicks even where fields are never updated. Word
  * replaces it with its own, page numbers included, when it updates fields.
  */
-function tocField(w: W, title: string | null): string {
-  const toc = w.preset.toc || defaultToc();
+function tocField(ctx: WordContext, title: string | null): string {
+  const toc = ctx.preset.toc || defaultToc();
   const deepest = toc.levels.lastIndexOf(true) + 1;
   if (!deepest) return '';
-  const tab = `<w:tab w:val="right" w:leader="dot" w:pos="${w.width}"/>`;
+  const tab = `<w:tab w:val="right" w:leader="dot" w:pos="${ctx.width}"/>`;
   const begin =
     '<w:r><w:fldChar w:fldCharType="begin"/></w:r>' +
     `<w:r><w:instrText xml:space="preserve"> TOC \\o "1-${deepest}" \\h \\z \\u </w:instrText></w:r>` +
     '<w:r><w:fldChar w:fldCharType="separate"/></w:r>';
-  const entries = w.toc.map((e, i) =>
+  const entries = ctx.toc.map((e, i) =>
     para(
-      { style: w.styles.id(`toc${e.level}` as WordRole), tabs: tab },
+      { style: ctx.styles.id(`toc${e.level}` as WordRole), tabs: tab },
       (i === 0 ? begin : '') +
-        `<w:hyperlink w:anchor="${e.bookmark}" w:history="1">${run(e.text, {}, w)}<w:r><w:tab/></w:r>` +
-        field(`PAGEREF ${e.bookmark} \\h`, '', {}, w) +
+        `<w:hyperlink w:anchor="${e.bookmark}" w:history="1">${run(e.text, {}, ctx)}<w:r><w:tab/></w:r>` +
+        field(`PAGEREF ${e.bookmark} \\h`, '', {}, ctx) +
         '</w:hyperlink>'
     )
   );
   const body = entries.length
     ? entries.join('') + para({}, '<w:r><w:fldChar w:fldCharType="end"/></w:r>')
     : para({}, begin + '<w:r><w:fldChar w:fldCharType="end"/></w:r>');
-  const heading = title ? para({ style: w.styles.id('tocHeading') }, run(title, {}, w)) : '';
+  const heading = title ? para({ style: ctx.styles.id('tocHeading') }, run(title, {}, ctx)) : '';
   return (
     '<w:sdt><w:sdtPr><w:docPartObj><w:docPartGallery w:val="Table of Contents"/><w:docPartUnique/></w:docPartObj></w:sdtPr>' +
     `<w:sdtContent>${heading}${body}</w:sdtContent></w:sdt>`
@@ -1306,8 +1324,8 @@ const COVER_LINE = 1.2;
  * before by the gap the PDF leaves; the rule, which has no text, is drawn
  * with the decoration. Returns the paragraphs and where the rule goes.
  */
-function coverText(vars: ReportVars, w: W, top: number, left: number): { xml: string; ruleY: number } {
-  const p = w.preset;
+function coverText(vars: ReportVars, ctx: WordContext, top: number, left: number): { xml: string; ruleY: number } {
+  const p = ctx.preset;
   const cv = p.layout.cover;
   const raw = (vars.coverTitle || vars.docTitle || 'REPORT').toUpperCase();
   const fitted = fitCoverTitle(raw, cv.titleSize, cv.titleMaxChars);
@@ -1318,17 +1336,17 @@ function coverText(vars: ReportVars, w: W, top: number, left: number): { xml: st
 
   let cursor = top;
   let xml = '';
-  const line = (style: WordRole, text: string, y: number, size: number, f: Fmt) => {
+  const line = (style: WordRole, text: string, y: number, size: number, format: Fmt) => {
     const before = Math.max(0, y - cursor);
     const height = size * COVER_LINE;
     cursor = Math.max(cursor, y) + height * text.split('\n').length;
     xml += para(
       {
-        style: w.styles.id(style),
+        style: ctx.styles.id(style),
         spacing: `<w:spacing w:before="${tw(before)}" w:after="0" w:line="${tw(height)}" w:lineRule="exact"/>`,
         ind: `<w:ind w:left="${tw(cv.x - left)}"/>`
       },
-      run(text, { ...f, size }, w)
+      run(text, { ...format, size }, ctx)
     );
   };
   line('title', fitted.text, cv.titleY, fitted.fontSize, {});
@@ -1338,73 +1356,76 @@ function coverText(vars: ReportVars, w: W, top: number, left: number): { xml: st
 }
 
 /** The cover's artwork, or the built-in decoration, with the logo and the rule. */
-function coverHeader(w: W, rels: Relationships, ruleY: number, logo: string | null): string {
-  const p = w.preset;
+function coverHeader(ctx: WordContext, rels: Relationships, ruleY: number, logo: string | null): string {
+  const p = ctx.preset;
   const C = p.colors;
   const cv = p.layout.cover;
+  const draw = pageArt(rels, ctx);
   // The artwork, when Word can show it; otherwise the decoration, as in the PDF.
-  let art = p.assets.coverBg ? placedImage(p.assets.coverBg, 'coverBg', 0, 0, PAGE_W, PAGE_H, rels, w) : '';
+  let art = p.assets.coverBg ? draw.image(p.assets.coverBg, 'coverBg', 0, 0, PAGE_W, PAGE_H) : '';
   if (!art && p.layout.decor !== false) {
-    const bx = Math.max(0, cv.x - 28);
-    const top = Math.max(0, cv.titleY - 40);
-    const bottom = Math.min(PAGE_H - 160, Math.max(cv.acronymY, cv.subtitleY) + (ruleY - cv.ruleY) + 90);
-    const accent = tint(C.brand, 0.35);
+    // Word has no lines to anchor: the bracket's strokes are thin rectangles,
+    // the vertical one capped by half a stroke at each end to close the corners.
+    const { x, top, bottom } = coverBracket(p, ruleY - cv.ruleY);
+    const stroke = DECOR.bracketStroke;
+    const half = stroke / 2;
     art +=
-      rect(C.brand, 0, 0, 14, PAGE_H, rels, w) +
-      rect(C.brand, bx - 1.25, top - 1.25, 2.5, bottom - top + 2.5, rels, w) +
-      rect(C.brand, bx, top - 1.25, 90, 2.5, rels, w) +
-      rect(accent, bx, bottom - 1.25, 90, 2.5, rels, w) +
-      rect(C.dark, 0, PAGE_H - 96, PAGE_W, 96, rels, w) +
-      rect(C.brand, 0, PAGE_H - 101, PAGE_W * 0.45, 5, rels, w);
+      draw.rect(C.brand, 0, 0, DECOR.coverBar, PAGE_H) +
+      draw.rect(C.brand, x - half, top - half, stroke, bottom - top + stroke) +
+      draw.rect(C.brand, x, top - half, DECOR.bracketArm, stroke) +
+      draw.rect(decorAccents(p).bracketEnd, x, bottom - half, DECOR.bracketArm, stroke) +
+      draw.rect(C.dark, 0, PAGE_H - DECOR.coverFootBand, PAGE_W, DECOR.coverFootBand) +
+      draw.rect(C.brand, 0, PAGE_H - DECOR.coverFootBand - DECOR.coverFootRule, PAGE_W * DECOR.ruleSpan, DECOR.coverFootRule);
   }
-  if (cv.showRule !== false) art += rect('#141414', cv.x, ruleY, cv.ruleW, 3, rels, w);
-  if (logo) art += placedImage(logo, 'coverLogo', cv.logoX, cv.logoY, cv.logoW, null, rels, w);
+  if (cv.showRule !== false) art += draw.rect('#141414', cv.x, ruleY, cv.ruleW, 3);
+  if (logo) art += draw.image(logo, 'coverLogo', cv.logoX, cv.logoY, cv.logoW);
   return `${XML_DECL}<w:hdr xmlns:w="${NS.w}" xmlns:r="${NS.r}">${para({}, art)}</w:hdr>`;
 }
 
 /** The header of every other page: the frame artwork or the bands, then the title and the client. */
-function frameHeader(vars: ReportVars, w: W, rels: Relationships, right: number): string {
-  const p = w.preset;
+function frameHeader(vars: ReportVars, ctx: WordContext, rels: Relationships, right: number): string {
+  const p = ctx.preset;
   const C = p.colors;
-  let art = p.assets.frame ? placedImage(p.assets.frame, 'frame', 0, 0, PAGE_W, PAGE_H, rels, w) : '';
+  const draw = pageArt(rels, ctx);
+  let art = p.assets.frame ? draw.image(p.assets.frame, 'frame', 0, 0, PAGE_W, PAGE_H) : '';
   if (!art && p.layout.decor !== false) {
     art +=
-      rect(C.banner, 0, 0, PAGE_W, 64, rels, w) +
-      rect(tint(C.banner, 0.55), 0, 64, PAGE_W, 3, rels, w) +
-      rect(C.dark, 0, PAGE_H - 48, PAGE_W, 48, rels, w) +
-      rect(C.brand, 0, PAGE_H - 51, PAGE_W * 0.45, 3, rels, w);
+      draw.rect(C.banner, 0, 0, PAGE_W, DECOR.headerBand) +
+      draw.rect(decorAccents(p).bannerRule, 0, DECOR.headerBand, PAGE_W, DECOR.accentRule) +
+      draw.rect(C.dark, 0, PAGE_H - DECOR.footerBand, PAGE_W, DECOR.footerBand) +
+      draw.rect(C.brand, 0, PAGE_H - DECOR.footerBand - DECOR.accentRule, PAGE_W * DECOR.ruleSpan, DECOR.accentRule);
   }
   // The text ends where the PDF's does, `headerRight` from the edge of the page.
   const ind = `<w:ind w:right="${tw(p.layout.headerRight - right)}"/>`;
-  const f: Fmt = { color: hex(C.headerText), size: 12, font: wordFont(p.fonts.bodyFont, 'Arial') };
+  const format: Fmt = { color: hex(C.headerText), size: 12, font: wordFont(p.fonts.bodyFont, 'Arial') };
   return (
     `${XML_DECL}<w:hdr xmlns:w="${NS.w}" xmlns:r="${NS.r}">` +
-    para({ jc: 'right', ind, spacing: '<w:spacing w:before="0" w:after="0"/>' }, art + run(vars.docTitle || '', f, w)) +
-    (vars.client ? para({ jc: 'right', ind, spacing: `<w:spacing w:before="${tw(4)}" w:after="0"/>` }, run(vars.client, f, w)) : '') +
+    para({ jc: 'right', ind, spacing: '<w:spacing w:before="0" w:after="0"/>' }, art + run(vars.docTitle || '', format, ctx)) +
+    (vars.client ? para({ jc: 'right', ind, spacing: `<w:spacing w:before="${tw(4)}" w:after="0"/>` }, run(vars.client, format, ctx)) : '') +
     '</w:hdr>'
   );
 }
 
 /** The footer: the TLP marking, then the page number, at the right as in the PDF. */
-function footerXml(w: W, tlp: TlpKey | null, right: number): string {
-  const p = w.preset;
+function footerXml(ctx: WordContext, tlp: TlpKey | null, right: number): string {
+  const p = ctx.preset;
   const ind = `<w:ind w:right="${tw(p.layout.footerRight - right)}"/>`;
   const font = wordFont(p.fonts.bodyFont, 'Arial');
   const paging = String(p.layout.pagination ?? '')
     .split(/(\{\{\s*(?:page|total|pages)\s*\}\})/i)
     .map((part) => {
-      const f: Fmt = { color: hex(p.colors.footerText), size: 10, font };
+      const format: Fmt = { color: hex(p.colors.footerText), size: 10, font };
       const key = /^\{\{\s*(page|total|pages)\s*\}\}$/i.exec(part)?.[1].toLowerCase();
       // {{page}} and {{total}} become Word fields, so the numbers stay right.
-      if (key) return field(key === 'page' ? 'PAGE' : 'NUMPAGES', '1', f, w);
-      return run(part, f, w);
+      if (key) return field(key === 'page' ? 'PAGE' : 'NUMPAGES', '1', format, ctx);
+      return run(part, format, ctx);
     })
     .join('');
   const lines =
     (tlp
       ? para(
           { jc: 'right', ind, spacing: '<w:spacing w:before="0" w:after="0"/>' },
-          run('TLP:' + tlp, { bold: true, color: hex(tlpColor(p, tlp).bg), size: 11, font }, w)
+          run('TLP:' + tlp, { bold: true, color: hex(tlpColor(p, tlp).bg), size: 11, font }, ctx)
         )
       : '') +
     (String(p.layout.pagination ?? '').trim()
@@ -1414,43 +1435,43 @@ function footerXml(w: W, tlp: TlpKey | null, right: number): string {
 }
 
 /** Where the footer sits from the bottom edge, so its text lands where the PDF prints it. */
-function footerDistance(w: W, tlp: boolean): number {
-  const L = w.preset.layout;
+function footerDistance(ctx: WordContext, tlp: boolean): number {
+  const L = ctx.preset.layout;
   const height = (tlp ? 13 : 0) + (String(L.pagination ?? '').trim() ? (tlp ? 2 : 7) + 12 : 0);
   return Math.max(0, L.pageMargins[3] - L.footerY - height);
 }
 
 /** The references page: document status, contacts, recipients. */
-function references(vars: ReportVars, w: W): string {
-  const L = w.preset.labels || defaultLabels();
+function references(vars: ReportVars, ctx: WordContext): string {
+  const L = ctx.preset.labels || defaultLabels();
   const pad = (rows: string[][]) => {
     while (rows.length < 3) rows.push(['', '', '']);
     return rows;
   };
   const people = (list: DocContact[], headers: string[]) =>
-    grid(headers, pad(list.map((c) => [c.nom ?? '', c.poste || c.societe || '', c.courriel ?? ''])), w, {
+    grid(headers, pad(list.map((c) => [c.nom ?? '', c.poste || c.societe || '', c.courriel ?? ''])), ctx, {
       widths: [1, 1, 1],
-      cell: (text, i, j, f) => run(text, i === 0 ? f : j === 2 ? { color: hex(w.preset.colors.link) } : {}, w)
+      cell: (text, i, j, format) => run(text, i === 0 ? format : j === 2 ? { color: hex(ctx.preset.colors.link) } : {}, ctx)
     });
-  const title = (role: WordRole, text: string) => para({ style: w.styles.id(role) }, run(text, {}, w));
+  const title = (role: WordRole, text: string) => para({ style: ctx.styles.id(role) }, run(text, {}, ctx));
   const recipients = vars.recipients || [];
   return (
     title('sectionTitle', L.references) +
     title('sectionSubtitle', L.status) +
-    grid([L.versionColumn, L.versionDate, L.versionState], pad((vars.versions || []).map((v) => [v.version ?? '', v.date ?? '', v.etat ?? ''])), w, {
-      widths: [70, 90, Math.max(100, w.width / 20 - 160)]
+    grid([L.versionColumn, L.versionDate, L.versionState], pad((vars.versions || []).map((v) => [v.version ?? '', v.date ?? '', v.etat ?? ''])), ctx, {
+      widths: [70, 90, Math.max(100, ctx.width / 20 - 160)]
     }) +
     title('sectionSubtitle', L.contacts) +
     people(vars.contacts || [], [L.contactColumn, L.contactRole, L.contactEmail]) +
-    (w.preset.showRecipients || recipients.length
+    (ctx.preset.showRecipients || recipients.length
       ? title('sectionSubtitle', L.recipients) + people(recipients, [L.recipientColumn, L.recipientRole, L.recipientEmail])
       : '')
   );
 }
 
 /** The TLP reminder page: each level's badge beside its definition. */
-function tlpReminder(w: W): string {
-  const p = w.preset;
+function tlpReminder(ctx: WordContext): string {
+  const p = ctx.preset;
   const L = p.labels || defaultLabels();
   const nil = ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map((s) => `<w:${s} w:val="nil"/>`).join('');
   const badge = tw(80);
@@ -1458,20 +1479,20 @@ function tlpReminder(w: W): string {
     const col = tlpColor(p, lv.key);
     return (
       `<w:tr><w:tc><w:tcPr><w:tcW w:w="${badge}" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="${hex(col.bg)}"/><w:vAlign w:val="center"/></w:tcPr>` +
-      para({ jc: 'center', spacing: '<w:spacing w:before="0" w:after="0"/>' }, run('TLP:' + lv.key, { bold: true, color: hex(col.fg), size: bodySize(p) - 2 }, w)) +
-      `</w:tc><w:tc><w:tcPr><w:tcW w:w="${w.width - badge}" w:type="dxa"/></w:tcPr>` +
-      para({ style: w.styles.id('body'), spacing: `<w:spacing w:before="0" w:after="${tw(12)}"/>` }, run(lv.text, { size: bodySize(p) - 1 }, w)) +
+      para({ jc: 'center', spacing: '<w:spacing w:before="0" w:after="0"/>' }, run('TLP:' + lv.key, { bold: true, color: hex(col.fg), size: bodySize(p) - 2 }, ctx)) +
+      `</w:tc><w:tc><w:tcPr><w:tcW w:w="${ctx.width - badge}" w:type="dxa"/></w:tcPr>` +
+      para({ style: ctx.styles.id('body'), spacing: `<w:spacing w:before="0" w:after="${tw(12)}"/>` }, run(lv.text, { size: bodySize(p) - 1 }, ctx)) +
       '</w:tc></w:tr>'
     );
   });
   return (
-    para({ style: w.styles.id('sectionTitle') }, run(L.tlpReminder, {}, w)) +
-    para({ spacing: `<w:spacing w:before="${tw(2)}" w:after="${tw(10)}"/>` }, run(L.tlpReminderSubtitle, { bold: true }, w)) +
+    para({ style: ctx.styles.id('sectionTitle') }, run(L.tlpReminder, {}, ctx)) +
+    para({ spacing: `<w:spacing w:before="${tw(2)}" w:after="${tw(10)}"/>` }, run(L.tlpReminderSubtitle, { bold: true }, ctx)) +
     (rows.length
-      ? `<w:tbl><w:tblPr><w:tblW w:w="${w.width}" w:type="dxa"/><w:tblBorders>${nil}</w:tblBorders><w:tblLayout w:type="fixed"/>` +
+      ? `<w:tbl><w:tblPr><w:tblW w:w="${ctx.width}" w:type="dxa"/><w:tblBorders>${nil}</w:tblBorders><w:tblLayout w:type="fixed"/>` +
         '<w:tblCellMar><w:left w:w="100" w:type="dxa"/><w:right w:w="200" w:type="dxa"/></w:tblCellMar>' +
         '<w:tblLook w:val="0000" w:firstRow="0" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/></w:tblPr>' +
-        `<w:tblGrid><w:gridCol w:w="${badge}"/><w:gridCol w:w="${w.width - badge}"/></w:tblGrid>${rows.join('')}</w:tbl>` + para({}, '')
+        `<w:tblGrid><w:gridCol w:w="${badge}"/><w:gridCol w:w="${ctx.width - badge}"/></w:tblGrid>${rows.join('')}</w:tbl>` + para({}, '')
       : '')
   );
 }
@@ -1546,25 +1567,47 @@ function mainPart(pkg: Package): string {
   return path;
 }
 
-/** The part a relationship of `type` points to, created when there is none. */
-function partOf(main: string, rels: Relationships, ct: ContentTypes, type: string, name: string, contentType: string): string {
-  const rel = rels.ofType(type)[0];
-  if (rel) return resolveTarget(main, rel.target);
-  rels.add(type, name);
-  const path = resolveTarget(main, name);
-  ct.setOverride(path, contentType);
+/** The package being written, with its main part's relationships and its content types. */
+interface DocumentParts {
+  pkg: Package;
+  /** Path of the main part, `word/document.xml` in a generated package. */
+  main: string;
+  rels: Relationships;
+  contentTypes: ContentTypes;
+}
+
+/** A part the main part has at most one of; its relationship and content type share its name. */
+type SinglePart = 'styles' | 'numbering' | 'settings' | 'footnotes';
+
+/** The path of the template's own `kind` part, or null when it has none. */
+function existingPart(parts: DocumentParts, kind: SinglePart): string | null {
+  const rel = parts.rels.ofType(REL_TYPES[kind])[0];
+  return rel ? resolveTarget(parts.main, rel.target) : null;
+}
+
+/** The path of the `kind` part, created (as `styles.xml`, `numbering.xml`…) when there is none. */
+function partOf(parts: DocumentParts, kind: SinglePart): string {
+  const existing = existingPart(parts, kind);
+  if (existing) return existing;
+  const name = `${kind}.xml`;
+  parts.rels.add(REL_TYPES[kind], name);
+  const path = resolveTarget(parts.main, name);
+  parts.contentTypes.setOverride(path, CONTENT_TYPES[kind]);
   return path;
 }
 
-/** Text width of the document's last section, in twips. */
+/**
+ * Text width of the document's last section, in twips. A margin the section
+ * does not give is Word's default, one inch; a width that is missing or
+ * narrower than an inch falls back to Word's blank A4 page.
+ */
 function textWidth(doc: string): number {
   const sect = doc.lastIndexOf('<w:sectPr');
   const tail = sect >= 0 ? doc.slice(sect) : '';
-  const w = parseInt(attrOf(tail, 'w:pgSz', 'w:w') ?? '', 10);
-  const l = parseInt(attrOf(tail, 'w:pgMar', 'w:left') ?? '', 10);
-  const r = parseInt(attrOf(tail, 'w:pgMar', 'w:right') ?? '', 10);
-  const width = w - (isNaN(l) ? 1440 : l) - (isNaN(r) ? 1440 : r);
-  return isFinite(width) && width > 1440 ? width : 9026;
+  const twips = (el: string, attr: string) => parseInt(attrOf(tail, el, attr) ?? '', 10);
+  const marginOr = (value: number) => (isNaN(value) ? ONE_INCH_TW : value);
+  const width = twips('w:pgSz', 'w:w') - marginOr(twips('w:pgMar', 'w:left')) - marginOr(twips('w:pgMar', 'w:right'));
+  return isFinite(width) && width > ONE_INCH_TW ? width : PAGE_W_TW - 2 * ONE_INCH_TW;
 }
 
 function setCoreTitle(xml: string, vars: ReportVars): string {
@@ -1593,168 +1636,258 @@ export function listWordStyles(template: Uint8Array): { name: string; type: Styl
   return xml ? parseStyles(xml).map((s) => ({ name: s.name, type: s.type })) : [];
 }
 
-/** Add a header or footer part to a generated package and return its relationship id. */
-function addPart(pkg: Package, docRels: Relationships, ct: ContentTypes, kind: 'header' | 'footer', name: string, xml: string, rels: Relationships): string {
-  pkg.setText(`word/${name}`, xml);
-  if (rels.list.length) pkg.setText(relsPath(`word/${name}`), rels.toXml());
-  ct.setOverride(`word/${name}`, kind === 'header' ? CONTENT_TYPES.header : CONTENT_TYPES.footer);
-  return docRels.add(kind === 'header' ? REL_TYPES.header : REL_TYPES.footer, name);
+/** A header or footer part: its file name under `word/`, its XML and its own relationships. */
+interface HeaderFooterPart {
+  kind: 'header' | 'footer';
+  name: string;
+  xml: string;
+  rels: Relationships;
 }
 
-export function buildDocx(md: string, vars: ReportVars, preset: Preset, o: DocxOptions = {}): DocxResult {
-  const generated = !o.template;
-  const pkg = o.template ? openTemplate(o.template) : skeleton();
-  const main = mainPart(pkg);
-  const rels = new Relationships(pkg.text(relsPath(main)));
-  const ct = new ContentTypes(pkg.text('[Content_Types].xml') || '');
-  const doc = ensureRootNs(pkg.text(main) || '', 'r', NS.r);
+/** Add a header or footer part to a generated package and return its relationship id. */
+function addPart(parts: DocumentParts, part: HeaderFooterPart): string {
+  const path = `word/${part.name}`;
+  parts.pkg.setText(path, part.xml);
+  if (part.rels.list.length) parts.pkg.setText(relsPath(path), part.rels.toXml());
+  parts.contentTypes.setOverride(path, CONTENT_TYPES[part.kind]);
+  return parts.rels.add(REL_TYPES[part.kind], part.name);
+}
 
-  const stylesPath = partOf(main, rels, ct, REL_TYPES.styles, 'styles.xml', CONTENT_TYPES.styles);
+export function buildDocx(md: string, vars: ReportVars, preset: Preset, options: DocxOptions = {}): DocxResult {
+  const parts = openParts(options.template ? openTemplate(options.template) : skeleton());
+  const extracted = extractFootnotes(md);
+  const ctx = createContext(parts, preset, options, extracted.notes);
+  // The body first: the table of contents lists its headings.
+  const report = renderBlocks(extracted.md, ctx);
+  const main = options.template
+    ? fillWordTemplate(parts, ctx, markerValues(vars, preset, options.date || ''), report)
+    : layOutGenerated(parts, ctx, planDocument(vars, preset, options.clientLogo), report);
+  parts.pkg.setText(parts.main, main.xml);
+  writeSupportParts(parts, ctx, main.usesToc);
+  setCoreProperties(parts.pkg, vars);
+
+  const warnings = [...ctx.warnings];
+  if (ctx.styles.unknown.length) warnings.push(tr('word.stylesUnknown', { names: ctx.styles.unknown.join(', ') }));
+  return { bytes: parts.pkg.toBytes(), warnings };
+}
+
+/** The main part's new XML, and whether it holds a table of contents. */
+interface MainXml {
+  xml: string;
+  usesToc: boolean;
+}
+
+function openParts(pkg: Package): DocumentParts {
+  const main = mainPart(pkg);
+  return {
+    pkg,
+    main,
+    rels: new Relationships(pkg.text(relsPath(main))),
+    contentTypes: new ContentTypes(pkg.text('[Content_Types].xml') || '')
+  };
+}
+
+/** The main part as the package holds it, with the relationships namespace declared. */
+function mainXml(parts: DocumentParts): string {
+  return ensureRootNs(parts.pkg.text(parts.main) || '', 'r', NS.r);
+}
+
+/** A generated document's margins: the PDF template's, in points. */
+function generatedMargins(preset: Preset): { left: number; top: number; right: number; bottom: number } {
+  const [left, top, right, bottom] = DEFAULT_PAGE_MARGINS.map((fallback, i) => preset.layout.pageMargins[i] ?? fallback);
+  return { left, top, right, bottom };
+}
+
+/** The rendering context, building on the template's own styles, numbering and footnotes. */
+function createContext(parts: DocumentParts, preset: Preset, options: DocxOptions, notes: Footnote[]): WordContext {
+  const { pkg, main } = parts;
+  const generated = !options.template;
   const styles = new StyleBook(
-    pkg.text(stylesPath) || `${XML_DECL}<w:styles xmlns:w="${NS.w}"></w:styles>`,
+    pkg.text(partOf(parts, 'styles')) || `${XML_DECL}<w:styles xmlns:w="${NS.w}"></w:styles>`,
     preset,
     generated ? {} : preset.word?.styles || {}
   );
-  const numberingRel = rels.ofType(REL_TYPES.numbering)[0];
-  const numberingPath = numberingRel ? resolveTarget(main, numberingRel.target) : null;
-  const footnotesRel = rels.ofType(REL_TYPES.footnotes)[0];
-  const footnotesPath = footnotesRel ? resolveTarget(main, footnotesRel.target) : null;
-  const fn = extractFootnotes(md);
-
-  // A generated page has the PDF template's side margins.
-  const margins = preset.layout.pageMargins;
-  const left = margins[0] ?? 64;
-  const right = margins[2] ?? 64;
-
-  const diagrams = new Map<string, RasterImage>();
-  for (const [source, d] of Object.entries(o.diagrams || {})) {
-    if (d && d.png && d.width > 0 && d.height > 0) diagrams.set(diagramKey(source), d);
-  }
-  const w: W = {
+  const numberingPath = existingPart(parts, 'numbering');
+  const footnotesPath = existingPart(parts, 'footnotes');
+  const margins = generatedMargins(preset);
+  return {
     preset,
     styles,
-    rels,
+    rels: parts.rels,
     numbering: new NumberingBook(numberingPath ? pkg.text(numberingPath) : null),
     media: new MediaBook(pkg, main.slice(0, main.lastIndexOf('/') + 1)),
-    images: o.images || {},
-    diagrams,
-    icons: o.icons || {},
-    width: generated ? PAGE_W_TW - tw(left) - tw(right) : textWidth(doc),
+    images: options.images || {},
+    diagrams: renderedRasters(options.diagrams),
+    icons: options.icons || {},
+    width: generated ? PAGE_W_TW - tw(margins.left) - tw(margins.right) : textWidth(mainXml(parts)),
     counters: new Array<number>(HEADING_LEVELS).fill(0),
     ids: { drawing: 10000, bookmark: 10000 },
     toc: [],
     notes: new FootnoteBook(
       footnotesPath ? pkg.text(footnotesPath) : null,
       footnotesPath ? pkg.text(relsPath(footnotesPath)) : null,
-      fn.notes
+      notes
     ),
     warnings: new Set(),
     top: true,
     breakable: false
   };
+}
 
-  const values = markerValues(vars, preset, o.date || '');
-  const fill = (name: string) => values[name] ?? null;
-  // The body first: the table of contents lists its headings.
-  const report = blocks(fn.md, w);
-  let usesToc = false;
-  let out: string;
-
-  if (generated) {
-    const sections = resolveSections(vars, preset);
-    const tlp = reportTlp(vars.tlp, sections);
-    const hasCover = sections[0] === 'cover';
-    const top = margins[1] ?? 100;
-    let cover: { xml: string; ruleY: number } | null = null;
-    const pages: string[] = [];
-    for (const sec of sections) {
-      if (sec === 'cover') pages.push((cover = coverText(vars, w, top, left)).xml);
-      else if (sec === 'references') pages.push(references(vars, w));
-      else if (sec === 'tlp') pages.push(tlpReminder(w));
-      else if (sec === 'toc') {
-        const toc = tocField(w, vars.tocTitle || preset.labels.toc);
-        if (toc) { pages.push(toc); usesToc = true; }
-      } else if (sec === 'body') pages.push(report);
-    }
-    const body = pages.filter(Boolean).map((xml, i) => (i === 0 ? xml : onNewPage(xml))).join('');
-
-    // Headers and footers: the cover page has its own, every other page the frame.
-    const headerRels = new Relationships(null);
-    const header = addPart(pkg, rels, ct, 'header', 'header1.xml', frameHeader(vars, w, headerRels, right), headerRels);
-    const footer = addPart(pkg, rels, ct, 'footer', 'footer1.xml', footerXml(w, tlp, right), new Relationships(null));
-    let first = '';
-    if (hasCover && cover) {
-      const coverRels = new Relationships(null);
-      const logo = o.clientLogo || preset.assets.clientLogo || null;
-      const id = addPart(pkg, rels, ct, 'header', 'header2.xml', coverHeader(w, coverRels, cover.ruleY, logo), coverRels);
-      const blank = addPart(pkg, rels, ct, 'footer', 'footer2.xml', `${XML_DECL}<w:ftr xmlns:w="${NS.w}">${para({}, '')}</w:ftr>`, new Relationships(null));
-      first = `<w:headerReference w:type="first" r:id="${id}"/><w:footerReference w:type="first" r:id="${blank}"/>`;
-    }
-    const sectPr =
-      `<w:sectPr><w:headerReference w:type="default" r:id="${header}"/><w:footerReference w:type="default" r:id="${footer}"/>${first}` +
-      `<w:pgSz w:w="${PAGE_W_TW}" w:h="${PAGE_H_TW}"/>` +
-      `<w:pgMar w:top="${tw(top)}" w:right="${tw(right)}" w:bottom="${tw(margins[3] ?? 82)}" w:left="${tw(left)}" ` +
-      `w:header="${tw(preset.layout.headerY)}" w:footer="${tw(footerDistance(w, !!tlp))}" w:gutter="0"/>` +
-      `${hasCover ? '<w:titlePg/>' : ''}</w:sectPr>`;
-    out = doc.replace(/<w:body>[\s\S]*<\/w:body>/, `<w:body>${body}${sectPr}</w:body>`);
-  } else {
-    // Markers are filled around the report, never inside it: a note that
-    // writes "{{title}}" in its text keeps it.
-    const split = splitAtMarker(doc, 'content');
-    const withToc = (xml: string) => {
-      const at = splitAtMarker(xml, 'toc');
-      if (!at) return xml;
-      usesToc = true;
-      return at.before + tocField(w, null) + at.after;
-    };
-    if (split) {
-      out = withToc(fillMarkers(split.before, fill)) + report + withToc(fillMarkers(split.after, fill));
-    } else {
-      w.warnings.add(tr('word.noContentMarker'));
-      const filled = withToc(fillMarkers(doc, fill));
-      const at = filled.lastIndexOf('<w:sectPr');
-      const end = filled.lastIndexOf('</w:body>');
-      const cut = at > filled.lastIndexOf('</w:p>') ? at : end;
-      out = filled.slice(0, cut) + report + filled.slice(cut);
-    }
-    // Headers and footers carry markers too: the TLP marking, the title.
-    for (const rel of [...rels.ofType(REL_TYPES.header), ...rels.ofType(REL_TYPES.footer)]) {
-      const path = resolveTarget(main, rel.target);
-      const xml = pkg.text(path);
-      if (xml) pkg.setText(path, fillMarkers(xml, fill));
-    }
+/** The diagrams that were actually rendered, keyed by `diagramKey(source)`. */
+function renderedRasters(diagrams: Record<string, RasterImage> = {}): Map<string, RasterImage> {
+  const rendered = new Map<string, RasterImage>();
+  for (const [source, d] of Object.entries(diagrams)) {
+    if (d && d.png && d.width > 0 && d.height > 0) rendered.set(diagramKey(source), d);
   }
-  pkg.setText(main, out);
+  return rendered;
+}
 
+/* Generated document ------------------------------------------------- */
+
+/** A document without a Word template, laid out like the PDF: its pages, bands and margins. */
+function layOutGenerated(parts: DocumentParts, ctx: WordContext, plan: DocumentPlan, report: string): MainXml {
+  const pages = generatedPages(plan, ctx, report);
+  const sectPr = generatedSection(parts, ctx, plan, pages.coverRuleY);
+  return {
+    xml: mainXml(parts).replace(/<w:body>[\s\S]*<\/w:body>/, `<w:body>${pages.body}${sectPr}</w:body>`),
+    usesToc: pages.usesToc
+  };
+}
+
+/** Each section the plan lists, on a new page; where the cover's rule ended up, for its header. */
+function generatedPages(plan: DocumentPlan, ctx: WordContext, report: string): { body: string; coverRuleY: number | null; usesToc: boolean } {
+  const { vars, preset } = plan;
+  const { top, left } = generatedMargins(preset);
+  let coverRuleY: number | null = null;
+  let usesToc = false;
+  const page = (sec: SectionKey): string => {
+    switch (sec) {
+      case 'cover': {
+        const cover = coverText(vars, ctx, top, left);
+        coverRuleY = cover.ruleY;
+        return cover.xml;
+      }
+      case 'references': return references(vars, ctx);
+      case 'tlp': return tlpReminder(ctx);
+      case 'toc': {
+        const toc = tocField(ctx, vars.tocTitle || preset.labels.toc);
+        if (toc) usesToc = true;
+        return toc;
+      }
+      case 'body': return report;
+      default: return '';
+    }
+  };
+  const pages = plan.sections.map(page).filter(Boolean);
+  return { body: pages.map((xml, i) => (i === 0 ? xml : onNewPage(xml))).join(''), coverRuleY, usesToc };
+}
+
+/** The section properties: headers and footers, an A4 page and the PDF template's margins. */
+function generatedSection(parts: DocumentParts, ctx: WordContext, plan: DocumentPlan, coverRuleY: number | null): string {
+  const { vars, preset, tlp } = plan;
+  const { left, top, right, bottom } = generatedMargins(preset);
+  // Headers and footers: the cover page has its own, every other page the frame.
+  const headerRels = new Relationships(null);
+  const header = addPart(parts, { kind: 'header', name: 'header1.xml', xml: frameHeader(vars, ctx, headerRels, right), rels: headerRels });
+  const footer = addPart(parts, { kind: 'footer', name: 'footer1.xml', xml: footerXml(ctx, tlp, right), rels: new Relationships(null) });
+  const first = plan.hasCover && coverRuleY !== null ? coverHeaderFooter(parts, ctx, coverRuleY, plan.coverLogo) : '';
+  return (
+    `<w:sectPr><w:headerReference w:type="default" r:id="${header}"/><w:footerReference w:type="default" r:id="${footer}"/>${first}` +
+    `<w:pgSz w:w="${PAGE_W_TW}" w:h="${PAGE_H_TW}"/>` +
+    `<w:pgMar w:top="${tw(top)}" w:right="${tw(right)}" w:bottom="${tw(bottom)}" w:left="${tw(left)}" ` +
+    `w:header="${tw(preset.layout.headerY)}" w:footer="${tw(footerDistance(ctx, !!tlp))}" w:gutter="0"/>` +
+    `${plan.hasCover ? '<w:titlePg/>' : ''}</w:sectPr>`
+  );
+}
+
+/** The cover page's own header (its artwork, logo and rule) and an empty footer; their references. */
+function coverHeaderFooter(parts: DocumentParts, ctx: WordContext, ruleY: number, logo: string | null): string {
+  const coverRels = new Relationships(null);
+  const header = addPart(parts, { kind: 'header', name: 'header2.xml', xml: coverHeader(ctx, coverRels, ruleY, logo), rels: coverRels });
+  const footer = addPart(parts, {
+    kind: 'footer',
+    name: 'footer2.xml',
+    xml: `${XML_DECL}<w:ftr xmlns:w="${NS.w}">${para({}, '')}</w:ftr>`,
+    rels: new Relationships(null)
+  });
+  return `<w:headerReference w:type="first" r:id="${header}"/><w:footerReference w:type="first" r:id="${footer}"/>`;
+}
+
+/* Word template ------------------------------------------------------ */
+
+/**
+ * The user's Word template with its markers filled: the report at `{{content}}`,
+ * the table of contents at `{{toc}}`, the note's values everywhere else.
+ */
+function fillWordTemplate(parts: DocumentParts, ctx: WordContext, values: Record<string, MarkerValue>, report: string): MainXml {
+  const fill = (name: string) => values[name] ?? null;
+  let usesToc = false;
+  const withToc = (xml: string) => {
+    const at = splitAtMarker(xml, 'toc');
+    if (!at) return xml;
+    usesToc = true;
+    return at.before + tocField(ctx, null) + at.after;
+  };
+  // Markers are filled around the report, never inside it: a note that
+  // writes "{{title}}" in its text keeps it.
+  const doc = mainXml(parts);
+  const split = splitAtMarker(doc, 'content');
+  let xml: string;
+  if (split) {
+    xml = withToc(fillMarkers(split.before, fill)) + report + withToc(fillMarkers(split.after, fill));
+  } else {
+    ctx.warnings.add(tr('word.noContentMarker'));
+    xml = beforeLastSection(withToc(fillMarkers(doc, fill)), report);
+  }
+  // Headers and footers carry markers too: the TLP marking, the title.
+  const { pkg, main, rels } = parts;
+  for (const rel of [...rels.ofType(REL_TYPES.header), ...rels.ofType(REL_TYPES.footer)]) {
+    const path = resolveTarget(main, rel.target);
+    const part = pkg.text(path);
+    if (part) pkg.setText(path, fillMarkers(part, fill));
+  }
+  return { xml, usesToc };
+}
+
+/** `content` at the end of the body: before its closing section properties, if they come last. */
+function beforeLastSection(doc: string, content: string): string {
+  const sectPr = doc.lastIndexOf('<w:sectPr');
+  const cut = sectPr > doc.lastIndexOf('</w:p>') ? sectPr : doc.lastIndexOf('</w:body>');
+  return doc.slice(0, cut) + content + doc.slice(cut);
+}
+
+/* Package ------------------------------------------------------------ */
+
+/** The parts the report filled in or used: settings, numbering, footnotes, styles, relationships, content types. */
+function writeSupportParts(parts: DocumentParts, ctx: WordContext, usesToc: boolean): void {
+  const { pkg, main, rels, contentTypes } = parts;
   if (usesToc) {
-    const path = partOf(main, rels, ct, REL_TYPES.settings, 'settings.xml', CONTENT_TYPES.settings);
+    const path = partOf(parts, 'settings');
     pkg.setText(path, withUpdateFields(pkg.text(path) || `${XML_DECL}<w:settings xmlns:w="${NS.w}"></w:settings>`));
   }
-  if (w.numbering.used) {
-    const path = numberingPath ?? partOf(main, rels, ct, REL_TYPES.numbering, 'numbering.xml', CONTENT_TYPES.numbering);
-    pkg.setText(path, w.numbering.toXml());
+  if (ctx.numbering.used) pkg.setText(partOf(parts, 'numbering'), ctx.numbering.toXml());
+  if (ctx.notes.used) {
+    const path = partOf(parts, 'footnotes');
+    pkg.setText(path, ctx.notes.toXml());
+    if (ctx.notes.rels.list.length) pkg.setText(relsPath(path), ctx.notes.rels.toXml());
   }
-  if (w.notes.used) {
-    const path = footnotesPath ?? partOf(main, rels, ct, REL_TYPES.footnotes, 'footnotes.xml', CONTENT_TYPES.footnotes);
-    pkg.setText(path, w.notes.toXml());
-    if (w.notes.rels.list.length) pkg.setText(relsPath(path), w.notes.rels.toXml());
-  }
-  pkg.setText(stylesPath, styles.toXml());
+  pkg.setText(partOf(parts, 'styles'), ctx.styles.toXml());
   pkg.setText(relsPath(main), rels.toXml());
 
   // A .dotx opened in Word starts a new document; saved as is, it must
   // declare itself a document or Word refuses it.
-  ct.setOverride(main, CONTENT_TYPES.document);
-  const mime: Record<string, string> = { png: 'image/png', jpeg: 'image/jpeg', gif: 'image/gif', svg: 'image/svg+xml' };
-  for (const ext of w.media.types) ct.ensureDefault(ext, mime[ext]);
-  pkg.setText('[Content_Types].xml', ct.toXml());
+  contentTypes.setOverride(main, CONTENT_TYPES.document);
+  for (const ext of ctx.media.types) contentTypes.ensureDefault(ext, MEDIA_MIME[ext]);
+  pkg.setText('[Content_Types].xml', contentTypes.toXml());
+}
 
+const MEDIA_MIME: Record<string, string> = { png: 'image/png', jpeg: 'image/jpeg', gif: 'image/gif', svg: 'image/svg+xml' };
+
+/** The note's title and author in the file's properties, when the package has a core part. */
+function setCoreProperties(pkg: Package, vars: ReportVars): void {
   const coreRel = new Relationships(pkg.text('_rels/.rels')).ofType(REL_TYPES.core)[0];
   const corePath = coreRel ? resolveTarget('', coreRel.target) : null;
   const core = corePath ? pkg.text(corePath) : null;
   if (corePath && core) pkg.setText(corePath, setCoreTitle(core, vars));
-
-  const warnings = [...w.warnings];
-  if (styles.unknown.length) warnings.push(tr('word.stylesUnknown', { names: styles.unknown.join(', ') }));
-  return { bytes: pkg.toBytes(), warnings };
 }

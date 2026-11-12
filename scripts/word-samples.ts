@@ -4,19 +4,12 @@
  *
  *   node scripts/word-samples.ts <output folder>
  *
- * Each sample takes a different path through docx.ts: the generated document
- * with every page, template artwork and a logo, the bundled example notes,
- * and a Word template with markers in its body and header.
+ * The samples are defined in tests/samples.ts, which the reference tests
+ * render too.
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { buildDocx, calloutIcons, type DocxOptions } from '../src/docx.ts';
-import { defaultPreset } from '../src/generator.ts';
-import { setLocale } from '../src/i18n.ts';
-import { stripFrontmatter } from '../src/textScan.ts';
-import type { Preset, ReportVars, WordRole } from '../src/types.ts';
-import { makeTemplate } from '../tests/docxRead.ts';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { wordSamples } from '../tests/samples.ts';
 
 const out = process.argv[2];
 if (!out) {
@@ -24,156 +17,8 @@ if (!out) {
   process.exit(2);
 }
 mkdirSync(out, { recursive: true });
-setLocale('en');
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const note = (name: string) => stripFrontmatter(readFileSync(join(root, name), 'utf8').replace(/\r\n/g, '\n'));
-
-const PIXEL_PNG =
-  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
-const SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100"><rect width="200" height="100" fill="#ccc"/></svg>';
-
-const vars: ReportVars = {
-  docTitle: 'Website Migration Review',
-  client: 'ACME Corp',
-  tlp: 'AMBER',
-  coverTitle: 'Website Migration Review',
-  coverSubtitle: 'Audit',
-  coverSubtitle2: 'WMR',
-  tocTitle: '',
-  versions: [{ version: '1.0', date: '2026-10-01', etat: 'Draft' }, { version: '1.1', date: '2026-10-21', etat: 'Final' }],
-  contacts: [{ nom: 'Jane Doe', poste: 'Lead', courriel: 'jane@example.com' }],
-  recipients: [{ nom: 'John Roe', societe: 'ACME Corp', courriel: 'john@example.com' }],
-  author: 'Jane Doe'
-};
-
-const MERMAID = 'graph TD; A --> B';
-const DEMO = [
-  '# Introduction',
-  '',
-  'Some **bold**, *italic*, ~~struck~~ and `inline code` text, with [a link](https://example.com/?a=1&b=2).<br>Second line.',
-  '',
-  '## Findings',
-  '',
-  '- first',
-  '  1. nested one',
-  '     - deeper',
-  '- [ ] open task',
-  '- [x] done task',
-  '',
-  '| Item | Cost |',
-  '|---|---:|',
-  '| Hosting<br>and backups | 12 € |',
-  '',
-  '```bash',
-  'git clone https://example.org/repo.git && cd repo',
-  '```',
-  '',
-  ...['note', 'warning', 'danger', 'tip', 'quote'].flatMap((c) => [`> [!${c}] A ${c}`, '> Callout body.', '']),
-  '```mermaid',
-  MERMAID,
-  '```',
-  '',
-  '![a pixel](report-image:img0 "120")',
-  '',
-  '*Figure 1: a pixel*',
-  '',
-  '<!-- report-mark-start INTERNAL -->',
-  '',
-  'Kept for the team.',
-  '',
-  '<!-- report-mark-end -->',
-  '',
-  'Ships in May<span data-report-mark>, unless it slips</span>.',
-  '',
-  'A claim worth a source.[^src] Cited again[^src], and an inline note.^[With `code` and [a link](https://example.com).]',
-  '',
-  '[^src]: The source, with **bold** text',
-  '    and a second line.',
-  '',
-  '| Item | Cost |',
-  '|---|---:|',
-  '| Hosting | 12 € |',
-  '',
-  'Table 1: yearly costs',
-  '',
-  '````col',
-  'textAlign=center',
-  '===',
-  '```col-md',
-  'flexGrow=2',
-  'borderColor=#1F5F8B',
-  'borderPadding=6px',
-  '===',
-  '**Left**, twice as wide, with a list:',
-  '',
-  '- one',
-  '- two',
-  '```',
-  '```col-md',
-  '> [!tip] Right',
-  '> A callout in a column.',
-  '```',
-  '````',
-  '',
-  '> [!col]',
-  '> First column of a callout group.',
-  '>',
-  '> Second column.',
-  '',
-  '\\pagebreak',
-  '',
-  '### Last <words> & "quotes"'
-].join('\n');
-
-const preset = (): Preset => defaultPreset({}, 'en');
-const drawn = (p: Preset): DocxOptions => ({
-  images: { img0: PIXEL_PNG },
-  diagrams: { [MERMAID]: { png: PIXEL_PNG, svg: SVG, width: 200, height: 100 } },
-  icons: Object.fromEntries(calloutIcons(p).map((i) => [i.key, { png: PIXEL_PNG, svg: SVG, width: 24, height: 24 }]))
-});
-
-const template = makeTemplate({
-  body:
-    '<w:p><w:pPr><w:pStyle w:val="Title"/></w:pPr><w:r><w:t>{{ti</w:t></w:r><w:r><w:rPr><w:b/></w:rPr><w:t>tle</w:t></w:r><w:r><w:t>}}</w:t></w:r></w:p>' +
-    '<w:p><w:r><w:t>{{client}} · {{date}} · {{version}} · {{status}}</w:t></w:r></w:p>' +
-    '<w:p><w:r><w:t>{{toc}}</w:t></w:r></w:p>' +
-    '<w:p><w:r><w:t>{{content}}</w:t></w:r></w:p>' +
-    '<w:p><w:r><w:t>End of {{title}}.</w:t></w:r></w:p>',
-  styles:
-    '<w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/></w:style>' +
-    '<w:style w:type="paragraph" w:styleId="Titre1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/></w:style>',
-  header: '<w:p><w:r><w:t>{{tlp}} {{title}}</w:t></w:r></w:p>'
-});
-
-const samples: Record<string, () => Uint8Array> = {
-  'generated.docx': () => buildDocx(DEMO, vars, preset(), drawn(preset())).bytes,
-  'generated-artwork.docx': () => {
-    const p = preset();
-    p.assets = { coverBg: PIXEL_PNG, frame: PIXEL_PNG, clientLogo: null };
-    return buildDocx(DEMO, vars, p, { ...drawn(p), clientLogo: PIXEL_PNG }).bytes;
-  },
-  'example-report.docx': () => buildDocx(note('example-report.md'), vars, preset()).bytes,
-  'example-confidential.docx': () => buildDocx(note('example-confidential.md'), vars, preset()).bytes,
-  'template.docx': () => buildDocx(DEMO, vars, preset(), { ...drawn(preset()), template }).bytes
-};
-
-// The test bench: templates written by Word itself (templates/word), each
-// filled with the demo note and with the bundled example.
-const BENCH: Record<string, Partial<Record<WordRole, string>>> = {
-  'consulting-report': {},
-  // Its body text is a style of its own, picked in the settings.
-  memo: { body: 'Corps de rapport' },
-  'landscape-brief': {}
-};
-for (const [name, styles] of Object.entries(BENCH)) {
-  const bytes = readFileSync(join(root, 'templates', 'word', `${name}.dotx`));
-  const p = (): Preset => ({ ...preset(), word: { template: `${name}.dotx`, styles } });
-  samples[`bench-${name}.docx`] = () => buildDocx(DEMO, vars, p(), { ...drawn(p()), template: bytes }).bytes;
-  samples[`bench-${name}-example.docx`] = () => buildDocx(note('example-report.md'), vars, p(), { template: bytes }).bytes;
-}
-
-for (const [name, build] of Object.entries(samples)) {
+for (const [name, build] of Object.entries(wordSamples())) {
   writeFileSync(join(out, name), build());
   console.log(join(out, name));
 }

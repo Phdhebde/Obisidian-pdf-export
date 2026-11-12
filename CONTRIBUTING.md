@@ -39,7 +39,8 @@ npm install
 npm run dev     # esbuild in watch mode
 npm run check   # tsc --noEmit (strict)
 npm run lint    # eslint with the rules of the Obsidian plugin review
-npm test        # the test suite
+npm test        # the test suite, reference outputs included
+npm run reference:update   # rewrite tests/reference after an intended rendering change
 npm run build   # check + production build -> main.js
 ```
 
@@ -49,6 +50,7 @@ How the code is organised:
 
 - `generator.ts` (PDF) and `docx.ts` (Word) turn Markdown into a document. They run in Node for the tests and must not import `obsidian`; anything that needs a browser — rendering a Mermaid diagram, rasterising an icon — is done by the host and handed in.
 - `redact.ts` is the confidentiality filter. It runs on the Markdown **before** either engine, so removed text never reaches a renderer. Any change that touches it, or adds a place where text can travel, comes with a case in the sentinel tests (`tests/redact.test.ts`): a `LEAK-nn` string that must be absent from the client PDF and `.docx` and present in the full version.
+- **Reference outputs.** `tests/reference` holds what every sample of `tests/samples.ts` renders to: the PDF document definition as JSON, each Word part as XML with one tag per line. `npm test` fails as soon as either engine renders differently, and points at the first line that changed. A refactoring leaves these files untouched. A change to the rendering updates them with `npm run reference:update`, and their diff, committed with the change, shows the reviewer exactly what it does to the PDF and the Word file. A new feature adds its case to `tests/samples.ts`.
 - Word changes: run `node scripts/word-samples.ts word-samples`, then `dotnet run -c Release --project tools/ooxml-validate -- word-samples/*.docx` to check the documents against the Open XML schemas, as CI does.
 
 Pull requests:

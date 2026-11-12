@@ -10,6 +10,7 @@
     "check": "tsc --noEmit",
     "test": "node --test \"tests/*.test.ts\"",
     "version-bump": "node scripts/version-bump.mjs",
+    "reference:update": "node scripts/update-reference.ts",
     "lint": "eslint src"
   },
   "keywords": [

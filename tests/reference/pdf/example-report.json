@@ -1,0 +1,1950 @@
+{
+ "pageSize": "A4",
+ "pageMargins": [
+  64,
+  100,
+  64,
+  82
+ ],
+ "info": {
+  "title": "Website Migration Review",
+  "author": "Jane Doe",
+  "subject": "Audit",
+  "keywords": "TLP:AMBER, ACME Corp",
+  "creator": "Report Exporter"
+ },
+ "content": [
+  {
+   "text": "WEBSITE\nMIGRATION\nREVIEW",
+   "absolutePosition": {
+    "x": 101,
+    "y": 289
+   },
+   "font": "Archivo",
+   "fontSize": 36,
+   "lineHeight": 1.02,
+   "color": "#D6D6D6"
+  },
+  {
+   "text": "WEBSITE\nMIGRATION\nREVIEW",
+   "absolutePosition": {
+    "x": 100,
+    "y": 288
+   },
+   "font": "Archivo",
+   "fontSize": 36,
+   "lineHeight": 1.02,
+   "color": "#141414"
+  },
+  {
+   "canvas": [
+    {
+     "type": "line",
+     "x1": 0,
+     "y1": 0,
+     "x2": 96,
+     "y2": 0,
+     "lineWidth": 3,
+     "lineColor": "#141414"
+    }
+   ],
+   "absolutePosition": {
+    "x": 100,
+    "y": 411
+   }
+  },
+  {
+   "text": "Audit",
+   "absolutePosition": {
+    "x": 100,
+    "y": 424
+   },
+   "font": "Liberation",
+   "fontSize": 18,
+   "color": "#222222"
+  },
+  {
+   "text": "WMR",
+   "absolutePosition": {
+    "x": 100,
+    "y": 449
+   },
+   "font": "Archivo",
+   "fontSize": 28,
+   "color": "#141414"
+  },
+  {
+   "text": "",
+   "pageBreak": "before"
+  },
+  {
+   "text": "Document references",
+   "style": "h1"
+  },
+  {
+   "text": "Document status",
+   "style": "h2heavy"
+  },
+  {
+   "table": {
+    "headerRows": 1,
+    "widths": [
+     70,
+     90,
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "text": "VERSION",
+       "style": "tableHeader"
+      },
+      {
+       "text": "DATE",
+       "style": "tableHeader"
+      },
+      {
+       "text": "STATUS",
+       "style": "tableHeader"
+      }
+     ],
+     [
+      {
+       "text": "1.0",
+       "style": "tableCell"
+      },
+      {
+       "text": "2026-10-01",
+       "style": "tableCell"
+      },
+      {
+       "text": "Draft",
+       "style": "tableCell"
+      }
+     ],
+     [
+      {
+       "text": "1.1",
+       "style": "tableCell"
+      },
+      {
+       "text": "2026-10-21",
+       "style": "tableCell"
+      },
+      {
+       "text": "Final",
+       "style": "tableCell"
+      }
+     ],
+     [
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    18
+   ]
+  },
+  {
+   "text": "Contacts",
+   "style": "h2heavy"
+  },
+  {
+   "table": {
+    "headerRows": 1,
+    "widths": [
+     "*",
+     "*",
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "text": "CONTACT",
+       "style": "tableHeader"
+      },
+      {
+       "text": "ROLE",
+       "style": "tableHeader"
+      },
+      {
+       "text": "EMAIL",
+       "style": "tableHeader"
+      }
+     ],
+     [
+      {
+       "text": "Jane Doe",
+       "style": "tableCell"
+      },
+      {
+       "text": "Lead",
+       "style": "tableCell"
+      },
+      {
+       "text": "jane@example.com",
+       "style": "tableCell",
+       "color": "#1F6FB2"
+      }
+     ],
+     [
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      }
+     ],
+     [
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "text": "Recipients",
+   "style": "h2heavy",
+   "margin": [
+    0,
+    14,
+    0,
+    6
+   ]
+  },
+  {
+   "table": {
+    "headerRows": 1,
+    "widths": [
+     "*",
+     "*",
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "text": "RECIPIENT",
+       "style": "tableHeader"
+      },
+      {
+       "text": "COMPANY / ROLE",
+       "style": "tableHeader"
+      },
+      {
+       "text": "EMAIL",
+       "style": "tableHeader"
+      }
+     ],
+     [
+      {
+       "text": "John Roe",
+       "style": "tableCell"
+      },
+      {
+       "text": "ACME Corp",
+       "style": "tableCell"
+      },
+      {
+       "text": "john@example.com",
+       "style": "tableCell",
+       "color": "#1F6FB2"
+      }
+     ],
+     [
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      }
+     ],
+     [
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      },
+      {
+       "text": " ",
+       "style": "tableCell"
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "text": "",
+   "pageBreak": "before"
+  },
+  {
+   "toc": {
+    "title": {
+     "text": "Table of contents",
+     "style": "tocTitle"
+    }
+   }
+  },
+  {
+   "text": "",
+   "pageBreak": "before"
+  },
+  {
+   "text": "Context",
+   "style": "h1",
+   "tocItem": true,
+   "tocStyle": "tocH1",
+   "tocNumberStyle": "tocNumH1",
+   "tocMargin": [
+    0,
+    6,
+    0,
+    2
+   ]
+  },
+  {
+   "text": [
+    {
+     "text": "In May 2026, the ACME Corp website was moved from a single virtual machine to a managed\ncontainer platform. This report reviews the migration, the incidents met along the way and\nthe work that remains."
+    }
+   ],
+   "style": "body"
+  },
+  {
+   "table": {
+    "widths": [
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "stack": [
+        {
+         "columns": [
+          {
+           "width": 13,
+           "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#00B8D4\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\" /><path d=\"M12 16v-4\" /><path d=\"M12 8h.01\" /></svg>",
+           "fit": [
+            12,
+            12
+           ],
+           "margin": [
+            0,
+            1,
+            0,
+            0
+           ]
+          },
+          {
+           "width": "*",
+           "text": [
+            {
+             "color": "#00B8D4",
+             "text": "Scope"
+            }
+           ],
+           "style": "calloutTitle",
+           "color": "#00B8D4"
+          }
+         ],
+         "columnGap": 5,
+         "margin": [
+          0,
+          0,
+          0,
+          4
+         ]
+        },
+        {
+         "text": [
+          {
+           "text": "The review covers the public website and its API. The internal intranet is out of scope."
+          }
+         ],
+         "style": "body"
+        }
+       ]
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "text": "Timeline",
+   "style": "h1",
+   "tocItem": true,
+   "tocStyle": "tocH1",
+   "tocNumberStyle": "tocNumH1",
+   "tocMargin": [
+    0,
+    6,
+    0,
+    2
+   ]
+  },
+  {
+   "table": {
+    "headerRows": 1,
+    "widths": [
+     "*",
+     "*",
+     "*",
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "text": [
+        {
+         "text": "Date"
+        }
+       ],
+       "style": "tableHeader",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "Step"
+        }
+       ],
+       "style": "tableHeader",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "Owner"
+        }
+       ],
+       "style": "tableHeader",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "Outcome"
+        }
+       ],
+       "style": "tableHeader",
+       "alignment": "left"
+      }
+     ],
+     [
+      {
+       "text": [
+        {
+         "text": "2026-05-04"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "Inventory of services"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "J. Smith"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "Done"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      }
+     ],
+     [
+      {
+       "text": [
+        {
+         "text": "2026-05-11"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "Staging environment ready"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "J. Smith"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "Done"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      }
+     ],
+     [
+      {
+       "text": [
+        {
+         "text": "2026-05-18"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "DNS switch"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "J. Doe"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "Rolled back"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      }
+     ],
+     [
+      {
+       "text": [
+        {
+         "text": "2026-05-25"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "DNS switch, second attempt"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "J. Doe"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      },
+      {
+       "text": [
+        {
+         "text": "Done"
+        }
+       ],
+       "style": "tableCell",
+       "alignment": "left"
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "text": "Table 1: Main migration steps",
+   "style": "caption"
+  },
+  {
+   "text": "Analysis",
+   "style": "h1",
+   "tocItem": true,
+   "tocStyle": "tocH1",
+   "tocNumberStyle": "tocNumH1",
+   "tocMargin": [
+    0,
+    6,
+    0,
+    2
+   ]
+  },
+  {
+   "text": "A.  Performance",
+   "style": "h2",
+   "tocItem": true,
+   "tocStyle": "tocH2",
+   "tocNumberStyle": "tocNumSub",
+   "tocMargin": [
+    16,
+    1,
+    0,
+    1
+   ]
+  },
+  {
+   "text": [
+    {
+     "text": "Median response time dropped from "
+    },
+    {
+     "text": "420 ms",
+     "bold": true
+    },
+    {
+     "text": " to "
+    },
+    {
+     "text": "180 ms",
+     "bold": true
+    },
+    {
+     "text": " after the move. The gain comes\nmostly from the CDN placed in front of the static assets."
+    }
+   ],
+   "style": "body"
+  },
+  {
+   "table": {
+    "widths": [
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "text": "flowchart LR\n  User --> CDN --> LB[Load balancer]\n  LB --> App1[App pod 1]\n  LB --> App2[App pod 2]\n  App1 --> DB[(Database)]\n  App2 --> DB",
+       "style": "code",
+       "preserveLeadingSpaces": true
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "text": "Figure 1: Target architecture",
+   "style": "caption"
+  },
+  {
+   "text": "B.  Incidents",
+   "style": "h2",
+   "tocItem": true,
+   "tocStyle": "tocH2",
+   "tocNumberStyle": "tocNumSub",
+   "tocMargin": [
+    16,
+    1,
+    0,
+    1
+   ]
+  },
+  {
+   "text": "1. First DNS switch",
+   "style": "h3",
+   "tocItem": true,
+   "tocStyle": "tocH3",
+   "tocNumberStyle": "tocNumSub",
+   "tocMargin": [
+    30,
+    1,
+    0,
+    1
+   ]
+  },
+  {
+   "text": [
+    {
+     "text": "The first switch was rolled back after 20 minutes: the TLS certificate of the new\nplatform did not cover the "
+    },
+    {
+     "text": "www",
+     "font": "LiberationMono",
+     "fontSize": 9.5,
+     "background": "#F0F0F0"
+    },
+    {
+     "text": " subdomain."
+    }
+   ],
+   "style": "body"
+  },
+  {
+   "table": {
+    "widths": [
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "stack": [
+        {
+         "columns": [
+          {
+           "width": 13,
+           "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#F09B00\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\" /><path d=\"M12 9v4\" /><path d=\"M12 17h.01\" /></svg>",
+           "fit": [
+            12,
+            12
+           ],
+           "margin": [
+            0,
+            1,
+            0,
+            0
+           ]
+          },
+          {
+           "width": "*",
+           "text": [
+            {
+             "color": "#F09B00",
+             "text": "Lesson learned"
+            }
+           ],
+           "style": "calloutTitle",
+           "color": "#F09B00"
+          }
+         ],
+         "columnGap": 5,
+         "margin": [
+          0,
+          0,
+          0,
+          4
+         ]
+        },
+        {
+         "text": [
+          {
+           "text": "Check every hostname against the certificate "
+          },
+          {
+           "text": "before",
+           "bold": true
+          },
+          {
+           "text": " lowering the DNS TTL."
+          }
+         ],
+         "style": "body"
+        }
+       ]
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "text": "2. Session loss",
+   "style": "h3",
+   "tocItem": true,
+   "tocStyle": "tocH3",
+   "tocNumberStyle": "tocNumSub",
+   "tocMargin": [
+    30,
+    1,
+    0,
+    1
+   ]
+  },
+  {
+   "text": [
+    {
+     "text": "Users were logged out once during the switch, because sessions were stored in memory on the\nold machine. They now live in a shared cache."
+    }
+   ],
+   "style": "body"
+  },
+  {
+   "text": "C.  Checklist",
+   "style": "h2",
+   "tocItem": true,
+   "tocStyle": "tocH2",
+   "tocNumberStyle": "tocNumSub",
+   "tocMargin": [
+    16,
+    1,
+    0,
+    1
+   ]
+  },
+  {
+   "stack": [
+    {
+     "columns": [
+      {
+       "width": 14,
+       "canvas": [
+        {
+         "type": "rect",
+         "x": 0.5,
+         "y": 0.5,
+         "w": 8,
+         "h": 8,
+         "r": 1,
+         "lineWidth": 0.8,
+         "lineColor": "#767676"
+        },
+        {
+         "type": "polyline",
+         "lineWidth": 1.4,
+         "lineColor": "#1F5F8B",
+         "points": [
+          {
+           "x": 2,
+           "y": 4.6
+          },
+          {
+           "x": 3.8,
+           "y": 6.6
+          },
+          {
+           "x": 7,
+           "y": 2.2
+          }
+         ]
+        }
+       ],
+       "margin": [
+        0,
+        3.2,
+        0,
+        0
+       ]
+      },
+      {
+       "width": "*",
+       "stack": [
+        {
+         "text": [
+          {
+           "text": "Certificates cover every hostname"
+          }
+         ],
+         "style": "listItem"
+        }
+       ]
+      }
+     ],
+     "columnGap": 2,
+     "margin": [
+      0,
+      1,
+      0,
+      3
+     ]
+    },
+    {
+     "columns": [
+      {
+       "width": 14,
+       "canvas": [
+        {
+         "type": "rect",
+         "x": 0.5,
+         "y": 0.5,
+         "w": 8,
+         "h": 8,
+         "r": 1,
+         "lineWidth": 0.8,
+         "lineColor": "#767676"
+        },
+        {
+         "type": "polyline",
+         "lineWidth": 1.4,
+         "lineColor": "#1F5F8B",
+         "points": [
+          {
+           "x": 2,
+           "y": 4.6
+          },
+          {
+           "x": 3.8,
+           "y": 6.6
+          },
+          {
+           "x": 7,
+           "y": 2.2
+          }
+         ]
+        }
+       ],
+       "margin": [
+        0,
+        3.2,
+        0,
+        0
+       ]
+      },
+      {
+       "width": "*",
+       "stack": [
+        {
+         "text": [
+          {
+           "text": "Sessions stored outside the application"
+          }
+         ],
+         "style": "listItem"
+        }
+       ]
+      }
+     ],
+     "columnGap": 2,
+     "margin": [
+      0,
+      1,
+      0,
+      3
+     ]
+    },
+    {
+     "columns": [
+      {
+       "width": 14,
+       "canvas": [
+        {
+         "type": "rect",
+         "x": 0.5,
+         "y": 0.5,
+         "w": 8,
+         "h": 8,
+         "r": 1,
+         "lineWidth": 0.8,
+         "lineColor": "#767676"
+        }
+       ],
+       "margin": [
+        0,
+        3.2,
+        0,
+        0
+       ]
+      },
+      {
+       "width": "*",
+       "stack": [
+        {
+         "text": [
+          {
+           "text": "Load test at twice the peak traffic"
+          }
+         ],
+         "style": "listItem"
+        }
+       ]
+      }
+     ],
+     "columnGap": 2,
+     "margin": [
+      0,
+      1,
+      0,
+      3
+     ]
+    },
+    {
+     "columns": [
+      {
+       "width": 14,
+       "canvas": [
+        {
+         "type": "rect",
+         "x": 0.5,
+         "y": 0.5,
+         "w": 8,
+         "h": 8,
+         "r": 1,
+         "lineWidth": 0.8,
+         "lineColor": "#767676"
+        }
+       ],
+       "margin": [
+        0,
+        3.2,
+        0,
+        0
+       ]
+      },
+      {
+       "width": "*",
+       "stack": [
+        {
+         "text": [
+          {
+           "text": "Disaster recovery drill"
+          }
+         ],
+         "style": "listItem"
+        }
+       ]
+      }
+     ],
+     "columnGap": 2,
+     "margin": [
+      0,
+      1,
+      0,
+      3
+     ]
+    }
+   ],
+   "margin": [
+    0,
+    2,
+    0,
+    8
+   ]
+  },
+  {
+   "text": "Recommendations",
+   "style": "h1",
+   "tocItem": true,
+   "tocStyle": "tocH1",
+   "tocNumberStyle": "tocNumH1",
+   "tocMargin": [
+    0,
+    6,
+    0,
+    2
+   ]
+  },
+  {
+   "stack": [
+    {
+     "columns": [
+      {
+       "width": 12,
+       "canvas": [
+        {
+         "type": "polyline",
+         "closePath": true,
+         "color": "#1F5F8B",
+         "points": [
+          {
+           "x": 5,
+           "y": 0
+          },
+          {
+           "x": 9,
+           "y": 4
+          },
+          {
+           "x": 5,
+           "y": 8
+          },
+          {
+           "x": 1,
+           "y": 4
+          }
+         ]
+        }
+       ],
+       "margin": [
+        0,
+        3.5,
+        0,
+        0
+       ]
+      },
+      {
+       "width": "*",
+       "stack": [
+        {
+         "text": [
+          {
+           "text": "Automate certificate checks in the deployment pipeline."
+          }
+         ],
+         "style": "listItem"
+        }
+       ]
+      }
+     ],
+     "columnGap": 4,
+     "margin": [
+      0,
+      1,
+      0,
+      5
+     ]
+    },
+    {
+     "columns": [
+      {
+       "width": 12,
+       "canvas": [
+        {
+         "type": "polyline",
+         "closePath": true,
+         "color": "#1F5F8B",
+         "points": [
+          {
+           "x": 5,
+           "y": 0
+          },
+          {
+           "x": 9,
+           "y": 4
+          },
+          {
+           "x": 5,
+           "y": 8
+          },
+          {
+           "x": 1,
+           "y": 4
+          }
+         ]
+        }
+       ],
+       "margin": [
+        0,
+        3.5,
+        0,
+        0
+       ]
+      },
+      {
+       "width": "*",
+       "stack": [
+        {
+         "text": [
+          {
+           "text": "Run the load test before the autumn campaign."
+          }
+         ],
+         "style": "listItem"
+        }
+       ]
+      }
+     ],
+     "columnGap": 4,
+     "margin": [
+      0,
+      1,
+      0,
+      5
+     ]
+    },
+    {
+     "columns": [
+      {
+       "width": 12,
+       "canvas": [
+        {
+         "type": "polyline",
+         "closePath": true,
+         "color": "#1F5F8B",
+         "points": [
+          {
+           "x": 5,
+           "y": 0
+          },
+          {
+           "x": 9,
+           "y": 4
+          },
+          {
+           "x": 5,
+           "y": 8
+          },
+          {
+           "x": 1,
+           "y": 4
+          }
+         ]
+        }
+       ],
+       "margin": [
+        0,
+        3.5,
+        0,
+        0
+       ]
+      },
+      {
+       "width": "*",
+       "stack": [
+        {
+         "text": [
+          {
+           "text": "Document the rollback procedure:"
+          }
+         ],
+         "style": "listItem"
+        },
+        {
+         "ul": [
+          {
+           "text": [
+            {
+             "text": "DNS records and their previous values"
+            }
+           ],
+           "style": "listItem"
+          },
+          {
+           "text": [
+            {
+             "text": "Who decides, and how fast"
+            }
+           ],
+           "style": "listItem"
+          }
+         ],
+         "type": "disc",
+         "markerColor": "#000000",
+         "margin": [
+          0,
+          2,
+          0,
+          8
+         ]
+        }
+       ]
+      }
+     ],
+     "columnGap": 4,
+     "margin": [
+      0,
+      1,
+      0,
+      5
+     ]
+    }
+   ],
+   "margin": [
+    0,
+    2,
+    0,
+    8
+   ]
+  },
+  {
+   "text": "Appendix",
+   "style": "h1",
+   "tocItem": true,
+   "tocStyle": "tocH1",
+   "tocNumberStyle": "tocNumH1",
+   "tocMargin": [
+    0,
+    6,
+    0,
+    2
+   ],
+   "pageBreak": "before"
+  },
+  {
+   "text": "A.  Commands used",
+   "style": "h2",
+   "tocItem": true,
+   "tocStyle": "tocH2",
+   "tocNumberStyle": "tocNumSub",
+   "tocMargin": [
+    16,
+    1,
+    0,
+    1
+   ]
+  },
+  {
+   "table": {
+    "widths": [
+     "*"
+    ],
+    "body": [
+     [
+      {
+       "text": "kubectl rollout status deployment/website\ncurl -sI https://www.example.com | head -n 1",
+       "style": "code",
+       "preserveLeadingSpaces": true
+      }
+     ]
+    ]
+   },
+   "layout": {},
+   "margin": [
+    0,
+    4,
+    0,
+    10
+   ]
+  },
+  {
+   "columns": [
+    {
+     "width": 227.64,
+     "stack": [
+      {
+       "text": [
+        {
+         "text": "Before",
+         "bold": true
+        }
+       ],
+       "style": "body"
+      },
+      {
+       "text": [
+        {
+         "text": "One virtual machine, manual deployments."
+        }
+       ],
+       "style": "body"
+      }
+     ]
+    },
+    {
+     "width": 227.64,
+     "stack": [
+      {
+       "text": [
+        {
+         "text": "After",
+         "bold": true
+        }
+       ],
+       "style": "body"
+      },
+      {
+       "text": [
+        {
+         "text": "Two pods behind a load balancer, deployments from CI."
+        }
+       ],
+       "style": "body"
+      }
+     ]
+    }
+   ],
+   "columnGap": 12,
+   "margin": [
+    0,
+    4,
+    0,
+    6
+   ]
+  }
+ ],
+ "images": {},
+ "styles": {
+  "h1": {
+   "font": "Archivo",
+   "fontSize": 22,
+   "color": "#1F5F8B",
+   "margin": [
+    0,
+    16,
+    0,
+    8
+   ],
+   "alignment": "left"
+  },
+  "h2": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 14,
+   "color": "#000000",
+   "margin": [
+    0,
+    12,
+    0,
+    5
+   ],
+   "alignment": "left"
+  },
+  "h2heavy": {
+   "font": "Archivo",
+   "fontSize": 16,
+   "color": "#000000",
+   "margin": [
+    0,
+    12,
+    0,
+    6
+   ],
+   "alignment": "left"
+  },
+  "h3": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 11,
+   "color": "#000000",
+   "margin": [
+    0,
+    8,
+    0,
+    4
+   ],
+   "alignment": "left"
+  },
+  "h4": {
+   "font": "Liberation",
+   "bold": true,
+   "italics": true,
+   "fontSize": 11,
+   "color": "#000000",
+   "margin": [
+    0,
+    6,
+    0,
+    3
+   ],
+   "alignment": "left"
+  },
+  "h5": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 10,
+   "color": "#333333",
+   "margin": [
+    0,
+    6,
+    0,
+    3
+   ],
+   "alignment": "left"
+  },
+  "h6": {
+   "font": "Liberation",
+   "italics": true,
+   "fontSize": 10,
+   "color": "#555555",
+   "margin": [
+    0,
+    5,
+    0,
+    3
+   ],
+   "alignment": "left"
+  },
+  "subBold": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 11,
+   "color": "#000000",
+   "alignment": "left"
+  },
+  "body": {
+   "font": "Liberation",
+   "fontSize": 11,
+   "color": "#1A1A1A",
+   "alignment": "justify",
+   "lineHeight": 1.22,
+   "margin": [
+    0,
+    0,
+    0,
+    8
+   ]
+  },
+  "bodyTight": {
+   "font": "Liberation",
+   "fontSize": 10,
+   "color": "#1A1A1A",
+   "alignment": "justify",
+   "lineHeight": 1.18
+  },
+  "listItem": {
+   "font": "Liberation",
+   "fontSize": 11,
+   "color": "#1A1A1A",
+   "alignment": "left",
+   "lineHeight": 1.2
+  },
+  "caption": {
+   "font": "Liberation",
+   "italics": true,
+   "fontSize": 9,
+   "color": "#555555",
+   "alignment": "center",
+   "margin": [
+    0,
+    4,
+    0,
+    12
+   ]
+  },
+  "calloutTitle": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 11,
+   "alignment": "left"
+  },
+  "tableHeader": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 10,
+   "color": "#FFFFFF"
+  },
+  "tableCell": {
+   "font": "Liberation",
+   "fontSize": 10,
+   "color": "#333333"
+  },
+  "tocTitle": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 16,
+   "color": "#163F5C",
+   "margin": [
+    0,
+    0,
+    0,
+    12
+   ]
+  },
+  "tocH1": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 12,
+   "color": "#1F5F8B"
+  },
+  "tocH2": {
+   "font": "Liberation",
+   "fontSize": 11,
+   "color": "#000000"
+  },
+  "tocH3": {
+   "font": "Liberation",
+   "fontSize": 11,
+   "color": "#000000"
+  },
+  "tocNumH1": {
+   "font": "Liberation",
+   "bold": true,
+   "fontSize": 12,
+   "color": "#1F5F8B"
+  },
+  "tocNumSub": {
+   "font": "Liberation",
+   "fontSize": 11,
+   "color": "#000000"
+  },
+  "code": {
+   "font": "LiberationMono",
+   "fontSize": 9.5,
+   "color": "#2A2A2A",
+   "alignment": "left"
+  }
+ },
+ "defaultStyle": {
+  "font": "Liberation",
+  "fontSize": 11,
+  "color": "#1A1A1A",
+  "lineHeight": 1.22,
+  "alignment": "justify"
+ },
+ "pages": [
+  {
+   "page": 1,
+   "background": {
+    "canvas": [
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 0,
+      "w": 14,
+      "h": 841.89,
+      "color": "#1F5F8B"
+     },
+     {
+      "type": "line",
+      "x1": 72,
+      "y1": 248,
+      "x2": 72,
+      "y2": 539,
+      "lineWidth": 2.5,
+      "lineColor": "#1F5F8B"
+     },
+     {
+      "type": "line",
+      "x1": 72,
+      "y1": 248,
+      "x2": 162,
+      "y2": 248,
+      "lineWidth": 2.5,
+      "lineColor": "#1F5F8B"
+     },
+     {
+      "type": "line",
+      "x1": 72,
+      "y1": 539,
+      "x2": 162,
+      "y2": 539,
+      "lineWidth": 2.5,
+      "lineColor": "#6d97b4"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 745.89,
+      "w": 595.28,
+      "h": 96,
+      "color": "#22303C"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 740.89,
+      "w": 267.876,
+      "h": 5,
+      "color": "#1F5F8B"
+     }
+    ]
+   },
+   "header": null,
+   "footer": null
+  },
+  {
+   "page": 2,
+   "background": {
+    "canvas": [
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 0,
+      "w": 595.28,
+      "h": 64,
+      "color": "#1F5F8B"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 64,
+      "w": 595.28,
+      "h": 3,
+      "color": "#9ab7cb"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 793.89,
+      "w": 595.28,
+      "h": 48,
+      "color": "#22303C"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 790.89,
+      "w": 267.876,
+      "h": 3,
+      "color": "#1F5F8B"
+     }
+    ]
+   },
+   "header": {
+    "columns": [
+     {
+      "text": "",
+      "width": "*"
+     },
+     {
+      "width": "auto",
+      "alignment": "right",
+      "stack": [
+       {
+        "text": "Website Migration Review",
+        "color": "#FFFFFF",
+        "fontSize": 12,
+        "font": "Liberation"
+       },
+       {
+        "text": "ACME Corp",
+        "color": "#FFFFFF",
+        "fontSize": 12,
+        "font": "Liberation",
+        "margin": [
+         0,
+         4,
+         0,
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "margin": [
+     0,
+     15,
+     40,
+     0
+    ]
+   },
+   "footer": {
+    "columns": [
+     {
+      "text": "",
+      "width": "*"
+     },
+     {
+      "width": "auto",
+      "alignment": "right",
+      "stack": [
+       {
+        "text": "TLP:AMBER",
+        "color": "#FFC000",
+        "bold": true,
+        "fontSize": 11,
+        "font": "Liberation",
+        "alignment": "right"
+       },
+       {
+        "text": "page 2/3",
+        "color": "#FFFFFF",
+        "fontSize": 10,
+        "font": "Liberation",
+        "alignment": "right",
+        "margin": [
+         0,
+         2,
+         0,
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "margin": [
+     0,
+     43,
+     40,
+     0
+    ]
+   }
+  },
+  {
+   "page": 3,
+   "background": {
+    "canvas": [
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 0,
+      "w": 595.28,
+      "h": 64,
+      "color": "#1F5F8B"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 64,
+      "w": 595.28,
+      "h": 3,
+      "color": "#9ab7cb"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 793.89,
+      "w": 595.28,
+      "h": 48,
+      "color": "#22303C"
+     },
+     {
+      "type": "rect",
+      "x": 0,
+      "y": 790.89,
+      "w": 267.876,
+      "h": 3,
+      "color": "#1F5F8B"
+     }
+    ]
+   },
+   "header": {
+    "columns": [
+     {
+      "text": "",
+      "width": "*"
+     },
+     {
+      "width": "auto",
+      "alignment": "right",
+      "stack": [
+       {
+        "text": "Website Migration Review",
+        "color": "#FFFFFF",
+        "fontSize": 12,
+        "font": "Liberation"
+       },
+       {
+        "text": "ACME Corp",
+        "color": "#FFFFFF",
+        "fontSize": 12,
+        "font": "Liberation",
+        "margin": [
+         0,
+         4,
+         0,
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "margin": [
+     0,
+     15,
+     40,
+     0
+    ]
+   },
+   "footer": {
+    "columns": [
+     {
+      "text": "",
+      "width": "*"
+     },
+     {
+      "width": "auto",
+      "alignment": "right",
+      "stack": [
+       {
+        "text": "TLP:AMBER",
+        "color": "#FFC000",
+        "bold": true,
+        "fontSize": 11,
+        "font": "Liberation",
+        "alignment": "right"
+       },
+       {
+        "text": "page 3/3",
+        "color": "#FFFFFF",
+        "fontSize": 10,
+        "font": "Liberation",
+        "alignment": "right",
+        "margin": [
+         0,
+         2,
+         0,
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "margin": [
+     0,
+     43,
+     40,
+     0
+    ]
+   }
+  }
+ ]
+}

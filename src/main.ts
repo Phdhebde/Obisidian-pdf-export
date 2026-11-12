@@ -26,9 +26,10 @@ import {
   targetPath,
   writeExport,
   type ExportDeps,
+  type ExportRequest,
   type ExportFormat
 } from './exporter.ts';
-import { getLocale, setLocale, t } from './i18n.ts';
+import { getLocale, setLocale, t, type MessageKey } from './i18n.ts';
 import type { RedactionCounts } from './redact.ts';
 import type { ConflictMode, DocContact, ExportProfile, PluginData, Preset } from './types.ts';
 import type { PdfMake } from 'pdfmake/build/pdfmake.js';
@@ -42,6 +43,15 @@ async function getPdfMake(): Promise<PdfMake> {
   return (await import('pdfmake/build/pdfmake.js')).default;
 }
 
+/** How `exportFile` exports a note. */
+interface ExportFileOptions {
+  /** Text exported instead of the note's body. */
+  selection?: string;
+  /** The version's audience; undefined means the profile the note's frontmatter names, or the full version. */
+  profile?: ExportProfile | null;
+  format?: ExportFormat;
+}
+
 export default class PdfReportPlugin extends Plugin {
   data!: PluginData;
   assets!: AssetStore;
@@ -52,85 +62,66 @@ export default class PdfReportPlugin extends Plugin {
     this.assets = new AssetStore(this.app, this.manifest);
 
     this.addSettingTab(new ReportSettingTab(this.app, this));
+    this.registerCommands();
 
+    this.addRibbonIcon('file-text', t('ribbon.export'), () => {
+      const file = this.activeNote();
+      if (!file) {
+        new Notice(t('notice.openMarkdown'));
+        return;
+      }
+      void this.exportFile(file);
+    });
+
+    this.registerFileMenu();
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Commands and menus                                                */
+  /* ---------------------------------------------------------------- */
+
+  /** The Markdown note open in the active pane, if any. */
+  private activeNote(): TFile | null {
+    const file = this.app.workspace.getActiveFile();
+    return file && file.extension === 'md' ? file : null;
+  }
+
+  /** A command on the active note, offered only while a Markdown note is open. */
+  private addNoteCommand(id: string, name: MessageKey, run: (file: TFile) => void): void {
     this.addCommand({
-      id: 'export-pdf-report',
-      name: t('cmd.export'),
+      id,
+      name: t(name),
       checkCallback: (checking) => {
-        const file = this.app.workspace.getActiveFile();
-        if (!file || file.extension !== 'md') return false;
-        if (!checking) void this.exportFile(file);
+        const file = this.activeNote();
+        if (!file) return false;
+        if (!checking) run(file);
         return true;
       }
     });
+  }
 
-    this.addCommand({
-      id: 'preview-pdf-report',
-      name: t('cmd.preview'),
-      checkCallback: (checking) => {
-        const file = this.app.workspace.getActiveFile();
-        if (!file || file.extension !== 'md') return false;
-        if (!checking) void this.previewFile(file);
-        return true;
-      }
-    });
+  /** Ask which profile, then export that version. */
+  private exportWithProfile(file: TFile, format: ExportFormat): void {
+    new ProfilePickerModal(this.app, this.data.profiles, (profile) => void this.exportFile(file, { profile, format })).open();
+  }
 
-    this.addCommand({
-      id: 'export-pdf-report-profile',
-      name: t('cmd.exportProfile'),
-      checkCallback: (checking) => {
-        const file = this.app.workspace.getActiveFile();
-        if (!file || file.extension !== 'md') return false;
-        if (!checking) {
-          new ProfilePickerModal(this.app, this.data.profiles, (profile) => void this.exportFile(file, undefined, profile)).open();
-        }
-        return true;
-      }
-    });
-
-    this.addCommand({
-      id: 'export-all-versions',
-      name: t('cmd.exportAll'),
-      checkCallback: (checking) => {
-        const file = this.app.workspace.getActiveFile();
-        if (!file || file.extension !== 'md') return false;
-        if (!checking) void this.exportAllVersions(file);
-        return true;
-      }
-    });
-
-    this.addCommand({
-      id: 'export-word-report',
-      name: t('cmd.exportWord'),
-      checkCallback: (checking) => {
-        const file = this.app.workspace.getActiveFile();
-        if (!file || file.extension !== 'md') return false;
-        if (!checking) void this.exportFile(file, undefined, undefined, 'docx');
-        return true;
-      }
-    });
-
-    this.addCommand({
-      id: 'export-word-report-profile',
-      name: t('cmd.exportWordProfile'),
-      checkCallback: (checking) => {
-        const file = this.app.workspace.getActiveFile();
-        if (!file || file.extension !== 'md') return false;
-        if (!checking) {
-          new ProfilePickerModal(this.app, this.data.profiles, (profile) => void this.exportFile(file, undefined, profile, 'docx')).open();
-        }
-        return true;
-      }
-    });
+  // The ids are those of earlier versions: users' hotkeys are bound to them.
+  private registerCommands(): void {
+    this.addNoteCommand('export-pdf-report', 'cmd.export', (file) => void this.exportFile(file));
+    this.addNoteCommand('preview-pdf-report', 'cmd.preview', (file) => void this.previewFile(file));
+    this.addNoteCommand('export-pdf-report-profile', 'cmd.exportProfile', (file) => this.exportWithProfile(file, 'pdf'));
+    this.addNoteCommand('export-all-versions', 'cmd.exportAll', (file) => void this.exportAllVersions(file));
+    this.addNoteCommand('export-word-report', 'cmd.exportWord', (file) => void this.exportFile(file, { format: 'docx' }));
+    this.addNoteCommand('export-word-report-profile', 'cmd.exportWordProfile', (file) => this.exportWithProfile(file, 'docx'));
 
     this.addCommand({
       id: 'export-selection-pdf-report',
       name: t('cmd.exportSelection'),
       editorCheckCallback: (checking, editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => {
-        const sel = editor.getSelection();
+        const selection = editor.getSelection();
         const file = ctx.file;
-        if (!sel.trim() || !file || file.extension !== 'md') return false;
-        if (!checking) void this.exportFile(file, sel);
+        if (!selection.trim() || !file || file.extension !== 'md') return false;
+        if (!checking) void this.exportFile(file, { selection });
         return true;
       }
     });
@@ -140,17 +131,10 @@ export default class PdfReportPlugin extends Plugin {
       name: t('cmd.insertFrontmatter'),
       editorCallback: (editor: Editor) => this.insertFrontmatter(editor)
     });
+  }
 
-    this.addRibbonIcon('file-text', t('ribbon.export'), () => {
-      const file = this.app.workspace.getActiveFile();
-      if (!file || file.extension !== 'md') {
-        new Notice(t('notice.openMarkdown'));
-        return;
-      }
-      void this.exportFile(file);
-    });
-
-    // Right-click in the file explorer: a note, or a whole folder.
+  /** Right-click in the file explorer: a note, or a whole folder. */
+  private registerFileMenu(): void {
     this.registerEvent(
       this.app.workspace.on('file-menu', (menu, item) => {
         if (item instanceof TFile && item.extension === 'md') {
@@ -158,10 +142,7 @@ export default class PdfReportPlugin extends Plugin {
             mi.setTitle(t('menu.exportNote')).setIcon('file-text').onClick(() => void this.exportFile(item))
           );
           menu.addItem((mi) =>
-            mi
-              .setTitle(t('menu.exportWord'))
-              .setIcon('file-type')
-              .onClick(() => void this.exportFile(item, undefined, undefined, 'docx'))
+            mi.setTitle(t('menu.exportWord')).setIcon('file-type').onClick(() => void this.exportFile(item, { format: 'docx' }))
           );
         } else if (item instanceof TFolder) {
           const notes = this.markdownFilesIn(item);
@@ -247,16 +228,9 @@ export default class PdfReportPlugin extends Plugin {
   /* Export                                                            */
   /* ---------------------------------------------------------------- */
 
-  /**
-   * Export one version of a note. `profile` undefined means the one the note's
-   * frontmatter names, or the full version when it names none.
-   */
-  async exportFile(
-    file: TFile,
-    selection?: string,
-    profile?: ExportProfile | null,
-    format: ExportFormat = 'pdf'
-  ): Promise<void> {
+  /** Export one version of a note, as a PDF unless `format` says otherwise. */
+  async exportFile(file: TFile, options: ExportFileOptions = {}): Promise<void> {
+    const { selection, profile, format = 'pdf' } = options;
     const preset = await this.choosePreset(file);
     if (!preset) return;
 
@@ -265,7 +239,7 @@ export default class PdfReportPlugin extends Plugin {
     try {
       const deps = this.deps();
       const chosen = profile === undefined ? profileFromFrontmatter(this.app, file, this.data.profiles) : profile;
-      const result = await this.writeVersion(deps, file, preset, chosen, selection, format);
+      const result = await this.writeVersion(deps, { file, preset, profile: chosen, selection }, format);
       if (!result) { notice.hide(); return; }
 
       await this.rememberPreset(preset);
@@ -291,7 +265,7 @@ export default class PdfReportPlugin extends Plugin {
     const summaries: string[] = [];
     try {
       for (const profile of [null, ...this.data.profiles]) {
-        const result = await this.writeVersion(deps, file, preset, profile);
+        const result = await this.writeVersion(deps, { file, preset, profile });
         if (!result) continue;
         written.push(result.file);
         result.warnings.forEach((w) => warnings.add(w));
@@ -319,14 +293,12 @@ export default class PdfReportPlugin extends Plugin {
   /** Render one version and write it, asking about an existing file. Null when the user cancels. */
   private async writeVersion(
     deps: ExportDeps,
-    file: TFile,
-    preset: Preset,
-    profile: ExportProfile | null,
-    selection?: string,
+    request: ExportRequest,
     format: ExportFormat = 'pdf'
   ): Promise<{ file: TFile; warnings: string[]; redacted: RedactionCounts | null } | null> {
+    const { file, profile } = request;
     const render = format === 'docx' ? renderWord : renderReport;
-    const { bytes, vars, warnings, redacted } = await render(deps, file, preset, profile, selection);
+    const { bytes, vars, warnings, redacted } = await render(deps, request);
     let target = targetPath(deps, file, vars, profile, format);
     if (target.exists) {
       const mode = await this.resolveConflict(target.path);
@@ -405,7 +377,7 @@ export default class PdfReportPlugin extends Plugin {
       try {
         const notePreset = presetFromFrontmatter(this.app, note, this.data.presets) || preset;
         const profile = profileFromFrontmatter(this.app, note, this.data.profiles);
-        const { bytes, vars, redacted } = await renderReport(deps, note, notePreset, profile);
+        const { bytes, vars, redacted } = await renderReport(deps, { file: note, preset: notePreset, profile });
         // In batch, never prompt: a collision falls back to a numbered name
         // unless the user has explicitly chosen to overwrite.
         const target = targetPath(deps, note, vars, profile);
@@ -452,7 +424,7 @@ export default class PdfReportPlugin extends Plugin {
     try {
       const deps = this.deps();
       const profile = profileFromFrontmatter(this.app, file, this.data.profiles);
-      const { bytes, warnings } = await renderReport(deps, file, preset, profile);
+      const { bytes, warnings } = await renderReport(deps, { file, preset, profile });
       const folder = (this.data.outputFolder || '').trim().replace(/^\/+|\/+$/g, '');
       const name = t('preview.file');
       const path = normalizePath(folder ? `${folder}/${name}` : name);
