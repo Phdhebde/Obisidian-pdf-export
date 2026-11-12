@@ -188,7 +188,7 @@ To try it, export [example-confidential.md](example-confidential.md) with *Expor
 
 ### Word export
 
-**Export as Word document** writes the note as a `.docx`, with the same confidentiality filter. Without a Word template, the document is laid out like the PDF: cover, bands, references page, TLP reminder and a real Word table of contents. With your own `.dotx` or `.docx` (template settings → *Word export*), its cover, headers, footers and styles are kept: write `{{title}}`, `{{client}}`, `{{date}}`, `{{version}}`, `{{status}}`, `{{tlp}}`… where the note's values go, `{{toc}}` for the table of contents, and `{{content}}` alone in the paragraph where the report goes. Styles are found by their internal name, so a template saved by Word in any language works.
+**Export as Word document** writes the note as a `.docx`, with the same confidentiality filter. Without a Word template, the document is laid out like the PDF: cover, bands, references page, TLP reminder and a real Word table of contents. With your own `.dotx` or `.docx` (template settings → *Word export*), its cover, headers, footers and styles are kept: write `{{title}}`, `{{client}}`, `{{date}}`, `{{version}}`, `{{status}}`, `{{tlp}}`… where the note's values go, `{{toc}}` for the table of contents, `{{versions}}`, `{{contacts}}` and `{{recipients}}` for their tables, and `{{content}}` alone in the paragraph where the report goes. Styles are found by their internal name, so a template saved by Word in any language works.
 
 Footnotes become real Word footnotes, numbered captions get a sequence field for Word's table of figures, and Obsidian Columns sit side by side. Three example templates written in Word are in [`templates/word`](templates/word).
 

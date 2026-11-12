@@ -413,16 +413,28 @@ export function fillMarkers(xml: string, fill: (name: string) => MarkerValue | n
  * Split a part around the paragraph that holds only `{{name}}` — `{{content}}`
  * for the report, `{{toc}}` for the table of contents — so something else
  * goes in its place. Null when there is no such paragraph.
+ *
+ * `pageBreakBefore` tells whether the paragraph started a new page, a
+ * setting that goes away with it and that whatever replaces it should keep.
  */
-export function splitAtMarker(xml: string, name: string): { before: string; after: string } | null {
+export function splitAtMarker(xml: string, name: string): { before: string; after: string; pageBreakBefore: boolean } | null {
   const only = new RegExp(`^\\{\\{\\s*${name}\\s*\\}\\}$`, 'i');
   for (const m of xml.matchAll(PARA_RE)) {
     if (only.test(paragraphText(m[0]).trim())) {
       const at = m.index ?? 0;
-      return { before: xml.slice(0, at), after: xml.slice(at + m[0].length) };
+      return { before: xml.slice(0, at), after: xml.slice(at + m[0].length), pageBreakBefore: breaksPageBefore(m[0]) };
     }
   }
   return null;
+}
+
+/** Whether a paragraph's own properties put it on a new page (`w:val` false, 0 or off turns it off). */
+function breaksPageBefore(paragraph: string): boolean {
+  const pPr = /^<w:p\b[^>]*>\s*<w:pPr>([\s\S]*?)<\/w:pPr>/.exec(paragraph)?.[1] ?? '';
+  // The run properties of the paragraph mark come last and hold no page break.
+  const own = pPr.replace(/<w:rPr>[\s\S]*?<\/w:rPr>/, '');
+  const m = /<w:pageBreakBefore(?:\s+w:val="([^"]*)")?\s*\/>/.exec(own);
+  return !!m && !/^(false|0|off)$/i.test(m[1] ?? '');
 }
 
 /** Elements of CT_Settings that come after `w:updateFields`, in schema order. */

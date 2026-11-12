@@ -40,6 +40,9 @@ The file goes where the PDF would: same folder, same name, with the `.docx` exte
     | `{{version}}`, `{{date}}`, `{{status}}` | The last line of `versions` (the date defaults to today) |
     | `{{tlp}}` | The TLP marking, bold, in its colour (`TLP:AMBER`) |
     | `{{toc}}` | A Word table of contents, alone in its paragraph |
+    | `{{versions}}` | Every line of `versions` (version, date, status) as a table, alone in its paragraph |
+    | `{{contacts}}` | Every entry of `contacts` (name, role, email) as a table, alone in its paragraph |
+    | `{{recipients}}` | Every entry of `recipients` (name, company or role, email) as a table, alone in its paragraph |
     | `{{content}}` | The report, alone in its paragraph |
 
 2. Save it as `.dotx` or `.docx` into the vault. Macro-enabled files (`.dotm`, `.docm`) are refused.
@@ -49,10 +52,12 @@ Markers keep the formatting of the text they replace. Word sometimes splits a ma
 
 Without a `{{content}}` paragraph, the report is added at the end of the template, and a notice says so.
 
+The tables of `{{versions}}`, `{{contacts}}` and `{{recipients}}` take their column titles from the plugin template's *Fixed section labels*, and the Word style set for *Tables* in the **Word styles** table (`Table Grid` by default); their header row repeats on each page. When the list is empty in the note, the marker's paragraph is removed.
+
 ### Tips for a template that works well
 
 - **Number headings in the template, or not at all.** When the template's *Heading 1*, *Heading 2*… are numbered by Word (a multilevel list linked to them), the plugin leaves the numbering to Word. Otherwise it writes the plugin template's numbering (`A.`, `1.`…) as text, as in the PDF.
-- **Put the cover first and `{{content}}` on a page of its own.** Give the paragraph that holds `{{content}}` *Page break before*, or put a page break above it, so the report starts on a new page.
+- **Put the cover first and `{{content}}` on a page of its own.** Give the paragraph that holds `{{content}}` *Page break before*, or put a page break above it, so the report starts on a new page. *Page break before* works on the paragraphs of `{{toc}}`, `{{versions}}`, `{{contacts}}` and `{{recipients}}` too.
 - **Use a different first page** (*Layout → Different First Page*) for a cover without the running header.
 - **Name your styles as you like.** A custom style such as *Report body* is offered in the **Word styles** table of the settings, where you point *Body text* at it.
 - **Page size and orientation come from the template.** Tables, images and columns take the width of its text area, portrait or landscape.

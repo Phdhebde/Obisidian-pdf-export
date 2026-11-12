@@ -2,8 +2,9 @@
  * The notes, templates and options the reference tests and the Word
  * validation script render, chosen to take every path through both engines:
  * generated documents with every page, template artwork and a logo, the
- * bundled example notes, a Word template with markers in its body and header,
- * and the test bench of templates written by Word (templates/word).
+ * bundled example notes, a Word template with every marker, tables and page
+ * breaks included, and the test bench of templates written by Word
+ * (templates/word).
  */
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -129,8 +130,11 @@ const template = makeTemplate({
   body:
     '<w:p><w:pPr><w:pStyle w:val="Title"/></w:pPr><w:r><w:t>{{ti</w:t></w:r><w:r><w:rPr><w:b/></w:rPr><w:t>tle</w:t></w:r><w:r><w:t>}}</w:t></w:r></w:p>' +
     '<w:p><w:r><w:t>{{client}} · {{date}} · {{version}} · {{status}}</w:t></w:r></w:p>' +
-    '<w:p><w:r><w:t>{{toc}}</w:t></w:r></w:p>' +
-    '<w:p><w:r><w:t>{{content}}</w:t></w:r></w:p>' +
+    '<w:p><w:r><w:t>{{versions}}</w:t></w:r></w:p>' +
+    '<w:p><w:r><w:t>{{contacts}}</w:t></w:r></w:p>' +
+    '<w:p><w:r><w:t>{{recipients}}</w:t></w:r></w:p>' +
+    '<w:p><w:pPr><w:pageBreakBefore/></w:pPr><w:r><w:t>{{toc}}</w:t></w:r></w:p>' +
+    '<w:p><w:pPr><w:pageBreakBefore/></w:pPr><w:r><w:t>{{content}}</w:t></w:r></w:p>' +
     '<w:p><w:r><w:t>End of {{title}}.</w:t></w:r></w:p>',
   styles:
     '<w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/></w:style>' +

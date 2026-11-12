@@ -314,6 +314,59 @@ test('a {{toc}} paragraph in a template becomes a table of contents', () => {
   assert.match(p['word/settings.xml'], /<w:zoom w:percent="100"\/><w:updateFields w:val="true"\/><w:compat\/>/);
 });
 
+test('a marker paragraph that starts a new page keeps it for what replaces it (#32)', () => {
+  const breakBefore = (text: string, val = '') =>
+    `<w:p><w:pPr><w:pStyle w:val="Normal"/><w:pageBreakBefore${val}/><w:rPr><w:b/></w:rPr></w:pPr><w:r><w:t>${text}</w:t></w:r></w:p>`;
+  const build = (body: string) =>
+    parts(buildDocx('# Part\n\nText', vars, preset(), { template: makeTemplate({ body }) }).bytes)['word/document.xml'];
+
+  // The report's first heading starts the page.
+  const doc = build('<w:p><w:r><w:t>Cover</w:t></w:r></w:p>' + breakBefore('{{content}}'));
+  assert.match(doc, /<w:pPr><w:pStyle w:val="[^"]*"\/><w:pageBreakBefore\/>(?:(?!<\/w:pPr>)[\s\S])*<\/w:pPr><w:bookmarkStart [^>]*\/><w:r><w:t xml:space="preserve">Part/);
+  assert.equal(doc.match(/<w:pageBreakBefore\/>/g)?.length, 1);
+  // So does the table of contents.
+  assert.match(build(breakBefore('{{toc}}') + '<w:p><w:r><w:t>{{content}}</w:t></w:r></w:p>'), /<w:sdtContent><w:p><w:pPr>[^]*?<w:pageBreakBefore\/>/);
+  // Turned off, or without the setting, nothing is added.
+  assert.ok(!build(breakBefore('{{content}}', ' w:val="0"')).includes('<w:pageBreakBefore/>'));
+  assert.ok(!build('<w:p><w:r><w:t>{{content}}</w:t></w:r></w:p>').includes('pageBreakBefore'));
+});
+
+test('{{versions}}, {{contacts}} and {{recipients}} become tables in a template (#31)', () => {
+  const people = {
+    ...vars,
+    contacts: [{ nom: 'Jane Doe', poste: 'Lead', courriel: 'jane@example.com' }],
+    recipients: [{ nom: 'Max Client', societe: 'ACME', courriel: 'max@acme.test' }]
+  };
+  const body = (...markers: string[]) =>
+    markers.map((m) => `<w:p><w:r><w:t>{{${m}}}</w:t></w:r></w:p>`).join('') + '<w:p><w:r><w:t>{{content}}</w:t></w:r></w:p>';
+  const build = (v: ReportVars, b: string) => {
+    const { bytes, warnings } = buildDocx('Text', v, preset(), { template: makeTemplate({ body: b }) });
+    assertPackageWellFormed(bytes);
+    assert.deepEqual(warnings, []);
+    return parts(bytes)['word/document.xml'];
+  };
+  const doc = build(people, body('versions', 'contacts', 'recipients'));
+  assert.ok(!/\{\{\s*(versions|contacts|recipients)/.test(doc));
+  const tables = doc.match(/<w:tbl>[\s\S]*?<\/w:tbl>/g) ?? [];
+  assert.equal(tables.length, 3);
+  const text = (xml: string) => [...xml.matchAll(/<w:t[^>]*>([^<]*)<\/w:t>/g)].map((m) => m[1]).join('|');
+  // Every line, with the template's labels, its table style and a repeated header row; no empty rows.
+  const L = preset().labels;
+  assert.equal(text(tables[0]), [L.versionColumn, L.versionDate, L.versionState, '1.0', '2026-10-01', 'Draft', '1.1', '2026-10-21', 'Final'].join('|'));
+  assert.equal(text(tables[1]), [L.contactColumn, L.contactRole, L.contactEmail, 'Jane Doe', 'Lead', 'jane@example.com'].join('|'));
+  assert.equal(text(tables[2]), [L.recipientColumn, L.recipientRole, L.recipientEmail, 'Max Client', 'ACME', 'max@acme.test'].join('|'));
+  for (const t of tables) {
+    assert.match(t, /<w:tblStyle w:val="[^"]+"\/>/);
+    assert.match(t, /<w:trPr><w:tblHeader\/><\/w:trPr>/);
+  }
+  // An empty list removes its paragraph.
+  const none = build({ ...vars, versions: [] }, body('versions', 'contacts', 'recipients'));
+  assert.ok(!none.includes('<w:tbl>'));
+  assert.ok(!/\{\{/.test(none));
+  // A marker can be used twice.
+  assert.equal(build(people, body('contacts', 'contacts')).match(/<w:tbl>/g)?.length, 2);
+});
+
 test('the settings can point a role at another style of the template', () => {
   const template = makeTemplate({ body: '<w:p><w:r><w:t>{{content}}</w:t></w:r></w:p>', styles: FRENCH_STYLES });
   const p = preset({ word: { template: 'x.dotx', styles: { body: 'Body Text', heading1: 'No such style' } } });
