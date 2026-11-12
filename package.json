@@ -1,6 +1,6 @@
 {
   "name": "pdf-report-exporter",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Obsidian plugin: export notes as professional PDF and Word reports, with branded templates and client versions without internal passages.",
   "main": "main.js",
   "type": "module",
