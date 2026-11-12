@@ -40,6 +40,9 @@ Le fichier va là où irait le PDF : même dossier, même nom, avec l'extension 
     | `{{version}}`, `{{date}}`, `{{status}}` | La dernière ligne de `versions` (la date est celle du jour par défaut) |
     | `{{tlp}}` | Le marquage TLP, en gras, dans sa couleur (`TLP:AMBER`) |
     | `{{toc}}` | Un sommaire Word, seul dans son paragraphe |
+    | `{{versions}}` | Toutes les lignes de `versions` (version, date, état) en tableau, seul dans son paragraphe |
+    | `{{contacts}}` | Tous les `contacts` (nom, fonction, courriel) en tableau, seul dans son paragraphe |
+    | `{{recipients}}` | Tous les `recipients` (nom, société ou fonction, courriel) en tableau, seul dans son paragraphe |
     | `{{content}}` | Le rapport, seul dans son paragraphe |
 
 2. Enregistrez-le en `.dotx` ou `.docx` dans le coffre. Les fichiers avec macros (`.dotm`, `.docm`) sont refusés.
@@ -49,10 +52,12 @@ Les marqueurs gardent la mise en forme du texte qu'ils remplacent. Word coupe pa
 
 Sans paragraphe `{{content}}`, le rapport est ajouté à la fin du modèle, et une notification le signale.
 
+Les tableaux de `{{versions}}`, `{{contacts}}` et `{{recipients}}` prennent leurs titres de colonnes dans les *Libellés des sections fixes* du modèle du plugin, et le style Word choisi pour *Tableaux* dans le tableau **Styles Word** (`Table Grid` par défaut) ; leur ligne d'en-tête se répète à chaque page. Quand la liste est vide dans la note, le paragraphe du marqueur est supprimé.
+
 ### Conseils pour un modèle qui marche bien
 
 - **Numérotez les titres dans le modèle, ou pas du tout.** Quand les styles *Titre 1*, *Titre 2*… du modèle sont numérotés par Word (une liste à plusieurs niveaux liée à ces styles), le plugin laisse la numérotation à Word. Sinon, il écrit la numérotation du modèle du plugin (`A.`, `1.`…) en texte, comme dans le PDF.
-- **Mettez la page de garde en premier et `{{content}}` sur une page à part.** Donnez au paragraphe de `{{content}}` l'option *Saut de page avant*, ou placez un saut de page juste au-dessus, pour que le rapport commence sur une nouvelle page.
+- **Mettez la page de garde en premier et `{{content}}` sur une page à part.** Donnez au paragraphe de `{{content}}` l'option *Saut de page avant*, ou placez un saut de page juste au-dessus, pour que le rapport commence sur une nouvelle page. Le *Saut de page avant* fonctionne aussi sur les paragraphes de `{{toc}}`, `{{versions}}`, `{{contacts}}` et `{{recipients}}`.
 - **Utilisez une première page différente** (*Mise en page → Première page différente*) pour une page de garde sans l'en-tête courant.
 - **Nommez vos styles comme vous voulez.** Un style personnalisé comme *Corps de rapport* est proposé dans le tableau **Styles Word** des réglages, où vous y associez le *Texte courant*.
 - **Le format et l'orientation viennent du modèle.** Tableaux, images et colonnes prennent la largeur de sa zone de texte, en portrait comme en paysage.

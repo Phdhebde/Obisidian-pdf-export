@@ -73,6 +73,428 @@
 <w:t xml:space="preserve">ACME Corp · 2026-10-21 · 1.1 · Final</w:t>
 </w:r>
 </w:p>
+<w:tbl>
+<w:tblPr>
+<w:tblStyle w:val="TableGrid"/>
+<w:tblW w:w="9072" w:type="dxa"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="1400"/>
+<w:gridCol w:w="1800"/>
+<w:gridCol w:w="5872"/>
+</w:tblGrid>
+<w:tr>
+<w:trPr>
+<w:tblHeader/>
+</w:trPr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="1400" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">VERSION</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="1800" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">DATE</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="5872" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">STATUS</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="1400" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">1.0</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="1800" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">2026-10-01</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="5872" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Draft</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="1400" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">1.1</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="1800" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">2026-10-21</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="5872" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Final</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="120"/>
+</w:pPr>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:tblStyle w:val="TableGrid"/>
+<w:tblW w:w="9072" w:type="dxa"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="3024"/>
+<w:gridCol w:w="3024"/>
+<w:gridCol w:w="3024"/>
+</w:tblGrid>
+<w:tr>
+<w:trPr>
+<w:tblHeader/>
+</w:trPr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3024" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">CONTACT</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3024" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">ROLE</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3024" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">EMAIL</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3024" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Jane Doe</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3024" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">Lead</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3024" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:color w:val="1F6FB2"/>
+</w:rPr>
+<w:t xml:space="preserve">jane@example.com</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="120"/>
+</w:pPr>
+</w:p>
+<w:tbl>
+<w:tblPr>
+<w:tblStyle w:val="TableGrid"/>
+<w:tblW w:w="9072" w:type="dxa"/>
+<w:tblLayout w:type="fixed"/>
+<w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/>
+</w:tblPr>
+<w:tblGrid>
+<w:gridCol w:w="3024"/>
+<w:gridCol w:w="3024"/>
+<w:gridCol w:w="3024"/>
+</w:tblGrid>
+<w:tr>
+<w:trPr>
+<w:tblHeader/>
+</w:trPr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3024" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">RECIPIENT</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3024" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">COMPANY / ROLE</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3024" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:bCs/>
+<w:color w:val="FFFFFF"/>
+</w:rPr>
+<w:t xml:space="preserve">EMAIL</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+<w:tr>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3024" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">John Roe</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3024" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:t xml:space="preserve">ACME Corp</w:t>
+</w:r>
+</w:p>
+</w:tc>
+<w:tc>
+<w:tcPr>
+<w:tcW w:w="3024" w:type="dxa"/>
+</w:tcPr>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:jc w:val="left"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:color w:val="1F6FB2"/>
+</w:rPr>
+<w:t xml:space="preserve">john@example.com</w:t>
+</w:r>
+</w:p>
+</w:tc>
+</w:tr>
+</w:tbl>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="120"/>
+</w:pPr>
+</w:p>
 <w:sdt>
 <w:sdtPr>
 <w:docPartObj>
@@ -84,6 +506,7 @@
 <w:p>
 <w:pPr>
 <w:pStyle w:val="Toc1"/>
+<w:pageBreakBefore/>
 <w:tabs>
 <w:tab w:val="right" w:leader="dot" w:pos="9072"/>
 </w:tabs>
@@ -184,6 +607,7 @@
 <w:p>
 <w:pPr>
 <w:pStyle w:val="Titre1"/>
+<w:pageBreakBefore/>
 </w:pPr>
 <w:bookmarkStart w:id="10000" w:name="_TocReport10000"/>
 <w:r>

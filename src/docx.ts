@@ -79,7 +79,7 @@ import {
   type StyleInfo,
   type StyleType
 } from './ooxml.ts';
-import { HEADING_LEVELS, type DocContact, type Preset, type ReportVars, type SectionKey, type TlpKey, type WordRole } from './types.ts';
+import { HEADING_LEVELS, type DocContact, type DocVersion, type Preset, type ReportVars, type SectionKey, type TlpKey, type WordRole } from './types.ts';
 
 /** A drawing the host rasterised: the PNG every Word shows, the SVG recent ones prefer. */
 export interface RasterImage {
@@ -1441,32 +1441,51 @@ function footerDistance(ctx: WordContext, tlp: boolean): number {
   return Math.max(0, L.pageMargins[3] - L.footerY - height);
 }
 
-/** The references page: document status, contacts, recipients. */
+/** The references page: document status, contacts, recipients, with empty rows to fill by hand. */
 function references(vars: ReportVars, ctx: WordContext): string {
   const L = ctx.preset.labels || defaultLabels();
-  const pad = (rows: string[][]) => {
-    while (rows.length < 3) rows.push(['', '', '']);
-    return rows;
-  };
-  const people = (list: DocContact[], headers: string[]) =>
-    grid(headers, pad(list.map((c) => [c.nom ?? '', c.poste || c.societe || '', c.courriel ?? ''])), ctx, {
-      widths: [1, 1, 1],
-      cell: (text, i, j, format) => run(text, i === 0 ? format : j === 2 ? { color: hex(ctx.preset.colors.link) } : {}, ctx)
-    });
   const title = (role: WordRole, text: string) => para({ style: ctx.styles.id(role) }, run(text, {}, ctx));
   const recipients = vars.recipients || [];
   return (
     title('sectionTitle', L.references) +
     title('sectionSubtitle', L.status) +
-    grid([L.versionColumn, L.versionDate, L.versionState], pad((vars.versions || []).map((v) => [v.version ?? '', v.date ?? '', v.etat ?? ''])), ctx, {
-      widths: [70, 90, Math.max(100, ctx.width / 20 - 160)]
-    }) +
+    versionsTable(vars.versions || [], ctx, HAND_ROWS) +
     title('sectionSubtitle', L.contacts) +
-    people(vars.contacts || [], [L.contactColumn, L.contactRole, L.contactEmail]) +
+    contactsTable(vars.contacts || [], 'contacts', ctx, HAND_ROWS) +
     (ctx.preset.showRecipients || recipients.length
-      ? title('sectionSubtitle', L.recipients) + people(recipients, [L.recipientColumn, L.recipientRole, L.recipientEmail])
+      ? title('sectionSubtitle', L.recipients) + contactsTable(recipients, 'recipients', ctx, HAND_ROWS)
       : '')
   );
+}
+
+/** Rows the references page always has, empty ones to fill by hand after printing. */
+const HAND_ROWS = 3;
+
+/** `rows`, with empty rows added up to `count`. */
+function padRows(rows: string[][], count: number): string[][] {
+  while (rows.length < count) rows.push(['', '', '']);
+  return rows;
+}
+
+/** The document status: version, date and status of each line of `versions`. */
+function versionsTable(versions: DocVersion[], ctx: WordContext, minRows = 0): string {
+  const L = ctx.preset.labels || defaultLabels();
+  const rows = versions.map((v) => [v.version ?? '', v.date ?? '', v.etat ?? '']);
+  return grid([L.versionColumn, L.versionDate, L.versionState], padRows(rows, minRows), ctx, {
+    widths: [70, 90, Math.max(100, ctx.width / 20 - 160)]
+  });
+}
+
+/** Contacts or recipients: name, role (or company), email in the link colour. */
+function contactsTable(people: DocContact[], kind: 'contacts' | 'recipients', ctx: WordContext, minRows = 0): string {
+  const L = ctx.preset.labels || defaultLabels();
+  const header =
+    kind === 'contacts' ? [L.contactColumn, L.contactRole, L.contactEmail] : [L.recipientColumn, L.recipientRole, L.recipientEmail];
+  const rows = people.map((c) => [c.nom ?? '', c.poste || c.societe || '', c.courriel ?? '']);
+  return grid(header, padRows(rows, minRows), ctx, {
+    widths: [1, 1, 1],
+    cell: (text, i, j, format) => run(text, i === 0 ? format : j === 2 ? { color: hex(ctx.preset.colors.link) } : {}, ctx)
+  });
 }
 
 /** The TLP reminder page: each level's badge beside its definition. */
@@ -1660,7 +1679,7 @@ export function buildDocx(md: string, vars: ReportVars, preset: Preset, options:
   // The body first: the table of contents lists its headings.
   const report = renderBlocks(extracted.md, ctx);
   const main = options.template
-    ? fillWordTemplate(parts, ctx, markerValues(vars, preset, options.date || ''), report)
+    ? fillWordTemplate(parts, ctx, vars, markerValues(vars, preset, options.date || ''), report)
     : layOutGenerated(parts, ctx, planDocument(vars, preset, options.clientLogo), report);
   parts.pkg.setText(parts.main, main.xml);
   writeSupportParts(parts, ctx, main.usesToc);
@@ -1818,27 +1837,33 @@ function coverHeaderFooter(parts: DocumentParts, ctx: WordContext, ruleY: number
 
 /**
  * The user's Word template with its markers filled: the report at `{{content}}`,
- * the table of contents at `{{toc}}`, the note's values everywhere else.
+ * the table of contents at `{{toc}}`, the tables at `{{versions}}`,
+ * `{{contacts}}` and `{{recipients}}`, the note's values everywhere else.
  */
-function fillWordTemplate(parts: DocumentParts, ctx: WordContext, values: Record<string, MarkerValue>, report: string): MainXml {
+function fillWordTemplate(parts: DocumentParts, ctx: WordContext, vars: ReportVars, values: Record<string, MarkerValue>, report: string): MainXml {
   const fill = (name: string) => values[name] ?? null;
   let usesToc = false;
-  const withToc = (xml: string) => {
-    const at = splitAtMarker(xml, 'toc');
-    if (!at) return xml;
-    usesToc = true;
-    return at.before + tocField(ctx, null) + at.after;
+  // An empty list removes its marker's paragraph, as an empty {{tlp}} leaves nothing.
+  const blocks: Record<string, () => string> = {
+    toc: () => {
+      usesToc = true;
+      return tocField(ctx, null);
+    },
+    versions: () => (vars.versions?.length ? versionsTable(vars.versions, ctx) : ''),
+    contacts: () => (vars.contacts?.length ? contactsTable(vars.contacts, 'contacts', ctx) : ''),
+    recipients: () => (vars.recipients?.length ? contactsTable(vars.recipients, 'recipients', ctx) : '')
   };
+  const fillAround = (xml: string) => fillBlockMarkers(fillMarkers(xml, fill), blocks);
   // Markers are filled around the report, never inside it: a note that
   // writes "{{title}}" in its text keeps it.
   const doc = mainXml(parts);
   const split = splitAtMarker(doc, 'content');
   let xml: string;
   if (split) {
-    xml = withToc(fillMarkers(split.before, fill)) + report + withToc(fillMarkers(split.after, fill));
+    xml = fillAround(split.before) + keepPageBreak(split, report) + fillAround(split.after);
   } else {
     ctx.warnings.add(tr('word.noContentMarker'));
-    xml = beforeLastSection(withToc(fillMarkers(doc, fill)), report);
+    xml = beforeLastSection(fillAround(doc), report);
   }
   // Headers and footers carry markers too: the TLP marking, the title.
   const { pkg, main, rels } = parts;
@@ -1848,6 +1873,25 @@ function fillWordTemplate(parts: DocumentParts, ctx: WordContext, values: Record
     if (part) pkg.setText(path, fillMarkers(part, fill));
   }
   return { xml, usesToc };
+}
+
+/** Each paragraph holding only a block marker, replaced by what `blocks` renders for it. */
+function fillBlockMarkers(xml: string, blocks: Record<string, () => string>): string {
+  for (const [name, render] of Object.entries(blocks)) {
+    let done = '';
+    let rest = xml;
+    for (let at = splitAtMarker(rest, name); at; at = splitAtMarker(rest, name)) {
+      done += at.before + keepPageBreak(at, render());
+      rest = at.after;
+    }
+    xml = done + rest;
+  }
+  return xml;
+}
+
+/** What replaces a marker's paragraph starts a new page if the paragraph did. */
+function keepPageBreak(marker: { pageBreakBefore: boolean }, xml: string): string {
+  return marker.pageBreakBefore && xml ? onNewPage(xml) : xml;
 }
 
 /** `content` at the end of the body: before its closing section properties, if they come last. */

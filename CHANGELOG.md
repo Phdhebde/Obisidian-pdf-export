@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.2
+
+- **Word template: version history, contacts and recipients** ([#31](https://github.com/Phdhebde/Obisidian-pdf-export/issues/31)). `{{versions}}`, `{{contacts}}` and `{{recipients}}`, each alone in its paragraph, become tables of every entry of the note's lists, with the template's column labels and the Word style set for tables; the header row repeats on each page. An empty list removes the paragraph. `{{version}}`, `{{date}}` and `{{status}}` still give the last version.
+- **Word template: "Page break before" on the `{{content}}` paragraph is kept** ([#32](https://github.com/Phdhebde/Obisidian-pdf-export/issues/32)): the report starts on a new page, as the documentation recommends. The same goes for `{{toc}}` and the new table markers. The bundled `consulting-report.dotx` was affected: its report now starts after the table of contents page.
+- Tests: reference outputs of every sample PDF and Word document, compared on each build, so that any change in the rendering shows in the tests and in the pull request.
+
 ## 2.0.1
 
 - **Mermaid diagrams print correctly again with Obsidian 1.15**, which draws them with Pele instead of Mermaid.js ([#14](https://github.com/Phdhebde/Obisidian-pdf-export/issues/14)): shapes have their border, arrows and lines are back, multi-line and formatted labels are centred, and the diagram keeps light paper colours whatever Obsidian's theme — dark included. Labels are measured in the font the PDF prints them in.
