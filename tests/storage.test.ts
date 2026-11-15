@@ -94,6 +94,14 @@ test('the factory template is seeded on first run only', () => {
   assert.deepEqual(junk.presets[0].sections, ['body']);
 });
 
+test('callout colours: only known families with a hex colour are kept', () => {
+  const p = migratePreset({ accessibleCallouts: true, calloutColors: { warning: ' #ffd000 ', bogus: '#000000', note: 'red', tip: 3 } });
+  assert.equal(p.accessibleCallouts, true);
+  assert.deepEqual(p.calloutColors, { warning: '#ffd000' });
+  assert.equal(migratePreset({ accessibleCallouts: 'yes' }).accessibleCallouts, false);
+  assert.deepEqual(migratePreset({}).calloutColors, {});
+});
+
 test('migratePreset survives garbage input', () => {
   for (const junk of [null, undefined, 42, 'texte', []]) {
     const p = migratePreset(junk);

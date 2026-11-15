@@ -12,6 +12,7 @@ import {
   TLP_KEYS,
   isNumberingStyle,
   isSectionKey,
+  isCalloutFamily,
   isWordRole,
   type ConflictMode,
   type DocContact,
@@ -138,11 +139,23 @@ export function migratePreset(raw: unknown): Preset {
     labels: { ...defaultLabels(), ...(p.labels || {}) },
     showRecipients: p.showRecipients === true,
     calloutIcons: p.calloutIcons !== false,
+    accessibleCallouts: p.accessibleCallouts === true,
+    calloutColors: migrateCalloutColors(p.calloutColors),
     diamondBullets: p.diamondBullets !== false,
     justify: typeof p.justify === 'boolean' ? p.justify : true,
     transclusions: p.transclusions === 'warn' ? 'warn' : 'inline',
     word: migrateWord(p.word)
   };
+}
+
+/** Only known families with a `#RRGGBB` colour survive an import. */
+function migrateCalloutColors(raw: unknown): Preset['calloutColors'] {
+  const out: Preset['calloutColors'] = {};
+  if (!raw || typeof raw !== 'object') return out;
+  for (const [family, color] of Object.entries(raw as Record<string, unknown>)) {
+    if (isCalloutFamily(family) && typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color.trim())) out[family] = color.trim();
+  }
+  return out;
 }
 
 function migrateWord(raw: unknown): Preset['word'] {

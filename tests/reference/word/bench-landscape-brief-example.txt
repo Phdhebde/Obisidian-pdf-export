@@ -150,7 +150,7 @@
 <w:rPr>
 <w:b/>
 <w:bCs/>
-<w:color w:val="00B8D4"/>
+<w:color w:val="007A8D"/>
 <w:sz w:val="22"/>
 <w:szCs w:val="22"/>
 </w:rPr>
@@ -722,7 +722,7 @@
 <w:rPr>
 <w:b/>
 <w:bCs/>
-<w:color w:val="F09B00"/>
+<w:color w:val="996300"/>
 <w:sz w:val="22"/>
 <w:szCs w:val="22"/>
 </w:rPr>

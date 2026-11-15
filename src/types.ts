@@ -250,6 +250,14 @@ export interface PresetWord {
   styles: Partial<Record<WordRole, string>>;
 }
 
+/** The colour families of Obsidian callouts: each type takes one family's colours. */
+export const CALLOUT_FAMILIES = ['note', 'info', 'tip', 'success', 'warning', 'danger', 'example', 'quote'] as const;
+export type CalloutFamily = (typeof CALLOUT_FAMILIES)[number];
+
+export function isCalloutFamily(v: unknown): v is CalloutFamily {
+  return typeof v === 'string' && (CALLOUT_FAMILIES as readonly string[]).includes(v);
+}
+
 export interface Preset {
   id: string;
   name: string;
@@ -272,6 +280,13 @@ export interface Preset {
   showRecipients: boolean;
   /** Draw the Lucide icon of each callout type, as Obsidian does. */
   calloutIcons: boolean;
+  /**
+   * Callout titles at WCAG AAA (7:1) instead of AA (4.5:1), and the bar and
+   * icon in the title's colour, for organisations bound by stricter rules.
+   */
+  accessibleCallouts: boolean;
+  /** Accent per callout family, replacing Obsidian's; a family left out keeps it. */
+  calloutColors: Partial<Record<CalloutFamily, string>>;
   /** Diamond bullets for top-level lists under a "Recommendations" heading. */
   diamondBullets: boolean;
   /** Justify body text or align it left. */

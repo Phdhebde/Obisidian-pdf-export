@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- **Callout titles meet WCAG AA contrast**, in the PDF and in Word ([#41](https://github.com/Phdhebde/Obisidian-pdf-export/issues/41)). Each type keeps its accent for the bar and the icon. Its title now uses a darker shade of the same hue, at least 4.5:1 on the tint, so Word's Accessibility Checker and PDF/UA audits no longer flag it. A callout of an unknown type takes the template's brand colour, darkened only as much as it needs to be readable.
+- **Accessible callout colors** (template setting, off by default): titles reach WCAG AAA (7:1), and the bar and the icon take the title's colour, for organisations bound by stricter accessibility rules such as RGAA.
+- **Callout colors per type** in the template settings, as for the TLP colours: one colour per family (note, info, tip, success, warning, danger, example, quote), aliases included. The tint and a readable title colour are worked out from it, and a reset button brings back Obsidian's.
+
 ## 2.0.2
 
 - **Word template: version history, contacts and recipients** ([#31](https://github.com/Phdhebde/Obisidian-pdf-export/issues/31)). `{{versions}}`, `{{contacts}}` and `{{recipients}}`, each alone in its paragraph, become tables of every entry of the note's lists, with the template's column labels and the Word style set for tables; the header row repeats on each page. An empty list removes the paragraph. `{{version}}`, `{{date}}` and `{{status}}` still give the last version.

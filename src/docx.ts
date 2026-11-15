@@ -21,7 +21,7 @@
  */
 import { marked } from 'marked';
 import {
-  CALLOUT_STYLES,
+  CALLOUT_TYPES,
   CAPTION_RE,
   DECOR,
   DEFAULT_PAGE_MARGINS,
@@ -29,6 +29,7 @@ import {
   PAGE_W,
   IMAGE_REF_RE,
   bodySize,
+  calloutStyle,
   coverBracket,
   decorAccents,
   decodeEntities,
@@ -1040,7 +1041,8 @@ export function calloutIconKey(icon: IconName, accent: string): string {
 /** Every icon a callout of this template can show, for the host to rasterise. */
 export function calloutIcons(preset: Preset): { key: string; svg: string }[] {
   const seen = new Map<string, string>();
-  const styles = [...Object.values(CALLOUT_STYLES), { icon: 'info' as IconName, accent: preset.colors.brand }];
+  // The empty type stands for every unknown one, drawn in the brand colour.
+  const styles = [...Object.keys(CALLOUT_TYPES), ''].map((type) => calloutStyle(type, preset));
   for (const s of styles) seen.set(calloutIconKey(s.icon, s.accent), iconSvg(s.icon, '#' + hex(s.accent)));
   return [...seen].map(([key, svg]) => ({ key, svg }));
 }
@@ -1056,7 +1058,7 @@ function blockquote(t: MdToken, ctx: WordContext): string {
     return box(body, hex(brand), hex(tint(brand, 0.93)), ctx);
   }
 
-  const style = CALLOUT_STYLES[call.type] || { accent: brand, tint: tint(brand, 0.93), icon: 'info' };
+  const style = calloutStyle(call.type, ctx.preset);
   const accent = hex(style.accent);
   const label = call.type.charAt(0).toUpperCase() + call.type.slice(1);
   const iconImg = ctx.preset.calloutIcons !== false ? ctx.icons[calloutIconKey(style.icon, style.accent)] : undefined;
@@ -1065,7 +1067,7 @@ function blockquote(t: MdToken, ctx: WordContext): string {
   const title = para(
     { keepNext: !!call.body.trim(), spacing: `<w:spacing w:before="0" w:after="${tw(call.body.trim() ? 4 : 0)}"/>`, jc: 'left' },
     (icon ? pictureRun({ ...icon, cx: 12 * EMU_PER_PT, cy: 12 * EMU_PER_PT, alt: label }, ctx) + run(' ', {}, ctx) : '') +
-      renderInline(marked.Lexer.lexInline(call.title || label), ctx, { bold: true, color: accent, size })
+      renderInline(marked.Lexer.lexInline(call.title || label), ctx, { bold: true, color: hex(style.text), size })
   );
   return box(title + (call.body.trim() ? renderBlocks(call.body, inner) : ''), accent, hex(style.tint), ctx);
 }

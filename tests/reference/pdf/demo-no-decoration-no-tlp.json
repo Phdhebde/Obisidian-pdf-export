@@ -711,12 +711,12 @@
            "width": "*",
            "text": [
             {
-             "color": "#448AFF",
+             "color": "#005FFE",
              "text": "A note"
             }
            ],
            "style": "calloutTitle",
-           "color": "#448AFF"
+           "color": "#005FFE"
           }
          ],
          "columnGap": 5,
@@ -777,12 +777,12 @@
            "width": "*",
            "text": [
             {
-             "color": "#F09B00",
+             "color": "#996300",
              "text": "A warning"
             }
            ],
            "style": "calloutTitle",
-           "color": "#F09B00"
+           "color": "#996300"
           }
          ],
          "columnGap": 5,
@@ -843,12 +843,12 @@
            "width": "*",
            "text": [
             {
-             "color": "#E93147",
+             "color": "#D5172E",
              "text": "A danger"
             }
            ],
            "style": "calloutTitle",
-           "color": "#E93147"
+           "color": "#D5172E"
           }
          ],
          "columnGap": 5,
@@ -909,12 +909,12 @@
            "width": "*",
            "text": [
             {
-             "color": "#00BFA5",
+             "color": "#007D6C",
              "text": "A tip"
             }
            ],
            "style": "calloutTitle",
-           "color": "#00BFA5"
+           "color": "#007D6C"
           }
          ],
          "columnGap": 5,
@@ -975,12 +975,12 @@
            "width": "*",
            "text": [
             {
-             "color": "#9E9E9E",
+             "color": "#6E6E6E",
              "text": "A quote"
             }
            ],
            "style": "calloutTitle",
-           "color": "#9E9E9E"
+           "color": "#6E6E6E"
           }
          ],
          "columnGap": 5,
@@ -1318,12 +1318,12 @@
                "width": "*",
                "text": [
                 {
-                 "color": "#00BFA5",
+                 "color": "#007D6C",
                  "text": "Right"
                 }
                ],
                "style": "calloutTitle",
-               "color": "#00BFA5"
+               "color": "#007D6C"
               }
              ],
              "columnGap": 5,

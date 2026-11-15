@@ -585,7 +585,7 @@
 <w:rPr>
 <w:b/>
 <w:bCs/>
-<w:color w:val="448AFF"/>
+<w:color w:val="005FFE"/>
 <w:sz w:val="22"/>
 <w:szCs w:val="22"/>
 </w:rPr>
@@ -692,7 +692,7 @@
 <w:rPr>
 <w:b/>
 <w:bCs/>
-<w:color w:val="F09B00"/>
+<w:color w:val="996300"/>
 <w:sz w:val="22"/>
 <w:szCs w:val="22"/>
 </w:rPr>
@@ -799,7 +799,7 @@
 <w:rPr>
 <w:b/>
 <w:bCs/>
-<w:color w:val="E93147"/>
+<w:color w:val="D5172E"/>
 <w:sz w:val="22"/>
 <w:szCs w:val="22"/>
 </w:rPr>
@@ -906,7 +906,7 @@
 <w:rPr>
 <w:b/>
 <w:bCs/>
-<w:color w:val="00BFA5"/>
+<w:color w:val="007D6C"/>
 <w:sz w:val="22"/>
 <w:szCs w:val="22"/>
 </w:rPr>
@@ -1013,7 +1013,7 @@
 <w:rPr>
 <w:b/>
 <w:bCs/>
-<w:color w:val="9E9E9E"/>
+<w:color w:val="6E6E6E"/>
 <w:sz w:val="22"/>
 <w:szCs w:val="22"/>
 </w:rPr>
@@ -1541,7 +1541,7 @@
 <w:rPr>
 <w:b/>
 <w:bCs/>
-<w:color w:val="00BFA5"/>
+<w:color w:val="007D6C"/>
 <w:sz w:val="22"/>
 <w:szCs w:val="22"/>
 </w:rPr>

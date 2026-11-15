@@ -15,6 +15,7 @@ import {
   SECTION_KEYS,
   TLP_DEFAULT,
   isSectionKey,
+  type CalloutFamily,
   type DocContact,
   type Preset,
   type PresetAssets,
@@ -329,6 +330,8 @@ export function defaultPreset(assets?: Partial<PresetAssets>, locale: Locale = g
     // A note that declares `recipients:` prints the table anyway.
     showRecipients: false,
     calloutIcons: true,
+    accessibleCallouts: false,
+    calloutColors: {},
     diamondBullets: true,
     justify: true,
     transclusions: 'inline',
@@ -875,40 +878,83 @@ function codeNode(t: MdToken): PdfNode {
 }
 
 /**
- * Obsidian callout palette: accent colour, tint and Lucide icon per type. An
- * untitled callout is titled with its type, capitalised, as Obsidian does.
+ * Obsidian callout palette, per family: the accent of the bar and icon, the
+ * tint behind, and the title's colour. The accent is too light for text, so
+ * the title takes `text`, the same hue at WCAG AA (4.5:1) on the tint, or
+ * `strong`, at AAA (7:1), when the template asks for accessible callouts.
  */
-export interface CalloutStyle { accent: string; tint: string; icon: IconName }
+export interface CalloutColors { accent: string; tint: string; text: string; strong: string }
 
-export const CALLOUT_STYLES: Record<string, CalloutStyle> = {
-  note: { accent: '#448AFF', tint: '#EEF4FF', icon: 'pencil' },
-  abstract: { accent: '#00B8D4', tint: '#E8FAFD', icon: 'clipboardList' },
-  summary: { accent: '#00B8D4', tint: '#E8FAFD', icon: 'clipboardList' },
-  tldr: { accent: '#00B8D4', tint: '#E8FAFD', icon: 'clipboardList' },
-  info: { accent: '#00B8D4', tint: '#E8FAFD', icon: 'info' },
-  todo: { accent: '#00B8D4', tint: '#E8FAFD', icon: 'listTodo' },
-  tip: { accent: '#00BFA5', tint: '#E6F8F5', icon: 'flame' },
-  hint: { accent: '#00BFA5', tint: '#E6F8F5', icon: 'flame' },
-  important: { accent: '#00BFA5', tint: '#E6F8F5', icon: 'flame' },
-  success: { accent: '#00C853', tint: '#E9F9EE', icon: 'check' },
-  check: { accent: '#00C853', tint: '#E9F9EE', icon: 'check' },
-  done: { accent: '#00C853', tint: '#E9F9EE', icon: 'check' },
-  question: { accent: '#F09B00', tint: '#FEF5E6', icon: 'circleHelp' },
-  help: { accent: '#F09B00', tint: '#FEF5E6', icon: 'circleHelp' },
-  faq: { accent: '#F09B00', tint: '#FEF5E6', icon: 'circleHelp' },
-  warning: { accent: '#F09B00', tint: '#FEF5E6', icon: 'triangleAlert' },
-  caution: { accent: '#F09B00', tint: '#FEF5E6', icon: 'triangleAlert' },
-  attention: { accent: '#F09B00', tint: '#FEF5E6', icon: 'triangleAlert' },
-  failure: { accent: '#E93147', tint: '#FDECEE', icon: 'x' },
-  fail: { accent: '#E93147', tint: '#FDECEE', icon: 'x' },
-  missing: { accent: '#E93147', tint: '#FDECEE', icon: 'x' },
-  danger: { accent: '#E93147', tint: '#FDECEE', icon: 'zap' },
-  error: { accent: '#E93147', tint: '#FDECEE', icon: 'zap' },
-  bug: { accent: '#E93147', tint: '#FDECEE', icon: 'bug' },
-  example: { accent: '#7C4DFF', tint: '#F1EDFF', icon: 'list' },
-  quote: { accent: '#9E9E9E', tint: '#F4F4F4', icon: 'quote' },
-  cite: { accent: '#9E9E9E', tint: '#F4F4F4', icon: 'quote' }
+export const CALLOUT_PALETTE: Record<CalloutFamily, CalloutColors> = {
+  note: { accent: '#448AFF', tint: '#EEF4FF', text: '#005FFE', strong: '#0047BE' },
+  info: { accent: '#00B8D4', tint: '#E8FAFD', text: '#007A8D', strong: '#005B69' },
+  tip: { accent: '#00BFA5', tint: '#E6F8F5', text: '#007D6C', strong: '#005C4F' },
+  success: { accent: '#00C853', tint: '#E9F9EE', text: '#007E34', strong: '#005F28' },
+  warning: { accent: '#F09B00', tint: '#FEF5E6', text: '#996300', strong: '#734A00' },
+  danger: { accent: '#E93147', tint: '#FDECEE', text: '#D5172E', strong: '#9E1122' },
+  example: { accent: '#7C4DFF', tint: '#F1EDFF', text: '#7340FF', strong: '#4100F5' },
+  quote: { accent: '#9E9E9E', tint: '#F4F4F4', text: '#6E6E6E', strong: '#515151' }
 };
+
+/**
+ * Family and Lucide icon per callout type. An untitled callout is titled with
+ * its type, capitalised, as Obsidian does.
+ */
+export const CALLOUT_TYPES: Record<string, { family: CalloutFamily; icon: IconName }> = {
+  note: { family: 'note', icon: 'pencil' },
+  abstract: { family: 'info', icon: 'clipboardList' },
+  summary: { family: 'info', icon: 'clipboardList' },
+  tldr: { family: 'info', icon: 'clipboardList' },
+  info: { family: 'info', icon: 'info' },
+  todo: { family: 'info', icon: 'listTodo' },
+  tip: { family: 'tip', icon: 'flame' },
+  hint: { family: 'tip', icon: 'flame' },
+  important: { family: 'tip', icon: 'flame' },
+  success: { family: 'success', icon: 'check' },
+  check: { family: 'success', icon: 'check' },
+  done: { family: 'success', icon: 'check' },
+  question: { family: 'warning', icon: 'circleHelp' },
+  help: { family: 'warning', icon: 'circleHelp' },
+  faq: { family: 'warning', icon: 'circleHelp' },
+  warning: { family: 'warning', icon: 'triangleAlert' },
+  caution: { family: 'warning', icon: 'triangleAlert' },
+  attention: { family: 'warning', icon: 'triangleAlert' },
+  failure: { family: 'danger', icon: 'x' },
+  fail: { family: 'danger', icon: 'x' },
+  missing: { family: 'danger', icon: 'x' },
+  danger: { family: 'danger', icon: 'zap' },
+  error: { family: 'danger', icon: 'zap' },
+  bug: { family: 'danger', icon: 'bug' },
+  example: { family: 'example', icon: 'list' },
+  quote: { family: 'quote', icon: 'quote' },
+  cite: { family: 'quote', icon: 'quote' }
+};
+
+/** How a callout is drawn: bar and icon in `accent`, `tint` behind, title in `text`. */
+export interface CalloutStyle { accent: string; tint: string; text: string; icon: IconName }
+
+/**
+ * The style of a callout type in this template. A family whose accent the
+ * template overrides, and an unknown type, which takes the brand colour, get
+ * a tint and a title colour worked out from that accent.
+ */
+export function calloutStyle(type: string, preset: Preset): CalloutStyle {
+  const known = Object.prototype.hasOwnProperty.call(CALLOUT_TYPES, type) ? CALLOUT_TYPES[type] : undefined;
+  const accessible = preset.accessibleCallouts === true;
+  const custom = known ? preset.calloutColors?.[known.family] : undefined;
+  let colors: CalloutColors;
+  if (known && !custom) {
+    colors = CALLOUT_PALETTE[known.family];
+  } else {
+    const accent = custom || preset.colors.brand;
+    const bg = tint(accent, 0.93);
+    colors = { accent, tint: bg, text: readableOn(accent, bg), strong: readableOn(accent, bg, 7) };
+  }
+  const text = accessible ? colors.strong : colors.text;
+  // In accessible mode the bar and icon take the title's colour too: most
+  // accents are under the 3:1 WCAG asks of graphics (1.4.11).
+  return { accent: accessible ? text : colors.accent, tint: colors.tint, text, icon: known ? known.icon : 'info' };
+}
 
 /** Border (3) plus the left and right padding (10 each) that `boxed` adds. */
 const BOX_INSET = 23;
@@ -930,16 +976,15 @@ function calloutNode(t: MdToken, preset: Preset, ctx: Ctx): PdfNode {
     return boxed(inner, preset.colors.brand, tint(preset.colors.brand, 0.93));
   }
 
-  const style = CALLOUT_STYLES[call.type] ||
-    { accent: preset.colors.brand, tint: tint(preset.colors.brand, 0.93), icon: 'info' };
+  const style = calloutStyle(call.type, preset);
   const label = call.type.charAt(0).toUpperCase() + call.type.slice(1);
   // The title is inline Markdown too: `code`, **bold** and links in it must
   // not be printed with their literal syntax.
   const titleRuns = inlineRuns(marked.Lexer.lexInline(call.title || label), preset).map((r) => ({
-    color: style.accent,
+    color: style.text,
     ...r
   }));
-  const titleNode: PdfNode = { text: titleRuns, style: 'calloutTitle', color: style.accent };
+  const titleNode: PdfNode = { text: titleRuns, style: 'calloutTitle', color: style.text };
   const titleRow: PdfNode = preset.calloutIcons === false
     ? { ...titleNode, margin: [0, 0, 0, call.body.trim() ? 4 : 0] }
     : {
@@ -964,6 +1009,32 @@ function calloutNode(t: MdToken, preset: Preset, ctx: Ctx): PdfNode {
     stack.push(...sub);
   }
   return boxed(stack, style.accent, style.tint);
+}
+
+/** WCAG 2.1 contrast ratio of two `#RRGGBB` colours, from 1 to 21. */
+export function contrast(a: string, b: string): number {
+  const lum = (hex: string) => {
+    const n = parseInt(hex.replace('#', ''), 16);
+    const [r, g, bl] = [16, 8, 0].map((s) => {
+      const c = ((n >> s) & 255) / 255;
+      return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+  };
+  const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/** `fg` darkened, keeping its hue, until it reads on `bg` at `ratio` (WCAG AA by default). */
+export function readableOn(fg: string, bg: string, ratio = 4.5): string {
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(fg || '').trim());
+  if (!m) return '#000000';
+  const n = parseInt(m[1], 16);
+  for (let k = 1; k > 0; k -= 0.02) {
+    const c = '#' + [16, 8, 0].map((s) => Math.round(((n >> s) & 255) * k).toString(16).padStart(2, '0')).join('');
+    if (contrast(c, bg) >= ratio) return c.toUpperCase();
+  }
+  return '#000000';
 }
 
 /** `hex` mixed towards white by `amount` (0 = unchanged, 1 = white). */
