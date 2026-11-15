@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { collectDiagrams, coverShift, fitCoverTitle, defaultLabels, defaultPreset, normalizeTlp, decodeEntities } from '../src/generator.ts';
+import { CALLOUT_STYLES, calloutStyle, contrast, readableOn, collectDiagrams, coverShift, fitCoverTitle, defaultLabels, defaultPreset, normalizeTlp, decodeEntities } from '../src/generator.ts';
 import { buildDocDefinition, markdownToPdf, type PdfNode } from './loose.ts';
 import type { Preset, ReportVars } from '../src/types.ts';
 
@@ -373,6 +373,30 @@ test('callout icons can be turned off per preset', () => {
   assert.equal(count, 0);
   // The title text must survive the layout change.
   assert.match(collectText(nodes), /Attention/);
+});
+
+test('every callout title reads on its tint at WCAG AA, whatever the type (#41)', () => {
+  for (const [type, style] of Object.entries(CALLOUT_STYLES)) {
+    assert.ok(contrast(style.text, style.tint) >= 4.5, `${type}: ${style.text} on ${style.tint}`);
+  }
+  // The title takes the text colour; the icon keeps the accent.
+  const nodes = markdownToPdf('> [!warning] Attention\n> corps', preset());
+  const titles: PdfNode[] = [];
+  const svg: string[] = [];
+  walk(nodes, (n) => { if (n.style === 'calloutTitle') titles.push(n); if (n.svg) svg.push(n.svg); });
+  assert.equal(titles[0].color, '#996300');
+  assert.ok((titles[0].text as PdfNode[]).every((r) => r.color === '#996300'));
+  assert.match(svg[0], /stroke="#F09B00"/);
+});
+
+test('an unknown callout type darkens the brand colour for its title until it reads', () => {
+  for (const brand of ['#FFD000', '#F9A825', '#00B8D4', '#1A237E']) {
+    const style = calloutStyle('inconnu', brand);
+    assert.equal(style.accent, brand);
+    assert.ok(contrast(style.text, style.tint) >= 4.5, `${brand} -> ${style.text}`);
+  }
+  // A brand dark enough already is kept as is.
+  assert.equal(readableOn('#1A237E', '#FFFFFF'), '#1A237E');
 });
 
 test('a plain blockquote gets no icon', () => {

@@ -877,38 +877,47 @@ function codeNode(t: MdToken): PdfNode {
 /**
  * Obsidian callout palette: accent colour, tint and Lucide icon per type. An
  * untitled callout is titled with its type, capitalised, as Obsidian does.
+ * The accent is too light for text, so the title takes `text`: the same hue,
+ * dark enough for WCAG AA (4.5:1) on the tint.
  */
-export interface CalloutStyle { accent: string; tint: string; icon: IconName }
+export interface CalloutStyle { accent: string; tint: string; text: string; icon: IconName }
 
 export const CALLOUT_STYLES: Record<string, CalloutStyle> = {
-  note: { accent: '#448AFF', tint: '#EEF4FF', icon: 'pencil' },
-  abstract: { accent: '#00B8D4', tint: '#E8FAFD', icon: 'clipboardList' },
-  summary: { accent: '#00B8D4', tint: '#E8FAFD', icon: 'clipboardList' },
-  tldr: { accent: '#00B8D4', tint: '#E8FAFD', icon: 'clipboardList' },
-  info: { accent: '#00B8D4', tint: '#E8FAFD', icon: 'info' },
-  todo: { accent: '#00B8D4', tint: '#E8FAFD', icon: 'listTodo' },
-  tip: { accent: '#00BFA5', tint: '#E6F8F5', icon: 'flame' },
-  hint: { accent: '#00BFA5', tint: '#E6F8F5', icon: 'flame' },
-  important: { accent: '#00BFA5', tint: '#E6F8F5', icon: 'flame' },
-  success: { accent: '#00C853', tint: '#E9F9EE', icon: 'check' },
-  check: { accent: '#00C853', tint: '#E9F9EE', icon: 'check' },
-  done: { accent: '#00C853', tint: '#E9F9EE', icon: 'check' },
-  question: { accent: '#F09B00', tint: '#FEF5E6', icon: 'circleHelp' },
-  help: { accent: '#F09B00', tint: '#FEF5E6', icon: 'circleHelp' },
-  faq: { accent: '#F09B00', tint: '#FEF5E6', icon: 'circleHelp' },
-  warning: { accent: '#F09B00', tint: '#FEF5E6', icon: 'triangleAlert' },
-  caution: { accent: '#F09B00', tint: '#FEF5E6', icon: 'triangleAlert' },
-  attention: { accent: '#F09B00', tint: '#FEF5E6', icon: 'triangleAlert' },
-  failure: { accent: '#E93147', tint: '#FDECEE', icon: 'x' },
-  fail: { accent: '#E93147', tint: '#FDECEE', icon: 'x' },
-  missing: { accent: '#E93147', tint: '#FDECEE', icon: 'x' },
-  danger: { accent: '#E93147', tint: '#FDECEE', icon: 'zap' },
-  error: { accent: '#E93147', tint: '#FDECEE', icon: 'zap' },
-  bug: { accent: '#E93147', tint: '#FDECEE', icon: 'bug' },
-  example: { accent: '#7C4DFF', tint: '#F1EDFF', icon: 'list' },
-  quote: { accent: '#9E9E9E', tint: '#F4F4F4', icon: 'quote' },
-  cite: { accent: '#9E9E9E', tint: '#F4F4F4', icon: 'quote' }
+  note: { accent: '#448AFF', tint: '#EEF4FF', text: '#005FFE', icon: 'pencil' },
+  abstract: { accent: '#00B8D4', tint: '#E8FAFD', text: '#007A8D', icon: 'clipboardList' },
+  summary: { accent: '#00B8D4', tint: '#E8FAFD', text: '#007A8D', icon: 'clipboardList' },
+  tldr: { accent: '#00B8D4', tint: '#E8FAFD', text: '#007A8D', icon: 'clipboardList' },
+  info: { accent: '#00B8D4', tint: '#E8FAFD', text: '#007A8D', icon: 'info' },
+  todo: { accent: '#00B8D4', tint: '#E8FAFD', text: '#007A8D', icon: 'listTodo' },
+  tip: { accent: '#00BFA5', tint: '#E6F8F5', text: '#007D6C', icon: 'flame' },
+  hint: { accent: '#00BFA5', tint: '#E6F8F5', text: '#007D6C', icon: 'flame' },
+  important: { accent: '#00BFA5', tint: '#E6F8F5', text: '#007D6C', icon: 'flame' },
+  success: { accent: '#00C853', tint: '#E9F9EE', text: '#007E34', icon: 'check' },
+  check: { accent: '#00C853', tint: '#E9F9EE', text: '#007E34', icon: 'check' },
+  done: { accent: '#00C853', tint: '#E9F9EE', text: '#007E34', icon: 'check' },
+  question: { accent: '#F09B00', tint: '#FEF5E6', text: '#996300', icon: 'circleHelp' },
+  help: { accent: '#F09B00', tint: '#FEF5E6', text: '#996300', icon: 'circleHelp' },
+  faq: { accent: '#F09B00', tint: '#FEF5E6', text: '#996300', icon: 'circleHelp' },
+  warning: { accent: '#F09B00', tint: '#FEF5E6', text: '#996300', icon: 'triangleAlert' },
+  caution: { accent: '#F09B00', tint: '#FEF5E6', text: '#996300', icon: 'triangleAlert' },
+  attention: { accent: '#F09B00', tint: '#FEF5E6', text: '#996300', icon: 'triangleAlert' },
+  failure: { accent: '#E93147', tint: '#FDECEE', text: '#D5172E', icon: 'x' },
+  fail: { accent: '#E93147', tint: '#FDECEE', text: '#D5172E', icon: 'x' },
+  missing: { accent: '#E93147', tint: '#FDECEE', text: '#D5172E', icon: 'x' },
+  danger: { accent: '#E93147', tint: '#FDECEE', text: '#D5172E', icon: 'zap' },
+  error: { accent: '#E93147', tint: '#FDECEE', text: '#D5172E', icon: 'zap' },
+  bug: { accent: '#E93147', tint: '#FDECEE', text: '#D5172E', icon: 'bug' },
+  example: { accent: '#7C4DFF', tint: '#F1EDFF', text: '#7340FF', icon: 'list' },
+  quote: { accent: '#9E9E9E', tint: '#F4F4F4', text: '#6E6E6E', icon: 'quote' },
+  cite: { accent: '#9E9E9E', tint: '#F4F4F4', text: '#6E6E6E', icon: 'quote' }
 };
+
+/** The style of a callout type; an unknown type takes the template's brand colour. */
+export function calloutStyle(type: string, brand: string): CalloutStyle {
+  if (CALLOUT_STYLES[type]) return CALLOUT_STYLES[type];
+  const bg = tint(brand, 0.93);
+  return { accent: brand, tint: bg, text: readableOn(brand, bg), icon: 'info' };
+}
 
 /** Border (3) plus the left and right padding (10 each) that `boxed` adds. */
 const BOX_INSET = 23;
@@ -930,16 +939,15 @@ function calloutNode(t: MdToken, preset: Preset, ctx: Ctx): PdfNode {
     return boxed(inner, preset.colors.brand, tint(preset.colors.brand, 0.93));
   }
 
-  const style = CALLOUT_STYLES[call.type] ||
-    { accent: preset.colors.brand, tint: tint(preset.colors.brand, 0.93), icon: 'info' };
+  const style = calloutStyle(call.type, preset.colors.brand);
   const label = call.type.charAt(0).toUpperCase() + call.type.slice(1);
   // The title is inline Markdown too: `code`, **bold** and links in it must
   // not be printed with their literal syntax.
   const titleRuns = inlineRuns(marked.Lexer.lexInline(call.title || label), preset).map((r) => ({
-    color: style.accent,
+    color: style.text,
     ...r
   }));
-  const titleNode: PdfNode = { text: titleRuns, style: 'calloutTitle', color: style.accent };
+  const titleNode: PdfNode = { text: titleRuns, style: 'calloutTitle', color: style.text };
   const titleRow: PdfNode = preset.calloutIcons === false
     ? { ...titleNode, margin: [0, 0, 0, call.body.trim() ? 4 : 0] }
     : {
@@ -964,6 +972,32 @@ function calloutNode(t: MdToken, preset: Preset, ctx: Ctx): PdfNode {
     stack.push(...sub);
   }
   return boxed(stack, style.accent, style.tint);
+}
+
+/** WCAG 2.1 contrast ratio of two `#RRGGBB` colours, from 1 to 21. */
+export function contrast(a: string, b: string): number {
+  const lum = (hex: string) => {
+    const n = parseInt(hex.replace('#', ''), 16);
+    const [r, g, bl] = [16, 8, 0].map((s) => {
+      const c = ((n >> s) & 255) / 255;
+      return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+  };
+  const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/** `fg` darkened, keeping its hue, until it reads on `bg` at `ratio` (WCAG AA by default). */
+export function readableOn(fg: string, bg: string, ratio = 4.5): string {
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(fg || '').trim());
+  if (!m) return '#000000';
+  const n = parseInt(m[1], 16);
+  for (let k = 1; k > 0; k -= 0.02) {
+    const c = '#' + [16, 8, 0].map((s) => Math.round(((n >> s) & 255) * k).toString(16).padStart(2, '0')).join('');
+    if (contrast(c, bg) >= ratio) return c.toUpperCase();
+  }
+  return '#000000';
 }
 
 /** `hex` mixed towards white by `amount` (0 = unchanged, 1 = white). */

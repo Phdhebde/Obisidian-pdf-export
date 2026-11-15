@@ -29,6 +29,7 @@ import {
   PAGE_W,
   IMAGE_REF_RE,
   bodySize,
+  calloutStyle,
   coverBracket,
   decorAccents,
   decodeEntities,
@@ -1056,7 +1057,7 @@ function blockquote(t: MdToken, ctx: WordContext): string {
     return box(body, hex(brand), hex(tint(brand, 0.93)), ctx);
   }
 
-  const style = CALLOUT_STYLES[call.type] || { accent: brand, tint: tint(brand, 0.93), icon: 'info' };
+  const style = calloutStyle(call.type, brand);
   const accent = hex(style.accent);
   const label = call.type.charAt(0).toUpperCase() + call.type.slice(1);
   const iconImg = ctx.preset.calloutIcons !== false ? ctx.icons[calloutIconKey(style.icon, style.accent)] : undefined;
@@ -1065,7 +1066,7 @@ function blockquote(t: MdToken, ctx: WordContext): string {
   const title = para(
     { keepNext: !!call.body.trim(), spacing: `<w:spacing w:before="0" w:after="${tw(call.body.trim() ? 4 : 0)}"/>`, jc: 'left' },
     (icon ? pictureRun({ ...icon, cx: 12 * EMU_PER_PT, cy: 12 * EMU_PER_PT, alt: label }, ctx) + run(' ', {}, ctx) : '') +
-      renderInline(marked.Lexer.lexInline(call.title || label), ctx, { bold: true, color: accent, size })
+      renderInline(marked.Lexer.lexInline(call.title || label), ctx, { bold: true, color: hex(style.text), size })
   );
   return box(title + (call.body.trim() ? renderBlocks(call.body, inner) : ''), accent, hex(style.tint), ctx);
 }

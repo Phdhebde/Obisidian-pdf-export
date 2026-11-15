@@ -392,12 +392,12 @@
            "width": "*",
            "text": [
             {
-             "color": "#00B8D4",
+             "color": "#007A8D",
              "text": "Scope"
             }
            ],
            "style": "calloutTitle",
-           "color": "#00B8D4"
+           "color": "#007A8D"
           }
          ],
          "columnGap": 5,
@@ -803,12 +803,12 @@
            "width": "*",
            "text": [
             {
-             "color": "#F09B00",
+             "color": "#996300",
              "text": "Lesson learned"
             }
            ],
            "style": "calloutTitle",
-           "color": "#F09B00"
+           "color": "#996300"
           }
          ],
          "columnGap": 5,

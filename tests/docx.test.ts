@@ -114,8 +114,8 @@ test('a generated document is a well-formed package with every part wired', () =
   assert.match(doc, /<w:br\/><w:t xml:space="preserve"> {4}indented<\/w:t><w:tab\/><w:t xml:space="preserve">with tab/);
   // Links, the callout title, the image, the caption, the rule, the break.
   assert.match(doc, /<w:hyperlink r:id="rIdReport\d+" w:history="1"><w:r><w:rPr><w:rStyle w:val="Hyperlink"\/>/);
-  // A callout is a tinted box with a bar of its colour, its title in that colour.
-  assert.match(doc, /<w:left w:val="single" w:sz="24" w:space="0" w:color="F09B00"\/>[\s\S]*?<w:shd w:val="clear" w:color="auto" w:fill="FEF5E6"\/><\/w:tcPr><w:p><w:pPr><w:keepNext\/>[\s\S]*?<w:color w:val="F09B00"\/>[\s\S]*?Mind the gap/);
+  // A callout is a tinted box with a bar of its colour, its title in a darker shade that reads on the tint.
+  assert.match(doc, /<w:left w:val="single" w:sz="24" w:space="0" w:color="F09B00"\/>[\s\S]*?<w:shd w:val="clear" w:color="auto" w:fill="FEF5E6"\/><\/w:tcPr><w:p><w:pPr><w:keepNext\/>[\s\S]*?<w:color w:val="996300"\/>[\s\S]*?Mind the gap/);
   assert.match(doc, /<wp:extent cx="1143000" cy="1143000"\/>/);
   assert.match(doc, /<w:pStyle w:val="Caption"\/>/);
   assert.match(doc, /<w:br w:type="page"\/>/);
