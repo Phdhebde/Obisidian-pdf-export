@@ -19,6 +19,8 @@ import { DEFAULT_WORD_STYLES, listWordStyles } from './docx.ts';
 import { migratePreset, presetId } from './storage.ts';
 import { normalizeLevels } from './redact.ts';
 import {
+  CALLOUT_PALETTE,
+  CALLOUT_TYPES,
   DEFAULT_BODY_SIZE,
   DEFAULT_PAGINATION,
   MAX_BODY_SIZE,
@@ -33,6 +35,7 @@ import {
 import type { PresetImageKey } from './assets.ts';
 import { t, type MessageKey } from './i18n.ts';
 import {
+  CALLOUT_FAMILIES,
   HEADING_LEVELS,
   SECTION_KEYS,
   TLP_KEYS,
@@ -577,6 +580,7 @@ export class ReportSettingTab extends PluginSettingTab {
       this.coverSection(preset),
       this.headerFooterSection(preset),
       this.tlpSection(preset),
+      this.calloutsSection(preset),
       this.labelsSection(preset),
       this.assetsSection(preset),
       this.wordSection(preset)
@@ -938,6 +942,42 @@ export class ReportSettingTab extends PluginSettingTab {
         if (!preset.tlp[key]) preset.tlp[key] = { bg: '#888888', fg: '#FFFFFF' };
         return this.color(`TLP:${key}`, () => preset.tlp[key].bg, (v) => (preset.tlp[key].bg = v));
       })
+    };
+  }
+
+  /** Accessible colours, and an accent per family that replaces Obsidian's. */
+  private calloutsSection(preset: Preset): Section {
+    const types = (family: string) => Object.keys(CALLOUT_TYPES).filter((k) => CALLOUT_TYPES[k].family === family).join(', ');
+    return {
+      heading: t('set.calloutColors'),
+      desc: t('set.calloutColorsDesc'),
+      rows: [
+        this.toggle('set.accessibleCallouts', 'set.accessibleCalloutsDesc',
+          () => preset.accessibleCallouts, (v) => (preset.accessibleCallouts = v)),
+        ...CALLOUT_FAMILIES.map((family): Row => ({
+          name: t(`callout.${family}` as MessageKey),
+          desc: types(family),
+          render: (s) =>
+            s
+              .addColorPicker((cp) =>
+                cp.setValue(toHex6(preset.calloutColors[family] ?? CALLOUT_PALETTE[family].accent)).onChange((v) => {
+                  preset.calloutColors[family] = v;
+                  this.save();
+                })
+              )
+              .addExtraButton((b) =>
+                b
+                  .setIcon('reset')
+                  .setTooltip(t('set.calloutColorReset'))
+                  .setDisabled(!preset.calloutColors[family])
+                  .onClick(() => {
+                    delete preset.calloutColors[family];
+                    void this.plugin.saveSettings();
+                    this.refresh();
+                  })
+              )
+        }))
+      ]
     };
   }
 

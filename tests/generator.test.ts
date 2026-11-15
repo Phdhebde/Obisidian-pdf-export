@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CALLOUT_STYLES, calloutStyle, contrast, readableOn, collectDiagrams, coverShift, fitCoverTitle, defaultLabels, defaultPreset, normalizeTlp, decodeEntities } from '../src/generator.ts';
+import { CALLOUT_PALETTE, CALLOUT_TYPES, calloutStyle, contrast, readableOn, collectDiagrams, coverShift, fitCoverTitle, defaultLabels, defaultPreset, normalizeTlp, decodeEntities } from '../src/generator.ts';
 import { buildDocDefinition, markdownToPdf, type PdfNode } from './loose.ts';
 import type { Preset, ReportVars } from '../src/types.ts';
 
@@ -376,8 +376,9 @@ test('callout icons can be turned off per preset', () => {
 });
 
 test('every callout title reads on its tint at WCAG AA, whatever the type (#41)', () => {
-  for (const [type, style] of Object.entries(CALLOUT_STYLES)) {
-    assert.ok(contrast(style.text, style.tint) >= 4.5, `${type}: ${style.text} on ${style.tint}`);
+  for (const [family, c] of Object.entries(CALLOUT_PALETTE)) {
+    assert.ok(contrast(c.text, c.tint) >= 4.5, `${family}: ${c.text} on ${c.tint}`);
+    assert.ok(contrast(c.strong, c.tint) >= 7, `${family}: ${c.strong} on ${c.tint}`);
   }
   // The title takes the text colour; the icon keeps the accent.
   const nodes = markdownToPdf('> [!warning] Attention\n> corps', preset());
@@ -391,12 +392,43 @@ test('every callout title reads on its tint at WCAG AA, whatever the type (#41)'
 
 test('an unknown callout type darkens the brand colour for its title until it reads', () => {
   for (const brand of ['#FFD000', '#F9A825', '#00B8D4', '#1A237E']) {
-    const style = calloutStyle('inconnu', brand);
+    const style = calloutStyle('inconnu', preset({ colors: { ...preset().colors, brand } }));
     assert.equal(style.accent, brand);
     assert.ok(contrast(style.text, style.tint) >= 4.5, `${brand} -> ${style.text}`);
   }
   // A brand dark enough already is kept as is.
   assert.equal(readableOn('#1A237E', '#FFFFFF'), '#1A237E');
+});
+
+test('accessible callouts: AAA titles, and the bar and icon in the title colour', () => {
+  const p = preset({ accessibleCallouts: true });
+  for (const type of [...Object.keys(CALLOUT_TYPES), 'inconnu']) {
+    const style = calloutStyle(type, p);
+    assert.ok(contrast(style.text, style.tint) >= 7, `${type}: ${style.text} on ${style.tint}`);
+    assert.equal(style.accent, style.text);
+  }
+  const svg: string[] = [];
+  const titles: PdfNode[] = [];
+  walk(markdownToPdf('> [!warning] Attention\n> corps', p), (n) => { if (n.style === 'calloutTitle') titles.push(n); if (n.svg) svg.push(n.svg); });
+  assert.equal(titles[0].color, '#734A00');
+  assert.match(svg[0], /stroke="#734A00"/);
+});
+
+test('a template can recolour a callout family, aliases included', () => {
+  const p = preset({ calloutColors: { warning: '#FFD000' } });
+  const warning = calloutStyle('warning', p);
+  assert.equal(warning.accent, '#FFD000');
+  assert.ok(contrast(warning.text, warning.tint) >= 4.5, warning.text);
+  assert.deepEqual(calloutStyle('faq', p), { ...warning, icon: 'circleHelp' });
+  // Other families keep Obsidian's colours.
+  assert.equal(calloutStyle('note', p).accent, CALLOUT_PALETTE.note.accent);
+  // Both options together: the custom colour, darkened to AAA.
+  const strict = calloutStyle('warning', { ...p, accessibleCallouts: true });
+  assert.ok(contrast(strict.text, strict.tint) >= 7, strict.text);
+});
+
+test('a callout type named after an object property is an unknown type', () => {
+  assert.equal(calloutStyle('constructor', preset()).accent, preset().colors.brand);
 });
 
 test('a plain blockquote gets no icon', () => {

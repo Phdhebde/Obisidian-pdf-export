@@ -207,6 +207,7 @@ Each template sets:
 - **Sections** and their order: Cover, References, TLP reminder, Table of contents, Content. The cover always stays first.
 - **Headings and table of contents:** for each of the six levels, its numbering (`1.`, `A.`, `a)`, `I.`, `i.` or none), whether it is listed in the table of contents, and whether it starts a new page; plus **hierarchical numbering** (`1.1`, `1.A`…).
 - **Colors:** main color, header and footer bands and their text, table header/body/border, links, table of contents title, body text, TLP badges.
+- **Callout colors:** the color of each callout type, in place of Obsidian's; the title is darkened as needed to stay readable (WCAG AA). **Accessible callout colors** raise titles to WCAG AAA (7:1), for organisations bound by stricter rules such as RGAA.
 - **Typography:** body and heading fonts, **text size** (one slider, 7 to 18 pt, that everything scales from), justified or left-aligned text, callout icons, diamond bullets, embedded notes, page margins.
 - **Cover page:** position and size of the title, rule, subtitle, acronym and logo, in points from the top-left corner (A4 = 595 × 842 pt). A title too long for its place shrinks, then pushes the rule and subtitles down.
 - **Header and footer:** text position, and the **page number format** (`page {{page}}/{{total}}`, `{{page}}`, `Page {{page}} of {{total}}`, none, or your own).

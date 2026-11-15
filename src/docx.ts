@@ -21,7 +21,7 @@
  */
 import { marked } from 'marked';
 import {
-  CALLOUT_STYLES,
+  CALLOUT_TYPES,
   CAPTION_RE,
   DECOR,
   DEFAULT_PAGE_MARGINS,
@@ -1041,7 +1041,8 @@ export function calloutIconKey(icon: IconName, accent: string): string {
 /** Every icon a callout of this template can show, for the host to rasterise. */
 export function calloutIcons(preset: Preset): { key: string; svg: string }[] {
   const seen = new Map<string, string>();
-  const styles = [...Object.values(CALLOUT_STYLES), { icon: 'info' as IconName, accent: preset.colors.brand }];
+  // The empty type stands for every unknown one, drawn in the brand colour.
+  const styles = [...Object.keys(CALLOUT_TYPES), ''].map((type) => calloutStyle(type, preset));
   for (const s of styles) seen.set(calloutIconKey(s.icon, s.accent), iconSvg(s.icon, '#' + hex(s.accent)));
   return [...seen].map(([key, svg]) => ({ key, svg }));
 }
@@ -1057,7 +1058,7 @@ function blockquote(t: MdToken, ctx: WordContext): string {
     return box(body, hex(brand), hex(tint(brand, 0.93)), ctx);
   }
 
-  const style = calloutStyle(call.type, brand);
+  const style = calloutStyle(call.type, ctx.preset);
   const accent = hex(style.accent);
   const label = call.type.charAt(0).toUpperCase() + call.type.slice(1);
   const iconImg = ctx.preset.calloutIcons !== false ? ctx.icons[calloutIconKey(style.icon, style.accent)] : undefined;

@@ -15,6 +15,7 @@ import {
   SECTION_KEYS,
   TLP_DEFAULT,
   isSectionKey,
+  type CalloutFamily,
   type DocContact,
   type Preset,
   type PresetAssets,
@@ -329,6 +330,8 @@ export function defaultPreset(assets?: Partial<PresetAssets>, locale: Locale = g
     // A note that declares `recipients:` prints the table anyway.
     showRecipients: false,
     calloutIcons: true,
+    accessibleCallouts: false,
+    calloutColors: {},
     diamondBullets: true,
     justify: true,
     transclusions: 'inline',
@@ -875,48 +878,82 @@ function codeNode(t: MdToken): PdfNode {
 }
 
 /**
- * Obsidian callout palette: accent colour, tint and Lucide icon per type. An
- * untitled callout is titled with its type, capitalised, as Obsidian does.
- * The accent is too light for text, so the title takes `text`: the same hue,
- * dark enough for WCAG AA (4.5:1) on the tint.
+ * Obsidian callout palette, per family: the accent of the bar and icon, the
+ * tint behind, and the title's colour. The accent is too light for text, so
+ * the title takes `text`, the same hue at WCAG AA (4.5:1) on the tint, or
+ * `strong`, at AAA (7:1), when the template asks for accessible callouts.
  */
-export interface CalloutStyle { accent: string; tint: string; text: string; icon: IconName }
+export interface CalloutColors { accent: string; tint: string; text: string; strong: string }
 
-export const CALLOUT_STYLES: Record<string, CalloutStyle> = {
-  note: { accent: '#448AFF', tint: '#EEF4FF', text: '#005FFE', icon: 'pencil' },
-  abstract: { accent: '#00B8D4', tint: '#E8FAFD', text: '#007A8D', icon: 'clipboardList' },
-  summary: { accent: '#00B8D4', tint: '#E8FAFD', text: '#007A8D', icon: 'clipboardList' },
-  tldr: { accent: '#00B8D4', tint: '#E8FAFD', text: '#007A8D', icon: 'clipboardList' },
-  info: { accent: '#00B8D4', tint: '#E8FAFD', text: '#007A8D', icon: 'info' },
-  todo: { accent: '#00B8D4', tint: '#E8FAFD', text: '#007A8D', icon: 'listTodo' },
-  tip: { accent: '#00BFA5', tint: '#E6F8F5', text: '#007D6C', icon: 'flame' },
-  hint: { accent: '#00BFA5', tint: '#E6F8F5', text: '#007D6C', icon: 'flame' },
-  important: { accent: '#00BFA5', tint: '#E6F8F5', text: '#007D6C', icon: 'flame' },
-  success: { accent: '#00C853', tint: '#E9F9EE', text: '#007E34', icon: 'check' },
-  check: { accent: '#00C853', tint: '#E9F9EE', text: '#007E34', icon: 'check' },
-  done: { accent: '#00C853', tint: '#E9F9EE', text: '#007E34', icon: 'check' },
-  question: { accent: '#F09B00', tint: '#FEF5E6', text: '#996300', icon: 'circleHelp' },
-  help: { accent: '#F09B00', tint: '#FEF5E6', text: '#996300', icon: 'circleHelp' },
-  faq: { accent: '#F09B00', tint: '#FEF5E6', text: '#996300', icon: 'circleHelp' },
-  warning: { accent: '#F09B00', tint: '#FEF5E6', text: '#996300', icon: 'triangleAlert' },
-  caution: { accent: '#F09B00', tint: '#FEF5E6', text: '#996300', icon: 'triangleAlert' },
-  attention: { accent: '#F09B00', tint: '#FEF5E6', text: '#996300', icon: 'triangleAlert' },
-  failure: { accent: '#E93147', tint: '#FDECEE', text: '#D5172E', icon: 'x' },
-  fail: { accent: '#E93147', tint: '#FDECEE', text: '#D5172E', icon: 'x' },
-  missing: { accent: '#E93147', tint: '#FDECEE', text: '#D5172E', icon: 'x' },
-  danger: { accent: '#E93147', tint: '#FDECEE', text: '#D5172E', icon: 'zap' },
-  error: { accent: '#E93147', tint: '#FDECEE', text: '#D5172E', icon: 'zap' },
-  bug: { accent: '#E93147', tint: '#FDECEE', text: '#D5172E', icon: 'bug' },
-  example: { accent: '#7C4DFF', tint: '#F1EDFF', text: '#7340FF', icon: 'list' },
-  quote: { accent: '#9E9E9E', tint: '#F4F4F4', text: '#6E6E6E', icon: 'quote' },
-  cite: { accent: '#9E9E9E', tint: '#F4F4F4', text: '#6E6E6E', icon: 'quote' }
+export const CALLOUT_PALETTE: Record<CalloutFamily, CalloutColors> = {
+  note: { accent: '#448AFF', tint: '#EEF4FF', text: '#005FFE', strong: '#0047BE' },
+  info: { accent: '#00B8D4', tint: '#E8FAFD', text: '#007A8D', strong: '#005B69' },
+  tip: { accent: '#00BFA5', tint: '#E6F8F5', text: '#007D6C', strong: '#005C4F' },
+  success: { accent: '#00C853', tint: '#E9F9EE', text: '#007E34', strong: '#005F28' },
+  warning: { accent: '#F09B00', tint: '#FEF5E6', text: '#996300', strong: '#734A00' },
+  danger: { accent: '#E93147', tint: '#FDECEE', text: '#D5172E', strong: '#9E1122' },
+  example: { accent: '#7C4DFF', tint: '#F1EDFF', text: '#7340FF', strong: '#4100F5' },
+  quote: { accent: '#9E9E9E', tint: '#F4F4F4', text: '#6E6E6E', strong: '#515151' }
 };
 
-/** The style of a callout type; an unknown type takes the template's brand colour. */
-export function calloutStyle(type: string, brand: string): CalloutStyle {
-  if (CALLOUT_STYLES[type]) return CALLOUT_STYLES[type];
-  const bg = tint(brand, 0.93);
-  return { accent: brand, tint: bg, text: readableOn(brand, bg), icon: 'info' };
+/**
+ * Family and Lucide icon per callout type. An untitled callout is titled with
+ * its type, capitalised, as Obsidian does.
+ */
+export const CALLOUT_TYPES: Record<string, { family: CalloutFamily; icon: IconName }> = {
+  note: { family: 'note', icon: 'pencil' },
+  abstract: { family: 'info', icon: 'clipboardList' },
+  summary: { family: 'info', icon: 'clipboardList' },
+  tldr: { family: 'info', icon: 'clipboardList' },
+  info: { family: 'info', icon: 'info' },
+  todo: { family: 'info', icon: 'listTodo' },
+  tip: { family: 'tip', icon: 'flame' },
+  hint: { family: 'tip', icon: 'flame' },
+  important: { family: 'tip', icon: 'flame' },
+  success: { family: 'success', icon: 'check' },
+  check: { family: 'success', icon: 'check' },
+  done: { family: 'success', icon: 'check' },
+  question: { family: 'warning', icon: 'circleHelp' },
+  help: { family: 'warning', icon: 'circleHelp' },
+  faq: { family: 'warning', icon: 'circleHelp' },
+  warning: { family: 'warning', icon: 'triangleAlert' },
+  caution: { family: 'warning', icon: 'triangleAlert' },
+  attention: { family: 'warning', icon: 'triangleAlert' },
+  failure: { family: 'danger', icon: 'x' },
+  fail: { family: 'danger', icon: 'x' },
+  missing: { family: 'danger', icon: 'x' },
+  danger: { family: 'danger', icon: 'zap' },
+  error: { family: 'danger', icon: 'zap' },
+  bug: { family: 'danger', icon: 'bug' },
+  example: { family: 'example', icon: 'list' },
+  quote: { family: 'quote', icon: 'quote' },
+  cite: { family: 'quote', icon: 'quote' }
+};
+
+/** How a callout is drawn: bar and icon in `accent`, `tint` behind, title in `text`. */
+export interface CalloutStyle { accent: string; tint: string; text: string; icon: IconName }
+
+/**
+ * The style of a callout type in this template. A family whose accent the
+ * template overrides, and an unknown type, which takes the brand colour, get
+ * a tint and a title colour worked out from that accent.
+ */
+export function calloutStyle(type: string, preset: Preset): CalloutStyle {
+  const known = Object.prototype.hasOwnProperty.call(CALLOUT_TYPES, type) ? CALLOUT_TYPES[type] : undefined;
+  const accessible = preset.accessibleCallouts === true;
+  const custom = known ? preset.calloutColors?.[known.family] : undefined;
+  let colors: CalloutColors;
+  if (known && !custom) {
+    colors = CALLOUT_PALETTE[known.family];
+  } else {
+    const accent = custom || preset.colors.brand;
+    const bg = tint(accent, 0.93);
+    colors = { accent, tint: bg, text: readableOn(accent, bg), strong: readableOn(accent, bg, 7) };
+  }
+  const text = accessible ? colors.strong : colors.text;
+  // In accessible mode the bar and icon take the title's colour too: most
+  // accents are under the 3:1 WCAG asks of graphics (1.4.11).
+  return { accent: accessible ? text : colors.accent, tint: colors.tint, text, icon: known ? known.icon : 'info' };
 }
 
 /** Border (3) plus the left and right padding (10 each) that `boxed` adds. */
@@ -939,7 +976,7 @@ function calloutNode(t: MdToken, preset: Preset, ctx: Ctx): PdfNode {
     return boxed(inner, preset.colors.brand, tint(preset.colors.brand, 0.93));
   }
 
-  const style = calloutStyle(call.type, preset.colors.brand);
+  const style = calloutStyle(call.type, preset);
   const label = call.type.charAt(0).toUpperCase() + call.type.slice(1);
   // The title is inline Markdown too: `code`, **bold** and links in it must
   // not be printed with their literal syntax.
